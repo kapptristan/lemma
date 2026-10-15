@@ -4,8 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lemma – Kostenlose Mathe-Skripte für Matura &amp; Uni</title>
-<meta name="description" content="Lemma: Kostenlose Mathe-Skripte als PDF für Matura und Uni. Mathe nicht auswendig lernen, sondern verstehen.">
+<meta name="description" content="Kostenlose Mathe-Skripte als PDF für Matura und Uni – z. B. Kurvendiskussion Schritt für Schritt erklärt. Mathe nicht auswendig lernen, sondern verstehen.">
+<meta name="author" content="Tristan Kappeler">
+<link rel="canonical" href="https://lemmamathe.ch/">
 <link rel="icon" href="logos/2_L_qed_weiss.png">
+<link rel="apple-touch-icon" href="logos/2_L_qed_weiss.png">
+<!-- Vorschau beim Teilen (WhatsApp, Instagram, iMessage …) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Lemma">
+<meta property="og:locale" content="de_CH">
+<meta property="og:url" content="https://lemmamathe.ch/">
+<meta property="og:title" content="Lemma – Kostenlose Mathe-Skripte für Matura &amp; Uni">
+<meta property="og:description" content="Mathe nicht auswendig lernen, sondern verstehen. Kostenlose Skripte als PDF, z. B. Kurvendiskussion für die Matura.">
+<meta property="og:image" content="https://lemmamathe.ch/logos/4_wortmarke.png">
+<meta property="og:image:width" content="2400">
+<meta property="og:image:height" content="800">
+<meta name="twitter:card" content="summary_large_image">
 <!-- Computer Modern (CMU) liegt lokal in /fonts – keine Anfragen an fremde Server -->
 <link rel="preload" href="fonts/cmunrm.woff" as="font" type="font/woff" crossorigin>
 <style>
@@ -770,6 +784,39 @@ const vorschauUrls = s => isAvailable(s)
 // Bestellung ist nur aktiv, wenn mindestens ein verfügbares Dossier etwas kostet
 const BESTELLUNG_AKTIV = DOSSIERS.some(s => isAvailable(s) && !istKostenlos(s));
 let currentPage = "home";
+
+/* ---------- Strukturierte Daten für Google (aus der DOSSIERS-Liste erzeugt) ---------- */
+(() => {
+  const base = "https://lemmamathe.ch/";
+  const data = {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "WebSite", "@id": base + "#website", url: base, name: "Lemma", inLanguage: "de-CH",
+        description: "Kostenlose Mathe-Skripte für Matura und Uni.", publisher: { "@id": base + "#person" } },
+      { "@type": "Person", "@id": base + "#person", name: CONFIG.name,
+        sameAs: ["https://instagram.com/" + CONFIG.instagram] },
+      ...DOSSIERS.filter(isAvailable).map(s => ({
+        "@type": "LearningResource",
+        name: fullTitle(s),
+        description: s.beschreibung,
+        url: base + pdfUrl(s),
+        encodingFormat: "application/pdf",
+        inLanguage: "de-CH",
+        educationalLevel: s.stufe,
+        about: s.reihe,
+        teaches: s.inhalt,
+        numberOfPages: s.seiten,
+        version: s.version,
+        isAccessibleForFree: istKostenlos(s),
+        author: { "@id": base + "#person" },
+      })),
+    ],
+  };
+  const el = document.createElement("script");
+  el.type = "application/ld+json";
+  el.textContent = JSON.stringify(data);
+  document.head.appendChild(el);
+})();
 
 /* ---------- CONFIG-Werte einsetzen ---------- */
 document.querySelectorAll("[data-config]").forEach(el => {
