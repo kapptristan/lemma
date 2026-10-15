@@ -1,0 +1,1273 @@
+<!doctype html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lemma – Kostenlose Mathe-Skripte für Matura &amp; Uni</title>
+<meta name="description" content="Lemma: Kostenlose Mathe-Skripte als PDF für Matura und Uni. Mathe nicht auswendig lernen, sondern verstehen.">
+<link rel="icon" href="logos/2_L_qed_weiss.png">
+<!-- Computer Modern (CMU) liegt lokal in /fonts – keine Anfragen an fremde Server -->
+<link rel="preload" href="fonts/cmunrm.woff" as="font" type="font/woff" crossorigin>
+<style>
+  @font-face { font-family: "Computer Modern Serif"; src: url("fonts/cmunrm.woff") format("woff"); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Computer Modern Serif"; src: url("fonts/cmunbx.woff") format("woff"); font-weight: 700; font-style: normal; font-display: swap; }
+  @font-face { font-family: "Computer Modern Serif"; src: url("fonts/cmunti.woff") format("woff"); font-weight: 400; font-style: italic; font-display: swap; }
+  @font-face { font-family: "Computer Modern Serif"; src: url("fonts/cmunbi.woff") format("woff"); font-weight: 700; font-style: italic; font-display: swap; }
+  @font-face { font-family: "Computer Modern Typewriter"; src: url("fonts/cmuntt.woff") format("woff"); font-weight: 400; font-style: normal; font-display: swap; }
+
+  /* ---------- Grundlagen ---------- */
+  :root {
+    --white: #FFFFFF;
+    --grey:  #F2F2F2;
+    --black: #111111;
+    --line: 1px solid var(--black);
+    --radius: 999px; /* Rundung der Buttons */
+    --serif: "Computer Modern Serif", "CMU Serif", "Latin Modern Roman", Georgia, serif;
+    --mono:  "Computer Modern Typewriter", "CMU Typewriter Text", "Latin Modern Mono", ui-monospace, monospace;
+    --wrap: 80rem;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scrollbar-gutter: stable; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex; flex-direction: column;
+    background: var(--white);
+    color: var(--black);
+    font-family: var(--serif);
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+  main { flex: 1; display: flex; flex-direction: column; }
+  main > section { flex: 1; }
+  [data-page="home"] { display: flex; }
+  /* Seiten ohne Scrollen: genau so hoch wie der Bildschirm (alles ausser Shop & Produkt).
+     Nur falls der Inhalt auf sehr kleinen Bildschirmen nicht reicht, scrollt der Bereich in der Mitte. */
+  body.is-fit { height: 100vh; height: 100dvh; overflow: hidden; }
+  body.is-fit main { min-height: 0; }
+  body.is-fit main > section { min-height: 0; overflow-y: auto; }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; text-underline-offset: .18em; text-decoration-thickness: 1px; }
+  :focus-visible { outline: 2px solid var(--black); outline-offset: 3px; }
+  [tabindex="-1"]:focus { outline: none; }
+  [hidden] { display: none !important; }
+  .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 16px; }
+  @media (min-width: 40rem) { .wrap { padding: 0 2rem; } }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* ---------- Logo-Komponente ----------
+     Verwendung: <span class="logo">Lemma</span>
+     Grössen:    .logo--sm  .logo--lg  (oder eigene font-size)
+     Das Halmos-Quadrat (□) wird per ::after erzeugt. */
+  .logo {
+    font-variant: small-caps;
+    font-weight: 400;
+    letter-spacing: .03em;
+    white-space: nowrap;
+    text-decoration: none;
+    color: inherit;
+    line-height: 1;
+  }
+  .logo::after {
+    content: "";
+    display: inline-block;
+    width: max(.2em, 5px);
+    height: max(.2em, 5px);
+    margin-left: .2em;
+    border: max(1px, .028em) solid currentColor;
+    vertical-align: baseline;
+  }
+  .logo--sm { font-size: 1.35rem; }
+  .logo--lg { font-size: clamp(3.75rem, 17vw, 7.5rem); letter-spacing: .02em; }
+  /* Auf der Startseite steht das grosse Logo schon in der Mitte: im Header nur «L□» */
+  body[data-view="home"] .header-logo .logo-rest { display: none; }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-block;
+    padding: .75em 1.6em;
+    font: inherit;
+    font-size: 1rem;
+    line-height: 1.2;
+    color: var(--white);
+    background: var(--black);
+    border: var(--line);
+    border-radius: var(--radius);
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color .15s, color .15s;
+  }
+  .btn:hover { background: var(--white); color: var(--black); }
+  .btn--ghost { background: transparent; color: var(--black); }
+  .btn--ghost:hover { background: var(--black); color: var(--white); }
+  .btn--block { display: block; width: 100%; }
+  .btn[disabled] { cursor: not-allowed; opacity: .45; }
+  .btn[disabled]:hover { background: var(--black); color: var(--white); }
+  .link-btn { padding: 0; border: 0; background: none; font: inherit; color: inherit; text-decoration: underline; text-underline-offset: .18em; cursor: pointer; }
+  .back { display: inline-block; margin-bottom: 1.75rem; font-size: 1rem; text-decoration: none; }
+  .back:hover { text-decoration: underline; }
+
+  /* ---------- Header ---------- */
+  .site-header {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--white);
+    border-bottom: var(--line);
+  }
+  .site-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; height: 3.75rem; }
+  .nav { display: flex; align-items: center; gap: .8rem; font-size: .95rem; }
+  @media (min-width: 26rem) { .nav { gap: 1rem; font-size: 1rem; } }
+  @media (min-width: 40rem) { .nav { gap: 1.75rem; } }
+  .nav a { text-decoration: none; white-space: nowrap; }
+  .nav a:hover, .nav a[aria-current="page"] { text-decoration: underline; }
+  .cart-count {
+    display: inline-block; min-width: 1.45em; margin-left: .35em; padding: 0 .35em;
+    font-size: .8rem; line-height: 1.45em; text-align: center;
+    background: var(--black); color: var(--white); border-radius: var(--radius);
+  }
+
+  /* ---------- Seiten ---------- */
+  .page { padding: 3rem 0 4.5rem; }
+  @media (min-width: 40rem) { .page { padding: 4.5rem 0 6rem; } }
+  .page--text { padding: 1.25rem 0; }
+  @media (min-width: 40rem) { .page--text { padding: 3.5rem 0; } .page-title { margin-bottom: 1.5rem; } }
+  .page-title { margin: 0 0 1rem; font-size: clamp(1.75rem, 6vw, 2.4rem); font-weight: 700; line-height: 1.2; }
+  .lead { margin: -.75rem 0 1.75rem; max-width: 44rem; }
+  /* Alle Textseiten (ausser Shop & Produkt) haben dieselbe Spaltenbreite */
+  .page--text .wrap > * { max-width: 44rem; }
+
+  /* ---------- Titelseite ---------- */
+  .home { display: flex; flex-direction: column; justify-content: center; flex: 1; width: 100%; padding-top: 2rem; padding-bottom: 2rem; text-align: center; }
+  .home h1 { margin: 0; font-weight: 400; }
+  .home .logo--lg { font-size: clamp(3.5rem, 16vw, 6.5rem); }
+  .home .claim { margin: 1.25rem auto .5rem; max-width: 26ch; font-size: clamp(1.2rem, 4.5vw, 1.5rem); font-style: italic; line-height: 1.45; }
+  .home .sub-line { margin: 0 0 1.5rem; font-size: .95rem; font-variant: small-caps; letter-spacing: .06em; }
+  .home .cta { margin: 0; }
+
+  /* ---------- Shop: Vorteile & Filter ---------- */
+  .perks {
+    display: flex; flex-wrap: wrap; gap: .4rem 1.5rem;
+    margin: 0 0 2rem; padding: .8rem 0; list-style: none;
+    border-top: var(--line); border-bottom: var(--line); font-size: .95rem;
+  }
+  .perks li::before { content: ""; display: inline-block; width: .45em; height: .45em; margin-right: .55em; border: var(--line); vertical-align: .05em; }
+  .shop-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+  .filter { display: flex; }
+  .filter button {
+    padding: .45em 1.1em; font: inherit; font-size: .95rem; color: var(--black);
+    background: var(--white); border: var(--line); border-radius: 0; cursor: pointer;
+  }
+  .filter button:first-child { border-radius: var(--radius) 0 0 var(--radius); padding-left: 1.3em; }
+  .filter button:last-child { border-radius: 0 var(--radius) var(--radius) 0; padding-right: 1.3em; }
+  .filter button + button { border-left: 0; }
+  .filter button[aria-pressed="true"] { background: var(--black); color: var(--white); }
+  .result-count { font-size: .95rem; font-style: italic; }
+
+  /* ---------- Shop: Produktkarten ---------- */
+  .products { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
+  @media (min-width: 40rem) { .products { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 60rem) { .products { grid-template-columns: repeat(3, 1fr); } }
+  .product { display: flex; flex-direction: column; border: var(--line); background: var(--white); }
+  .product-media {
+    position: relative; display: flex; flex-direction: column; align-items: center; gap: .9rem;
+    padding: 2.75rem 1.25rem 1rem;
+    background: var(--white); border-bottom: var(--line);
+    color: inherit; text-decoration: none; text-align: center;
+  }
+  a.product-media:hover .cover { transform: translateY(-3px); }
+  a.product-media:hover .media-hint { text-decoration: underline; }
+  .badge {
+    position: absolute; top: .75rem; left: .75rem;
+    padding: .05em .7em; font-size: .85rem; font-variant: small-caps; letter-spacing: .05em;
+    background: var(--black); color: var(--white); border: var(--line); border-radius: var(--radius);
+  }
+  .badge--soon { background: var(--white); color: var(--black); }
+  .media-hint { font-size: .9rem; font-style: italic; }
+
+  /* Titelseite im LaTeX-Stil (wird aus den Daten erzeugt) */
+  .cover {
+    display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+    width: min(80%, 15rem); aspect-ratio: 1 / 1.414; padding: 2.6rem 1rem 1.6rem;
+    background: var(--white); border: var(--line);
+    text-align: center; line-height: 1.2;
+    transition: transform .2s;
+  }
+  .cover-stufe { font-size: .75rem; font-variant: small-caps; letter-spacing: .08em; }
+  .cover-main { display: flex; flex-direction: column; align-items: center; gap: .55rem; }
+  .cover-title { font-size: 1.1rem; font-weight: 700; hyphens: auto; }
+  .cover-rule { width: 3.5rem; border-top: var(--line); }
+  .cover-sub { font-size: .78rem; font-style: italic; }
+  .cover-logo { font-size: .95rem; }
+  .cover--lg { width: min(80%, 20rem); padding: 3.2rem 1.2rem 2rem; }
+  .cover--lg .cover-stufe { font-size: .95rem; }
+  .cover--lg .cover-title { font-size: 1.55rem; }
+  .cover--lg .cover-rule { width: 5rem; }
+  .cover--lg .cover-sub { font-size: 1rem; }
+  .cover--lg .cover-logo { font-size: 1.3rem; }
+  /* Cover aus der ersten PDF-Seite */
+  .cover-img {
+    display: block; width: min(80%, 15rem); aspect-ratio: 1 / 1.414; object-fit: cover; object-position: top;
+    background: var(--white); border: var(--line); transition: transform .2s;
+  }
+  .cover-img--lg { width: 100%; }
+  a.product-media:hover .cover-img { transform: translateY(-3px); }
+  .is-soon .cover, .is-soon .cover-img, .product.is-soon .product-info { opacity: .5; }
+
+  /* ---------- Verzeichnis der Skripte ---------- */
+  .page-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+  @media (min-width: 40rem) { .page-head { margin-bottom: 1.5rem; } }
+  .page-head .page-title { margin: 0; }
+  .search {
+    display: flex; align-items: center; gap: .5rem; flex: 0 1 15rem; min-width: 8.5rem;
+    padding: .4rem .9rem; border: var(--line); border-radius: var(--radius); cursor: text;
+  }
+  .search:focus-within { outline: 2px solid var(--black); outline-offset: 2px; }
+  .search svg { flex: none; }
+  .search input {
+    width: 100%; min-width: 0; padding: 0; border: 0; outline: 0; background: none;
+    font: inherit; font-size: 1rem; color: var(--black);
+  }
+  .search input::-webkit-search-cancel-button { cursor: pointer; }
+  .no-results { margin: 1.5rem 0 0; font-style: italic; }
+  .entry-hit { margin: .1rem 0 0; font-size: .85rem; font-style: italic; }
+  .entries { border-top: var(--line); }
+  .entry { display: grid; grid-template-columns: 5.5rem 1fr; gap: 1.1rem; padding: 1.4rem 0; border-bottom: var(--line); }
+  @media (min-width: 40rem) { .entry { grid-template-columns: 7.5rem 1fr; gap: 1.75rem; } }
+  .entry-cover { display: block; align-self: start; }
+  .entry-cover .cover-img, .entry-cover .cover { width: 100%; }
+  .entry-cover .cover { padding: .7rem .3rem .5rem; transition: none; }
+  .entry-cover .cover-stufe { font-size: .45rem; }
+  .entry-cover .cover-main { gap: .25rem; }
+  .entry-cover .cover-title { font-size: .62rem; }
+  .entry-cover .cover-rule { width: 1.5rem; }
+  .entry-cover .cover-sub { font-size: .45rem; }
+  .entry-cover .cover-logo { font-size: .55rem; }
+  .entry-body { display: flex; flex-direction: column; gap: .35rem; min-width: 0; }
+  .entry-title { margin: 0; font-size: 1.3rem; font-weight: 400; line-height: 1.25; }
+  .entry-title a { text-decoration: none; }
+  .entry-title a:hover { text-decoration: underline; }
+  .entry-sub { margin: 0; font-style: italic; }
+  .entry-text { margin: .2rem 0 0; font-size: 1rem; max-width: 40rem; }
+  .entry-aside { grid-column: 2; }
+  .entry-aside .entry-links { margin: 0; }
+  @media (min-width: 52rem) {
+    .entry:has(.entry-aside) { grid-template-columns: 7.5rem minmax(0, 1fr) 12rem; }
+    .entry-aside { grid-column: 3; grid-row: 1; text-align: right; }
+    .entry-aside .entry-links { flex-direction: column; align-items: flex-end; gap: .35rem; }
+  }
+  .entry-meta { margin: .1rem 0 0; font-size: .85rem; }
+  .entry-links { margin: .35rem 0 0; display: flex; flex-wrap: wrap; gap: .2rem .9rem; font-size: 1rem; }
+
+  .entry .license { margin-top: .1rem; }
+  .entry.is-soon .entry-cover, .entry.is-soon .entry-body { opacity: .5; }
+
+  /* ---------- Pfeile auf Bildern ---------- */
+  .lb-stage { position: relative; }
+  .arrow {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
+    display: grid; place-items: center; width: 2.75rem; height: 2.75rem; padding: 0;
+    font: inherit; font-size: 1.15rem; line-height: 1; color: var(--black);
+    background: var(--white); border: var(--line); border-radius: 50%; cursor: pointer;
+  }
+  .arrow:hover { background: var(--black); color: var(--white); }
+  .arrow--prev { left: .6rem; }
+  .arrow--next { right: .6rem; }
+
+  /* Gruppierung nach Reihe */
+  .reihe + .reihe { margin-top: 3rem; }
+  .reihe-title { margin: 0 0 .4rem; font-size: .9rem; font-weight: 400; font-variant: small-caps; letter-spacing: .08em; }
+  .entry--video { grid-template-columns: 8.5rem 1fr; }
+  @media (min-width: 40rem) { .entry--video { grid-template-columns: 12rem 1fr; } }
+  .video-thumb { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border: var(--line); background: var(--white); }
+
+  /* Download-Bereich */
+  .actions { display: flex; flex-direction: column; gap: .6rem; margin-top: auto; padding-top: 1rem; border-top: var(--line); }
+  .detail-info .actions { margin-top: .4rem; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: .6rem; }
+  .btn-row .btn { flex: 1 1 auto; white-space: nowrap; }
+  .license { margin: 0; font-size: .82rem; font-style: italic; line-height: 1.4; }
+  .version { margin: 0; font-size: .8rem; }
+  .soon-note { margin: 0; font-size: .95rem; font-style: italic; }
+
+  .product-info { display: flex; flex-direction: column; gap: .7rem; padding: 1.25rem; flex: 1; }
+  .product-meta { display: flex; align-items: center; gap: .6rem; margin: 0; font-size: .9rem; }
+  .tag { border: var(--line); border-radius: var(--radius); padding: 0 .7em; font-variant: small-caps; letter-spacing: .05em; }
+  .product h2 { margin: 0; font-size: 1.3rem; line-height: 1.25; }
+  .product h2 a { text-decoration: none; }
+  .product h2 a:hover { text-decoration: underline; }
+  .subtitle { margin: -.45rem 0 0; font-style: italic; }
+  .topics { margin: 0; padding: 0; list-style: none; font-size: .95rem; }
+  .topics li { padding: .2rem 0; }
+  .topics li::before { content: "–"; margin-right: .6em; }
+  .buy {
+    display: flex; flex-direction: column; gap: .9rem;
+    margin-top: auto; padding-top: 1rem; border-top: var(--line);
+  }
+  .price { margin: 0; font-size: 1.5rem; font-weight: 700; line-height: 1; white-space: nowrap; }
+  .price small { font-size: .85rem; font-weight: 400; font-style: italic; margin-left: .4em; }
+
+  /* ---------- Skript-Detailseite: wie ein Dokument, nicht wie ein Shop ---------- */
+  .doc-head { padding-bottom: 1.5rem; border-bottom: var(--line); }
+  .doc-title { margin: 0; font-size: clamp(1.9rem, 6vw, 2.8rem); font-weight: 400; line-height: 1.15; }
+  .doc-sub { margin: .4rem 0 0; font-size: 1.2rem; font-style: italic; }
+  .doc-meta { margin: .9rem 0 0; font-size: .9rem; }
+  .doc-body { display: grid; gap: 2rem; padding: 1.75rem 0 1.5rem; border-bottom: var(--line); }
+  .doc-body > div:first-child { display: flex; flex-direction: column; }
+  @media (min-width: 48rem) { .doc-body { grid-template-columns: 1fr 1fr; gap: 3.5rem; } }
+  .doc-h { margin: 0 0 .6rem; font-size: .9rem; font-weight: 400; font-variant: small-caps; letter-spacing: .08em; }
+  .doc-text { margin: 0; max-width: 34rem; }
+  /* steht in der linken Spalte ganz unten, knapp über der Linie */
+  .doc-download { display: inline-flex; align-items: center; gap: .4rem; align-self: flex-start; margin: 1.25rem 0 0; font-size: 1.15rem; }
+  @media (min-width: 48rem) { .doc-download { margin-top: auto; padding-top: 1.25rem; } }
+  .doc-download svg { flex: none; }
+  .doc-download small { font-size: .85rem; font-style: italic; }
+  .toc-list { margin: 0; padding: 0; list-style: none; }
+  @media (min-width: 30rem) { .toc-list { columns: 2; column-gap: 2rem; } }
+  .toc-list li { padding: .15rem 0; break-inside: avoid; }
+  .toc-list li { position: relative; padding-left: .95em; }
+  .toc-list li::before { content: ""; position: absolute; left: 0; top: .82em; width: .3em; height: .3em; border-radius: 50%; background: currentColor; }
+  .doc-pages { padding-top: 1.75rem; }
+  .pages {
+    display: grid; grid-auto-flow: column; grid-auto-columns: 72%; gap: 1rem;
+    overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: .5rem;
+  }
+  @media (min-width: 40rem) { .pages { grid-auto-columns: 42%; } }
+  @media (min-width: 60rem) { .pages { grid-auto-flow: row; grid-template-columns: repeat(var(--n, 4), 1fr); overflow: visible; } }
+  .page-btn {
+    display: block; padding: 0; aspect-ratio: 1 / 1.414; overflow: hidden;
+    border: var(--line); background: var(--white); cursor: zoom-in; font: inherit; scroll-snap-align: start;
+  }
+  .page-btn img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .page-btn.is-missing { display: grid; place-items: center; cursor: default; font-size: .85rem; font-style: italic; }
+  .pages-note { margin: .5rem 0 0; font-size: .85rem; font-style: italic; }
+  .doc.is-soon .doc-head, .doc.is-soon .doc-body { opacity: .6; }
+
+  /* ---------- Warenkorb-Leiste (unten) ---------- */
+  .cart-bar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    background: var(--black); color: var(--white);
+    transform: translateY(100%); transition: transform .25s;
+  }
+  .cart-bar.is-visible { transform: none; }
+  .cart-bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 3.75rem; }
+  .cart-bar .btn { background: var(--white); color: var(--black); border-color: var(--white); padding: .5em 1.3em; }
+  .cart-bar .btn:hover { background: var(--black); color: var(--white); }
+  body.has-cart-bar .site-footer { padding-bottom: 5.5rem; }
+
+
+  /* ---------- Kasse ---------- */
+  .checkout { display: grid; gap: 1.5rem; }
+  @media (min-width: 48rem) { .checkout { grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start; } }
+  .checkout h2 { margin: 0 0 .75rem; font-size: 1.2rem; }
+  /* Tabelle im booktabs-Stil */
+  .cart-table { width: 100%; border-collapse: collapse; font-size: 1rem; border-top: var(--line); border-bottom: var(--line); }
+  .cart-table th, .cart-table td { padding: .7rem .5rem .7rem 0; text-align: left; vertical-align: top; }
+  .cart-table thead th { font-weight: 400; font-style: italic; border-bottom: var(--line); }
+  .cart-table tfoot th, .cart-table tfoot td { border-top: var(--line); font-weight: 700; font-size: 1.15rem; }
+  .cart-table .num { text-align: right; white-space: nowrap; }
+  .cart-table small { display: block; font-size: .85rem; }
+  .cart-table .remove { font-size: .85rem; }
+  .cart-empty { margin: 0; padding: 1.25rem; border: 1px dashed var(--black); }
+  .field { margin-bottom: 1rem; }
+  .field label { display: block; margin-bottom: .35rem; font-weight: 700; font-size: 1rem; }
+  .field input {
+    width: 100%; padding: .6rem .8rem;
+    font: inherit; font-size: 1.05rem; color: var(--black);
+    background: var(--white); border: var(--line); border-radius: 0;
+    appearance: none; -webkit-appearance: none;
+  }
+  .field input[aria-invalid="true"] { border-width: 2px; }
+  .error { display: block; min-height: 1.3em; margin-top: .3rem; font-size: .9rem; font-style: italic; }
+  .error:empty { min-height: 0; margin: 0; }
+  .form-note { font-size: .9rem; margin: .75rem 0 0; line-height: 1.4; }
+  .result { border: var(--line); background: var(--grey); padding: 1.5rem 1.25rem; }
+  .result h2 { margin: 0 0 .75rem; font-size: 1.25rem; }
+  .result p { margin: 0 0 1rem; }
+  .code {
+    display: inline-block; font-family: var(--mono); font-size: 1.6rem; letter-spacing: .05em;
+    padding: .15em .5em; border: var(--line); background: var(--white);
+  }
+  .code-row { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; margin: 0 0 1.25rem; }
+  .result .btn { font-size: .95rem; padding: .55em 1.2em; }
+
+  /* ---------- Über mich ---------- */
+  .about { font-size: 1.05rem; }
+  @media (min-width: 40rem) { .about { font-size: inherit; } }
+  .about p { margin: 0 0 1rem; }
+  .about p:last-child { margin-bottom: 0; }
+  .about p:last-child::after { content: ""; display: inline-block; width: .5em; height: .5em; margin-left: .4em; border: var(--line); vertical-align: baseline; }
+
+  /* ---------- FAQ ---------- */
+  .faq { border-top: var(--line); }
+  .faq details { border-bottom: var(--line); }
+  .faq summary {
+    display: flex; justify-content: space-between; gap: 1rem;
+    padding: 1rem 0; cursor: pointer; font-weight: 700; list-style: none;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; font-weight: 400; }
+  .faq details[open] summary::after { content: "−"; }
+  .faq details p { margin: 0 0 1.1rem; }
+
+  /* ---------- Impressum ---------- */
+  .impressum p { margin: 0 0 .9rem; }
+
+  /* ---------- Footer ---------- */
+  .site-footer { border-top: var(--line); padding: 1rem 0; font-size: .95rem; }
+  @media (min-width: 40rem) { .site-footer { padding: 1.5rem 0; font-size: 1rem; } }
+  @media (max-width: 39.99rem) { .site-footer .logo { display: none; } }
+  .site-footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .4rem 2rem; }
+  .footer-links { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; }
+
+  /* ---------- Lightbox ---------- */
+  .lightbox {
+    padding: 0; border: var(--line); background: var(--white); color: var(--black);
+    max-width: 94vw; max-height: 94vh; width: fit-content;
+  }
+  .lightbox::backdrop { background: rgba(17, 17, 17, .85); }
+  .lightbox img { max-height: calc(94vh - 3.5rem); width: auto; margin: 0 auto; }
+  .lightbox-bar { display: flex; justify-content: space-between; align-items: center; border-top: var(--line); padding-left: 1.1rem; }
+  .lightbox-bar button {
+    font: inherit; font-size: 1rem; background: var(--white); color: var(--black);
+    border: 0; padding: .8rem 1.1rem; cursor: pointer; min-width: 3rem;
+  }
+  .lightbox-bar button:hover { background: var(--grey); }
+  .lightbox-bar .count { font-size: .9rem; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="#/" class="logo logo--sm header-logo" aria-label="Lemma – zur Startseite">L<span class="logo-rest">emma</span></a>
+    <nav class="nav" aria-label="Hauptnavigation">
+      <a href="#/skripte" data-nav="skripte">Skripte</a>
+      <a href="#/videos" data-nav="videos">Videos</a>
+      <a href="#/ueber-mich" data-nav="ueber-mich">Über mich</a>
+      <a href="#/faq" data-nav="faq">FAQ</a>
+      <a href="#/bestellen" data-nav="bestellen" data-nur-bestellung hidden>Bestellen<span class="cart-count" id="cart-count" hidden aria-label="Skripte im Warenkorb"></span></a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===== Titelseite ===== -->
+  <section data-page="home" data-title="">
+    <div class="wrap home">
+      <h1 tabindex="-1"><span class="logo logo--lg">Lemma</span></h1>
+      <p class="claim" data-config="heroSatz">Mathe nicht auswendig lernen, sondern verstehen.</p>
+      <p class="sub-line">Kostenlose Mathe-Skripte für Matura &amp; Uni</p>
+      <p class="cta"><a href="#/skripte" class="btn">Zu den Skripten</a></p>
+    </div>
+  </section>
+
+  <!-- ===== Skripte (Verzeichnis) ===== -->
+  <section class="page" data-page="skripte" data-title="Skripte" hidden>
+    <div class="wrap">
+      <div class="page-head">
+        <h1 class="page-title" tabindex="-1">Skripte</h1>
+        <label class="search">
+          <span class="visually-hidden">Skripte durchsuchen</span>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M10.2 10.2 15 15" stroke="currentColor" stroke-width="1.3"/></svg>
+          <input type="search" id="search" placeholder="Thema suchen …" autocomplete="off" spellcheck="false">
+        </label>
+      </div>
+      <p class="lead">Nicht nur wie man rechnet, sondern warum es funktioniert.<span data-nur-kostenlos><br>Alle Skripte sind aktuell noch kostenlos.</span></p>
+      <div class="shop-bar">
+        <div class="filter" id="filter" role="group" aria-label="Nach Stufe filtern"></div>
+      </div>
+      <div id="products"></div>
+      <p class="no-results" id="no-results" hidden></p>
+      <noscript><p>Bitte aktiviere JavaScript, um die Skripte zu sehen.</p></noscript>
+    </div>
+  </section>
+
+  <!-- ===== Videos (Liste kommt aus VIDEOS) ===== -->
+  <section class="page" data-page="videos" data-title="Videos" hidden>
+    <div class="wrap">
+      <div class="page-head"><h1 class="page-title" tabindex="-1">Videos</h1></div>
+      <div id="videos"></div>
+    </div>
+  </section>
+
+  <!-- ===== Skript-Detail (wird per JS gefüllt) ===== -->
+  <section class="page" data-page="detail" hidden>
+    <div class="wrap" id="detail"></div>
+  </section>
+
+  <!-- ===== Bestellen (Kasse) =====
+       Zurzeit deaktiviert: Die Seite erscheint erst, wenn mindestens ein verfügbares Dossier
+       «kostenlos: false» hat. Bis dahin leitet #/bestellen auf die Skripte um. -->
+  <section class="page page--text" data-page="bestellen" data-title="Bestellen" hidden>
+    <div class="wrap">
+      <h1 class="page-title" tabindex="-1">Bestellen</h1>
+      <div class="checkout">
+        <div>
+          <h2>Dein Warenkorb</h2>
+          <div id="cart"></div>
+        </div>
+
+        <div>
+          <form id="order-form" novalidate>
+            <h2>Deine Angaben</h2>
+            <div class="field">
+              <label for="f-name">Name</label>
+              <input id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="e-name">
+              <span class="error" id="e-name" aria-live="polite"></span>
+            </div>
+            <div class="field">
+              <label for="f-email">E-Mail</label>
+              <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="e-email">
+              <span class="error" id="e-email" aria-live="polite"></span>
+            </div>
+            <button type="submit" class="btn btn--block" id="submit-btn">Bestellung absenden</button>
+            <span class="error" id="e-form" aria-live="polite"></span>
+            <p class="form-note">Nach dem Absenden bekommst du deinen Bestellcode und die Zahlungsangaben für TWINT.</p>
+          </form>
+
+          <div class="result" id="result" hidden tabindex="-1">
+            <h2>Danke für deine Bestellung!</h2>
+            <div class="code-row">
+              <span class="code" id="r-code">LM-0000</span>
+              <button type="button" class="btn btn--ghost" id="copy-btn">Code kopieren</button>
+            </div>
+            <p id="r-text"></p>
+            <p id="r-next"></p>
+            <button type="button" class="btn btn--ghost" id="again-btn">Weiter einkaufen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 4 Über mich ===== -->
+  <section class="page page--text" data-page="ueber-mich" data-title="Über mich" hidden>
+    <div class="wrap">
+      <h1 class="page-title" tabindex="-1">Über mich</h1>
+      <div class="about" data-config="ueberMich"></div>
+    </div>
+  </section>
+
+  <!-- ===== 5 FAQ ===== -->
+  <section class="page page--text" data-page="faq" data-title="FAQ" hidden>
+    <div class="wrap">
+      <h1 class="page-title" tabindex="-1">FAQ</h1>
+      <div class="faq">
+        <details>
+          <summary>Kosten die Skripte etwas?</summary>
+          <p data-nur-kostenlos>Nein. Alle Skripte sind kostenlos. Du kannst sie direkt als PDF herunterladen, ohne Anmeldung.</p>
+          <p data-nur-bestellung hidden>Viele Skripte sind kostenlos und können direkt heruntergeladen werden. Bei einzelnen Skripten steht ein Preis, diese kannst du bestellen.</p>
+        </details>
+        <details>
+          <summary>Darf ich die Skripte weitergeben?</summary>
+          <p>Ja, gern – die kostenlosen Skripte darfst du unverändert und kostenlos weitergeben. Verkaufen oder verändern ist nicht erlaubt.</p>
+        </details>
+        <details>
+          <summary>Gibt es neue Versionen?</summary>
+          <p>Ja, ich verbessere die Skripte laufend. Bei jedem Skript steht die aktuelle Version. Lade es einfach neu herunter. Neue Skripte und Updates kündige ich auf Instagram an (<a data-config-instagram-handle target="_blank" rel="noopener"></a>).</p>
+        </details>
+        <details>
+          <summary>Ich habe einen Fehler gefunden.</summary>
+          <p>Danke! Schreib mir an <a data-config-mail></a> oder auf Instagram – ich korrigiere ihn in der nächsten Version.</p>
+        </details>
+        <!-- Nur sichtbar, wenn eine Bestellung aktiv ist -->
+        <details data-nur-bestellung hidden>
+          <summary>Wie bezahle ich?</summary>
+          <p>Per TWINT an <strong data-config="twintNummer"></strong>. Schreib unbedingt deinen Bestellcode (z.&nbsp;B. LM-1234) in die Nachricht, damit ich die Zahlung deiner Bestellung zuordnen kann.</p>
+        </details>
+        <details data-nur-bestellung hidden>
+          <summary>Wann bekomme ich das PDF?</summary>
+          <p>Sobald deine Zahlung bei mir eingegangen ist, in der Regel <span data-config="lieferzeit"></span>. Schau auch im Spam-Ordner nach.</p>
+        </details>
+        <details data-nur-bestellung hidden>
+          <summary>Kann ich mehrere Skripte auf einmal bestellen?</summary>
+          <p>Ja. Leg einfach alle in den Warenkorb – du zahlst alles zusammen mit einem einzigen Bestellcode.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Impressum ===== -->
+  <section class="page page--text" data-page="impressum" data-title="Impressum" hidden>
+    <div class="wrap">
+      <h1 class="page-title" tabindex="-1">Impressum</h1>
+      <div class="impressum">
+        <p><span data-config="name"></span><br><span data-config="adresse"></span></p>
+        <p>Kontakt: <a data-config-mail></a></p>
+        <p><em>Die kostenlosen Skripte dürfen unverändert und kostenlos weitergegeben werden. Verkauf und Veränderung sind nicht gestattet.</em></p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span class="logo logo--sm">Lemma</span>
+    <div class="footer-links">
+      <a href="#/faq">FAQ</a>
+      <a data-config-instagram target="_blank" rel="noopener"></a>
+      <a href="#/impressum">Impressum</a>
+    </div>
+    <small>© <span id="year"></span> <span data-config="name"></span></small>
+  </div>
+</footer>
+
+<!-- Warenkorb-Leiste -->
+<div class="cart-bar" id="cart-bar" aria-hidden="true">
+  <div class="wrap">
+    <span id="cart-bar-text"></span>
+    <a href="#/bestellen" class="btn" tabindex="-1">Zur Kasse</a>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<dialog class="lightbox" id="lightbox" aria-label="Vorschau">
+  <div class="lb-stage" id="lb-stage">
+    <img id="lb-img" alt="">
+    <button type="button" class="arrow arrow--prev" id="lb-prev" aria-label="Vorherige Seite">←</button>
+    <button type="button" class="arrow arrow--next" id="lb-next" aria-label="Nächste Seite">→</button>
+  </div>
+  <div class="lightbox-bar">
+    <span class="count" id="lb-count"></span>
+    <button type="button" id="lb-close" aria-label="Schliessen">✕</button>
+  </div>
+</dialog>
+
+<script>
+/* =====================================================================
+   CONFIG – hier alle Platzhalter ersetzen
+   ===================================================================== */
+const CONFIG = {
+  // ---- Nur für kostenpflichtige Dossiers (kostenlos: false) – zurzeit nicht aktiv ----
+  // Deine TWINT-Handynummer, z. B. "079 123 45 67"
+  twintNummer: "TWINT_NUMMER",
+
+  // Formspree-Endpoint: auf formspree.io gratis ein Formular erstellen
+  // und die URL hier einsetzen, z. B. "https://formspree.io/f/abcdwxyz".
+  // Solange hier "FORMSPREE_URL" steht, wird nichts gesendet (Testmodus).
+  // Wird nur aufgerufen, wenn jemand ein kostenpflichtiges Dossier bestellt.
+  formspreeUrl: "FORMSPREE_URL",
+
+  // Wie schnell das PDF bei einer Bestellung kommt
+  lieferzeit: "innerhalb von 24 Stunden",
+  // ---------------------------------------------------------------------------
+
+  // Dein Name (Impressum & Footer)
+  name: "Tristan Kappeler",
+
+  // Adresse oder Ort fürs Impressum, z. B. "8000 Zürich"
+  adresse: "9411 Schachen b. Reute AR",
+
+  // Kontakt-E-Mail (Impressum, Fehlermeldungen)
+  email: "kappeler.tristan@gmail.com",
+
+  // Instagram-Name ohne @
+  instagram: "lemma.mathe",
+
+  // Satz auf der Titelseite
+  heroSatz: "Mathe nicht auswendig lernen, sondern verstehen.",
+
+  // Text «Über mich» – jeder Eintrag ist ein Absatz
+  ueberMich: [
+    "Ich bin Tristan, Maturand mit Schwerpunktfach AM Mathematik & Physik. Nach der Matura möchte ich Mathematik studieren.",
+    "Ehrlich gesagt mochte ich Mathe lange nicht – nicht, weil sie zu schwierig war, sondern weil sie mir nie richtig erklärt wurde. Fasziniert hat mich höhere Mathematik trotzdem schon immer. Mit dem Schwerpunktfach wollte ich nicht mehr nur staunen, sondern so etwas selbst verstehen und lösen können.",
+    "Ein Lemma ist in der Mathematik ein Hilfssatz: ein kleiner Baustein, mit dem man Grösseres beweist. Genau das sollen diese Skripte sein – die Erklärungen, die ich selbst gern gehabt hätte."
+  ],
+};
+
+/* =====================================================================
+   DOSSIERS – die zentrale Liste aller Skripte
+   Neues Dossier: PDF als  dossiers/<id>.pdf  ablegen, Vorschaubilder mit
+   vorschau-erzeugen.ps1 erzeugen und hier einen Eintrag ergänzen.
+
+   - id:           Dateiname der PDF ohne «.pdf», ohne Leerzeichen
+                   (erscheint auch im Link: #/skripte/<id>)
+   - titel, untertitel
+   - stufe:        "Matura" oder "Uni"
+   - reihe:        "Analysis", "Algebra", "Geometrie" oder "Stochastik"
+   - status:       "verfügbar" oder "bald verfügbar" (dann ohne Button)
+   - seiten:       Seitenzahl
+   - version:      z. B. "1.0" – bei jeder neuen PDF erhöhen! Die Version wird
+                   an den Link gehängt (…pdf?v=1.0), damit der Browser keine
+                   alte, zwischengespeicherte Datei ausliefert.
+   - datum:        z. B. "Oktober 2026"
+   - kostenlos:    true  → Download-Button
+                   false → Preis + Bestellung über den Warenkorb
+   - preis:        Zahl in CHF, nur nötig bei kostenlos: false
+   - vorschau:     Anzahl Vorschaubilder (Standard 4: Seite 1 = Cover, 2–4 = Vorschau)
+   - badge:        optional, kleines Etikett auf dem Cover, z. B. "Neu"
+   - beschreibung: kurzer Text für Karte und Detailseite
+   - inhalt:       Liste der Kapitel (Detailseite)
+   ===================================================================== */
+const DOSSIERS = [
+  {
+    id: "kurvendiskussion-1",
+    titel: "Kurvendiskussion I",
+    untertitel: "Polynomfunktionen Schritt für Schritt",
+    stufe: "Matura",
+    reihe: "Analysis",
+    status: "verfügbar",
+    seiten: 13,
+    version: "1.0",
+    datum: "Oktober 2026",
+    kostenlos: true,
+    preis: 5, // wird nur verwendet, wenn kostenlos: false
+    beschreibung: "Eine einzige Funktion, f(x) = x³ − 6x² + 9x, begleitet dich durch das ganze Skript. Jede Frage, die wir ihr stellen, verrät ein Stück ihres Graphen – bis am Schluss das ganze Bild steht.",
+    inhalt: [
+      "Definitionsbereich", "Symmetrie", "Gleichungen lösen", "Schnittpunkte mit den Achsen",
+      "Ableitung", "Extrempunkte", "Wendepunkte", "Verhalten im Unendlichen",
+      "Zusammenfassung", "Typische Fehler",
+    ],
+  },
+  {
+    id: "kurvendiskussion-2",
+    titel: "Kurvendiskussion II",
+    untertitel: "Gebrochenrationale und Exponentialfunktionen",
+    stufe: "Matura",
+    reihe: "Analysis",
+    status: "bald verfügbar",
+    kostenlos: true,
+  },
+];
+
+// Reihenfolge der Reihen auf der Seite
+const REIHEN = ["Analysis", "Algebra", "Geometrie", "Stochastik"];
+
+/* =====================================================================
+   VIDEOS – solange die Liste leer ist, steht auf der Seite «kommt bald»
+   - youtube:      die ID aus dem Link, z. B. bei youtube.com/watch?v=abc123 → "abc123"
+   - titel, beschreibung
+   - reihe:        wie bei den Dossiers, z. B. "Analysis"
+   - dauer:        optional, z. B. "8 Min."
+   - skript:       optional, id des passenden Dossiers (z. B. "kurvendiskussion-1")
+   Beispiel:
+   { youtube: "abc123", titel: "Extrempunkte finden", reihe: "Analysis",
+     dauer: "8 Min.", skript: "kurvendiskussion-1", beschreibung: "…" },
+   ===================================================================== */
+const VIDEOS = [];
+
+/* =====================================================================
+   Ab hier muss nichts mehr angepasst werden
+   ===================================================================== */
+const $ = (sel, root = document) => root.querySelector(sel);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const chf = p => "CHF " + (Number.isInteger(p) ? p + ".–" : p.toFixed(2));
+const isAvailable = s => s.status === "verfügbar";
+const istKostenlos = s => s.kostenlos !== false;
+const fullTitle = s => s.untertitel ? `${s.titel} – ${s.untertitel}` : s.titel;
+const byId = id => DOSSIERS.find(s => s.id === id);
+const plural = n => n === 1 ? "1 Skript" : `${n} Skripte`;
+const cacheParam = s => s.version ? `?v=${encodeURIComponent(s.version)}` : "";
+const pdfUrl = s => `dossiers/${encodeURIComponent(s.id)}.pdf${cacheParam(s)}`;
+const pdfDateiname = s => `Lemma-${s.titel.replace(/\s+/g, "-")}.pdf`;
+// Vorschaubilder: [Cover, Seite 2, Seite 3, …] – nur für verfügbare Dossiers
+const vorschauUrls = s => isAvailable(s)
+  ? Array.from({ length: s.vorschau ?? 4 }, (_, i) => `dossiers/vorschau/${encodeURIComponent(s.id)}-${i + 1}.png${cacheParam(s)}`)
+  : [];
+// Bestellung ist nur aktiv, wenn mindestens ein verfügbares Dossier etwas kostet
+const BESTELLUNG_AKTIV = DOSSIERS.some(s => isAvailable(s) && !istKostenlos(s));
+let currentPage = "home";
+
+/* ---------- CONFIG-Werte einsetzen ---------- */
+document.querySelectorAll("[data-config]").forEach(el => {
+  const value = CONFIG[el.dataset.config];
+  if (Array.isArray(value)) el.innerHTML = value.map(p => `<p>${esc(p)}</p>`).join("");
+  else el.textContent = value;
+});
+document.querySelectorAll("[data-config-mail]").forEach(el => {
+  el.href = "mailto:" + CONFIG.email;
+  el.textContent = CONFIG.email;
+});
+document.querySelectorAll("[data-config-instagram]").forEach(el => {
+  el.href = "https://instagram.com/" + CONFIG.instagram;
+  el.textContent = "Instagram @" + CONFIG.instagram;
+});
+document.querySelectorAll("[data-config-instagram-handle]").forEach(el => {
+  el.href = "https://instagram.com/" + CONFIG.instagram;
+  el.textContent = "@" + CONFIG.instagram;
+});
+$("#year").textContent = new Date().getFullYear();
+
+// Teile, die nur bei aktiver Bestellung bzw. nur ohne Bestellung gelten
+document.querySelectorAll("[data-nur-bestellung]").forEach(el => (el.hidden = !BESTELLUNG_AKTIV));
+document.querySelectorAll("[data-nur-kostenlos]").forEach(el => (el.hidden = BESTELLUNG_AKTIV));
+
+/* ---------- Warenkorb (bleibt beim Neuladen erhalten) ---------- */
+const CART_KEY = "lemma-warenkorb";
+let cart = [];
+try { cart = JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch { cart = []; }
+cart = cart.filter(id => byId(id) && isAvailable(byId(id)) && !istKostenlos(byId(id)));
+const saveCart = () => { try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch { /* egal */ } };
+const cartTotal = () => cart.reduce((sum, id) => sum + byId(id).preis, 0);
+
+function addToCart(id) {
+  if (!cart.includes(id)) cart.push(id);
+  saveCart(); renderCart();
+}
+function removeFromCart(id) {
+  cart = cart.filter(x => x !== id);
+  saveCart(); renderCart();
+}
+
+/* ---------- Bausteine ---------- */
+// Titelseite im LaTeX-Stil – Ersatz, solange es (noch) kein Vorschaubild gibt
+function coverHtml(s, large = false) {
+  return `
+    <span class="cover${large ? " cover--lg" : ""}" aria-hidden="true">
+      <span class="cover-stufe">${esc(s.stufe)}</span>
+      <span class="cover-main">
+        <span class="cover-title">${esc(s.titel)}</span>
+        <span class="cover-rule"></span>
+        ${s.untertitel ? `<span class="cover-sub">${esc(s.untertitel)}</span>` : ""}
+      </span>
+      <span class="logo cover-logo">Lemma</span>
+    </span>`;
+}
+// Cover: erste PDF-Seite als Bild, sonst die LaTeX-Titelseite
+function coverOrImage(s, large = false) {
+  const [cover] = vorschauUrls(s);
+  return cover
+    ? `<img class="cover-img${large ? " cover-img--lg" : ""}" src="${esc(cover)}" alt="" data-cover="${esc(s.id)}" data-large="${large}" ${large ? "" : 'loading="lazy"'}>`
+    : coverHtml(s, large);
+}
+const badgeHtml = s => !isAvailable(s) ? `<span class="badge badge--soon">bald verfügbar</span>`
+                     : s.badge ? `<span class="badge">${esc(s.badge)}</span>` : "";
+const metaHtml = s => `<p class="product-meta"><span class="tag">${esc(s.stufe)}</span> PDF${s.seiten ? ` · ${esc(s.seiten)} Seiten` : ""}</p>`;
+const versionHtml = s => s.version ? `<p class="version">Version ${esc(s.version)}${s.datum ? ` · ${esc(s.datum)}` : ""}</p>` : "";
+
+// Button-Bereich: Download (kostenlos), Bestellung (mit Preis) oder «bald verfügbar»
+function actionsHtml(s) {
+  if (!isAvailable(s)) {
+    return `<div class="actions"><p class="soon-note">Bald verfügbar</p></div>`;
+  }
+  if (istKostenlos(s)) {
+    return `
+      <div class="actions">
+        <a class="btn btn--block" href="${esc(pdfUrl(s))}" download="${esc(pdfDateiname(s))}">Herunterladen</a>
+        ${versionHtml(s)}
+      </div>`;
+  }
+  return `
+    <div class="actions">
+      <p class="price">${chf(s.preis)}<small>inkl. PDF-Versand</small></p>
+      <button type="button" class="btn btn--block" data-add="${esc(s.id)}">In den Warenkorb</button>
+      ${versionHtml(s)}
+    </div>`;
+}
+
+/* ---------- Übersicht, gruppiert nach Reihe ---------- */
+function linksHtml(s) {
+  const link = `#/skripte/${encodeURIComponent(s.id)}`;
+  if (!isAvailable(s)) return "";
+  if (istKostenlos(s)) {
+    return `
+      <p class="entry-links">
+        <a href="${esc(pdfUrl(s))}" download="${esc(pdfDateiname(s))}">Herunterladen</a>
+        <a href="${link}">Vorschau &amp; Inhalt</a>
+      </p>`;
+  }
+  return `
+    <p class="entry-links">
+      <span>${chf(s.preis)}</span>
+      <button type="button" class="link-btn" data-add="${esc(s.id)}">In den Warenkorb</button>
+      <a href="${link}">Vorschau &amp; Inhalt</a>
+    </p>`;
+}
+function entryHtml(s) {
+  const soon = !isAvailable(s);
+  const link = `#/skripte/${encodeURIComponent(s.id)}`;
+  const meta = [s.stufe, s.seiten && `${s.seiten} Seiten`,
+    soon ? "erscheint bald" : s.version && `Version ${s.version}${s.datum ? ` · ${s.datum}` : ""}`,
+    !soon && s.badge && s.badge.toLowerCase()].filter(Boolean).map(esc).join(" · ");
+  return `
+    <article class="entry${soon ? " is-soon" : ""}" data-stufe="${esc(s.stufe)}" data-id="${esc(s.id)}">
+      <a href="${link}" class="entry-cover" tabindex="-1" aria-hidden="true">${coverOrImage(s)}</a>
+      <div class="entry-body">
+        <h3 class="entry-title"><a href="${link}">${esc(s.titel)}</a></h3>
+        ${s.untertitel ? `<p class="entry-sub">${esc(s.untertitel)}</p>` : ""}
+        ${s.beschreibung ? `<p class="entry-text">${esc(s.beschreibung)}</p>` : ""}
+        <p class="entry-meta">${meta}</p>
+        <p class="entry-hit" hidden></p>
+      </div>
+      ${isAvailable(s) ? `<div class="entry-aside">${linksHtml(s)}</div>` : ""}
+    </article>`;
+}
+const reihen = [...REIHEN, ...new Set(DOSSIERS.map(s => s.reihe).filter(r => r && !REIHEN.includes(r)))];
+$("#products").outerHTML = `<div id="products">${reihen
+  .filter(r => DOSSIERS.some(s => s.reihe === r))
+  .map(r => `
+    <section class="reihe" data-reihe="${esc(r)}">
+      <h2 class="reihe-title">${esc(r)}</h2>
+      <div class="entries">${DOSSIERS.filter(s => s.reihe === r).map(entryHtml).join("")}</div>
+    </section>`).join("")}</div>`;
+
+// Falls ein Vorschaubild fehlt: LaTeX-Titelseite anzeigen
+document.addEventListener("error", e => {
+  const img = e.target;
+  if (img.matches && img.matches("img[data-cover]")) {
+    img.outerHTML = coverHtml(byId(img.dataset.cover), img.dataset.large === "true");
+  }
+}, true);
+
+/* ---------- Filter nach Stufe ---------- */
+const stufen = [...new Set(DOSSIERS.map(s => s.stufe))];
+const filterEl = $("#filter");
+if (stufen.length > 1) {
+  filterEl.innerHTML = ["Alle", ...stufen].map((f, i) =>
+    `<button type="button" data-filter="${esc(f)}" aria-pressed="${i === 0}">${esc(f)}</button>`).join("");
+} else {
+  $(".shop-bar").hidden = true;
+}
+/* ---------- Suche ---------- */
+// Gross-/Kleinschreibung und Umlaute egal: «ubung» findet «Übung»
+const norm = t => String(t).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+let filterStufe = "Alle", query = "";
+function applyFilter(f = filterStufe) {
+  filterStufe = f;
+  const words = norm(query).split(/\s+/).filter(Boolean);
+  let n = 0;
+  document.querySelectorAll("#products .entry").forEach(p => {
+    const s = byId(p.dataset.id);
+    const felder = [s.titel, s.untertitel, s.beschreibung, s.reihe, s.stufe].filter(Boolean).map(norm).join(" ");
+    const kapitel = s.inhalt || [];
+    const trifft = w => felder.includes(w) || kapitel.some(k => norm(k).includes(w));
+    const show = (f === "Alle" || s.stufe === f) && words.every(trifft);
+    p.hidden = !show;
+    if (show) n++;
+    // passende Kapitel anzeigen, wenn gesucht wird
+    const hit = p.querySelector(".entry-hit");
+    const treffer = words.length ? kapitel.filter(k => words.some(w => norm(k).includes(w))) : [];
+    hit.hidden = !treffer.length;
+    hit.textContent = treffer.length ? `Enthält: ${treffer.join(", ")}` : "";
+  });
+  // leere Reihen ausblenden
+  document.querySelectorAll(".reihe").forEach(r => (r.hidden = !r.querySelector(".entry:not([hidden])")));
+  filterEl.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.filter === f));
+  const leer = $("#no-results");
+  leer.hidden = n > 0;
+  leer.textContent = n ? "" : `Nichts gefunden für «${query.trim()}». Versuch es mit einem anderen Begriff, z. B. «Ableitung».`;
+}
+$("#search").addEventListener("input", e => { query = e.target.value; applyFilter(); });
+applyFilter("Alle");
+
+/* ---------- Videos ---------- */
+function videoHtml(v) {
+  const url = `https://www.youtube.com/watch?v=${encodeURIComponent(v.youtube)}`;
+  const skript = v.skript && byId(v.skript);
+  const meta = [v.reihe, v.dauer].filter(Boolean).map(esc).join(" · ");
+  return `
+    <article class="entry entry--video">
+      <a href="${url}" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+        <img class="video-thumb" src="https://i.ytimg.com/vi/${encodeURIComponent(v.youtube)}/hqdefault.jpg" alt="" loading="lazy">
+      </a>
+      <div class="entry-body">
+        <h3 class="entry-title"><a href="${url}" target="_blank" rel="noopener">${esc(v.titel)}</a></h3>
+        ${v.beschreibung ? `<p class="entry-text">${esc(v.beschreibung)}</p>` : ""}
+        ${meta ? `<p class="entry-meta">${meta}</p>` : ""}
+        <p class="entry-links">
+          <a href="${url}" target="_blank" rel="noopener">Auf YouTube ansehen</a>
+          ${skript ? `<a href="#/skripte/${encodeURIComponent(skript.id)}">Zum Skript: ${esc(skript.titel)}</a>` : ""}
+        </p>
+      </div>
+    </article>`;
+}
+$("#videos").innerHTML = VIDEOS.length
+  ? `<div class="entries">${VIDEOS.map(videoHtml).join("")}</div>`
+  : `<p class="lead">Hier kommen bald Videos zu den Skripten.</p>
+     <p>Folge <a href="https://instagram.com/${esc(CONFIG.instagram)}" target="_blank" rel="noopener">@${esc(CONFIG.instagram)}</a> auf Instagram, dann verpasst du nichts.</p>`;
+
+/* ---------- Skript-Detailseite ---------- */
+function renderDetail(s) {
+  const soon = !isAvailable(s);
+  const seiten = vorschauUrls(s);
+  const meta = [s.stufe, s.reihe, s.seiten && `${s.seiten} Seiten`,
+    soon ? "erscheint bald" : s.version && `Version ${s.version}${s.datum ? ` · ${s.datum}` : ""}`]
+    .filter(Boolean).map(esc).join(" · ");
+  const download = soon ? ""
+    : istKostenlos(s)
+      ? `<a class="doc-download" href="${esc(pdfUrl(s))}" download="${esc(pdfDateiname(s))}"><svg aria-hidden="true" width="12" height="14" viewBox="0 0 12 14"><path d="M6 0v12M1 7l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>Herunterladen <small>(PDF)</small></a>`
+      : `<p class="doc-download">${chf(s.preis)} · <button type="button" class="link-btn" data-add="${esc(s.id)}">In den Warenkorb</button></p>`;
+  const text = s.beschreibung
+    || (soon ? `Dieses Skript erscheint bald. Folge @${CONFIG.instagram} auf Instagram, dann verpasst du es nicht.` : "");
+  // Leseprobe: alle Vorschauseiten nebeneinander, Klick öffnet die Vollbild-Ansicht
+  const pages = seiten.length ? `
+      <section class="doc-pages">
+        <h2 class="doc-h">Leseprobe</h2>
+        <div class="pages" style="--n: ${seiten.length}">${seiten.map((src, i) => `
+          <button type="button" class="page-btn" data-lb="${esc(s.id)}" data-index="${i}" aria-label="Seite ${i + 1} gross ansehen">
+            <img src="${esc(src)}" alt="Seite ${i + 1}" loading="lazy">
+          </button>`).join("")}
+        </div>
+        <p class="pages-note">Klick auf eine Seite, um sie gross anzusehen.</p>
+      </section>` : "";
+  $("#detail").innerHTML = `
+    <a href="#/skripte" class="back">← Alle Skripte</a>
+    <article class="doc${soon ? " is-soon" : ""}">
+      <header class="doc-head">
+        <h1 class="doc-title" tabindex="-1">${esc(s.titel)}</h1>
+        ${s.untertitel ? `<p class="doc-sub">${esc(s.untertitel)}</p>` : ""}
+        <p class="doc-meta">${meta}</p>
+      </header>
+      <div class="doc-body">
+        <div>
+          <h2 class="doc-h">Worum es geht</h2>
+          <p class="doc-text">${esc(text)}</p>
+          ${download}
+        </div>
+        ${s.inhalt ? `<div>
+          <h2 class="doc-h">Inhalt</h2>
+          <ul class="toc-list">${s.inhalt.map(t => `<li>${esc(t)}</li>`).join("")}</ul>
+        </div>` : ""}
+      </div>
+      ${pages}
+    </article>`;
+  // Fehlende Vorschaubilder durch Platzhalter ersetzen
+  $("#detail").querySelectorAll(".page-btn img").forEach(img => {
+    img.addEventListener("error", () => {
+      const btn = img.parentElement;
+      btn.classList.add("is-missing");
+      btn.disabled = true;
+      btn.textContent = "Vorschau";
+    });
+  });
+  renderCart();
+}
+/* ---------- Warenkorb anzeigen ---------- */
+function renderCart() {
+  const n = cart.length, total = cartTotal();
+
+  const count = $("#cart-count");
+  count.hidden = n === 0;
+  count.textContent = n;
+
+  document.querySelectorAll("[data-add]").forEach(b => {
+    const inCart = cart.includes(b.dataset.add);
+    b.textContent = inCart ? "✓ Im Warenkorb – zur Kasse" : "In den Warenkorb";
+    b.classList.toggle("btn--ghost", inCart);
+  });
+
+  $("#cart").innerHTML = n === 0
+    ? `<p class="cart-empty">Dein Warenkorb ist leer. <a href="#/skripte">Zu den Skripten</a></p>`
+    : `<table class="cart-table">
+        <thead><tr><th>Skript</th><th class="num">Preis</th><th><span class="visually-hidden">Entfernen</span></th></tr></thead>
+        <tbody>${cart.map(id => { const s = byId(id); return `
+          <tr>
+            <td><strong><a href="#/skripte/${encodeURIComponent(id)}">${esc(s.titel)}</a></strong><small>${esc(s.stufe)} · PDF · ${esc(s.seiten)} Seiten</small></td>
+            <td class="num">${chf(s.preis)}</td>
+            <td class="num"><button type="button" class="link-btn remove" data-remove="${esc(id)}" aria-label="${esc(s.titel)} entfernen">Entfernen</button></td>
+          </tr>`; }).join("")}
+        </tbody>
+        <tfoot><tr><th>Total</th><td class="num">${chf(total)}</td><td></td></tr></tfoot>
+      </table>`;
+
+  $("#submit-btn").textContent = n ? `Bestellung absenden · ${chf(total)}` : "Bestellung absenden";
+  if (n) $("#e-form").textContent = "";
+
+  $("#cart-bar-text").textContent = `${plural(n)} · ${chf(total)}`;
+  updateCartBar();
+}
+
+// Leiste unten: nur im Shop und auf Detailseiten, wenn etwas im Warenkorb ist
+const cartBar = $("#cart-bar");
+function updateCartBar() {
+  const show = BESTELLUNG_AKTIV && cart.length > 0 && (currentPage === "skripte" || currentPage === "detail");
+  cartBar.classList.toggle("is-visible", show);
+  cartBar.setAttribute("aria-hidden", !show);
+  cartBar.querySelector("a").tabIndex = show ? 0 : -1;
+  document.body.classList.toggle("has-cart-bar", show);
+}
+
+/* ---------- Seiten-Navigation (#/skripte, #/bestellen, …) ---------- */
+function route() {
+  const parts = location.hash.replace(/^#\/?/, "").split("/").map(decodeURIComponent);
+  let page = parts[0] || "home";
+  if (page === "bestellen" && !BESTELLUNG_AKTIV) page = "skripte";
+  let title = "";
+  if (page === "skripte" && parts[1]) {
+    const s = byId(parts[1]);
+    if (s) { renderDetail(s); page = "detail"; title = s.titel; }
+  }
+  const section = document.querySelector(`[data-page="${page}"]`) || document.querySelector('[data-page="home"]');
+  page = section.dataset.page;
+  document.querySelectorAll("main [data-page]").forEach(p => (p.hidden = p !== section));
+  document.querySelectorAll("[data-nav]").forEach(a => {
+    const active = a.dataset.nav === page || (a.dataset.nav === "skripte" && page === "detail");
+    active ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current");
+  });
+  title = title || section.dataset.title;
+  document.title = title ? `${title} – Lemma` : "Lemma – Kostenlose Mathe-Skripte für Matura & Uni";
+  currentPage = page;
+  document.body.dataset.view = page;
+  document.body.classList.toggle("is-fit", !["skripte", "detail", "videos"].includes(page) || (page === "videos" && !VIDEOS.length));
+  section.scrollTop = 0;
+  updateCartBar();
+  if (lb.open) lb.close();
+  scrollTo(0, 0);
+  const h = section.querySelector("h1");
+  if (h && document.activeElement !== document.body) h.focus({ preventScroll: true });
+}
+
+/* ---------- Lightbox ---------- */
+const lb = $("#lightbox"), lbImg = $("#lb-img");
+let lbList = [], lbIndex = 0;
+function showLb(i) {
+  lbIndex = (i + lbList.length) % lbList.length;
+  lbImg.src = lbList[lbIndex];
+  lbImg.alt = `Vorschau Seite ${lbIndex + 1}`;
+  $("#lb-count").textContent = `${lbIndex + 1} / ${lbList.length}`;
+  const multi = lbList.length > 1;
+  $("#lb-prev").hidden = !multi;
+  $("#lb-next").hidden = !multi;
+}
+$("#lb-prev").addEventListener("click", () => showLb(lbIndex - 1));
+$("#lb-next").addEventListener("click", () => showLb(lbIndex + 1));
+$("#lb-close").addEventListener("click", () => lb.close());
+lb.addEventListener("click", e => { if (e.target === lb) lb.close(); }); // Klick auf Hintergrund
+lb.addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft") showLb(lbIndex - 1);
+  if (e.key === "ArrowRight") showLb(lbIndex + 1);
+});
+
+// Wischen nach links/rechts (Handy)
+function addSwipe(el, onPrev, onNext) {
+  let x0 = null, y0 = null;
+  el.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  el.addEventListener("touchend", e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) (dx > 0 ? onPrev : onNext)();
+    x0 = null;
+  });
+}
+addSwipe($("#lb-stage"), () => showLb(lbIndex - 1), () => showLb(lbIndex + 1));
+
+/* ---------- Klicks ---------- */
+document.addEventListener("click", e => {
+  const thumb = e.target.closest("[data-lb]");
+  if (thumb && !thumb.disabled) {
+    const s = byId(thumb.dataset.lb);
+    const missing = [...document.querySelectorAll("#detail [data-lb]")].map(t => t.classList.contains("is-missing"));
+    const seiten = vorschauUrls(s);
+    lbList = seiten.filter((_, i) => !missing[i]);
+    showLb(Math.max(0, lbList.indexOf(seiten[+thumb.dataset.index])));
+    lb.showModal();
+  }
+  const add = e.target.closest("[data-add]");
+  if (add) {
+    if (cart.includes(add.dataset.add)) location.hash = "#/bestellen";
+    else addToCart(add.dataset.add);
+  }
+  const filter = e.target.closest("[data-filter]");
+  if (filter) applyFilter(filter.dataset.filter);
+  const remove = e.target.closest("[data-remove]");
+  if (remove) removeFromCart(remove.dataset.remove);
+});
+
+/* ---------- Bestellformular ---------- */
+const form = $("#order-form");
+const rules = {
+  name:  v => v.trim().length >= 2 || "Bitte gib deinen Namen ein.",
+  email: v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) || (v.trim() ? "Diese E-Mail-Adresse sieht nicht gültig aus." : "Bitte gib deine E-Mail-Adresse ein."),
+};
+function check(field) {
+  const res = rules[field.name](field.value);
+  const msg = res === true ? "" : res;
+  $("#e-" + field.name).textContent = msg;
+  field.setAttribute("aria-invalid", msg ? "true" : "false");
+  return !msg;
+}
+["name", "email"].forEach(n => {
+  const f = form.elements[n];
+  f.addEventListener("input", () => { if (f.getAttribute("aria-invalid") === "true") check(f); });
+  f.addEventListener("blur", () => { if (f.value) check(f); });
+});
+
+const makeCode = () => "LM-" + String(Math.floor(Math.random() * 10000)).padStart(4, "0");
+const formspreeReady = /^https:\/\/formspree\.io\//.test(CONFIG.formspreeUrl);
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  $("#e-form").textContent = "";
+  const fields = ["name", "email"].map(n => form.elements[n]);
+  const valid = fields.map(check).every(Boolean);
+  if (!cart.length) {
+    $("#e-form").textContent = "Dein Warenkorb ist leer. Wähl zuerst ein Skript aus.";
+    return;
+  }
+  if (!valid) { fields.find(f => f.getAttribute("aria-invalid") === "true").focus(); return; }
+
+  const items = cart.map(byId);
+  const total = cartTotal();
+  const code = makeCode();
+  const data = {
+    name: form.elements.name.value.trim(),
+    email: form.elements.email.value.trim(),
+    skripte: items.map(s => `${fullTitle(s)} (${chf(s.preis)})`).join("; "),
+    total: chf(total),
+    bestellcode: code,
+    _subject: `Neue Bestellung ${code}: ${chf(total)}`,
+  };
+
+  const btn = $("#submit-btn");
+  btn.disabled = true;
+  btn.textContent = "Wird gesendet …";
+  try {
+    if (formspreeReady) {
+      const res = await fetch(CONFIG.formspreeUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Formspree: " + res.status);
+    } else {
+      console.warn("Testmodus: FORMSPREE_URL ist noch nicht gesetzt. Bestellung wurde nicht gesendet:", data);
+    }
+    showResult(data, items, total);
+  } catch (err) {
+    console.error(err);
+    $("#e-form").textContent = `Das hat leider nicht geklappt. Bitte versuch es nochmals oder schreib mir an ${CONFIG.email}.`;
+    btn.disabled = false;
+    renderCart();
+  }
+});
+
+function showResult(data, items, total) {
+  const names = items.map(s => `«${s.titel}»`).join(", ");
+  $("#r-code").textContent = data.bestellcode;
+  $("#r-text").textContent = `Bitte überweise ${chf(total)} per TWINT an ${CONFIG.twintNummer} und schreib den Code ${data.bestellcode} in die Nachricht.`;
+  $("#r-next").textContent = `Sobald die Zahlung bei mir ist, schicke ich dir ${names} als PDF an ${data.email}.`;
+  form.hidden = true;
+  $("#submit-btn").disabled = false;
+  cart = [];
+  saveCart();
+  renderCart();
+  $("#cart").innerHTML = `<p class="cart-empty">Bestellung ${esc(data.bestellcode)} abgeschickt. Jetzt fehlt nur noch die Zahlung per TWINT.</p>`;
+  const r = $("#result");
+  r.hidden = false;
+  r.focus();
+}
+$("#copy-btn").addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText($("#r-code").textContent);
+    $("#copy-btn").textContent = "Kopiert";
+    setTimeout(() => ($("#copy-btn").textContent = "Code kopieren"), 1500);
+  } catch { /* Zwischenablage nicht verfügbar */ }
+});
+$("#again-btn").addEventListener("click", () => {
+  form.reset();
+  form.querySelectorAll("[aria-invalid]").forEach(f => f.removeAttribute("aria-invalid"));
+  $("#result").hidden = true;
+  form.hidden = false;
+  renderCart();
+  location.hash = "#/skripte";
+});
+
+addEventListener("hashchange", route);
+renderCart();
+route();
+</script>
+</body>
+</html>
