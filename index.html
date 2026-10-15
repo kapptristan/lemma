@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lemma – Kostenlose Mathe-Skripte für Matura &amp; Uni</title>
-<meta name="description" content="Kostenlose Mathe-Skripte als PDF für Matura und Uni – z. B. Kurvendiskussion Schritt für Schritt erklärt. Mathe nicht auswendig lernen, sondern verstehen.">
+<meta name="description" content="Kostenlose Mathe-Skripte als PDF für Matura und Uni. Mathe nicht auswendig lernen, sondern verstehen.">
 <meta name="author" content="Tristan Kappeler">
 <link rel="canonical" href="https://lemmamathe.ch/">
 <link rel="icon" href="logos/2_L_qed_weiss.png">
@@ -15,7 +15,7 @@
 <meta property="og:locale" content="de_CH">
 <meta property="og:url" content="https://lemmamathe.ch/">
 <meta property="og:title" content="Lemma – Kostenlose Mathe-Skripte für Matura &amp; Uni">
-<meta property="og:description" content="Mathe nicht auswendig lernen, sondern verstehen. Kostenlose Skripte als PDF, z. B. Kurvendiskussion für die Matura.">
+<meta property="og:description" content="Mathe nicht auswendig lernen, sondern verstehen. Kostenlose Mathe-Skripte als PDF für Matura und Uni.">
 <meta property="og:image" content="https://lemmamathe.ch/logos/4_wortmarke.png">
 <meta property="og:image:width" content="2400">
 <meta property="og:image:height" content="800">
@@ -705,34 +705,7 @@ const CONFIG = {
    - inhalt:       Liste der Kapitel (Detailseite)
    ===================================================================== */
 const DOSSIERS = [
-  {
-    id: "kurvendiskussion-1",
-    titel: "Kurvendiskussion I",
-    untertitel: "Polynomfunktionen Schritt für Schritt",
-    stufe: "Matura",
-    reihe: "Analysis",
-    status: "verfügbar",
-    seiten: 13,
-    version: "1.1",
-    datum: "Oktober 2026",
-    kostenlos: true,
-    preis: 5, // wird nur verwendet, wenn kostenlos: false
-    beschreibung: "Eine einzige Funktion, f(x) = x³ − 6x² + 9x, begleitet dich durch das ganze Skript. Jede Frage, die wir ihr stellen, verrät ein Stück ihres Graphen – bis am Schluss das ganze Bild steht.",
-    inhalt: [
-      "Definitionsbereich", "Symmetrie", "Gleichungen lösen", "Schnittpunkte mit den Achsen",
-      "Ableitung", "Extrempunkte", "Wendepunkte", "Verhalten im Unendlichen",
-      "Zusammenfassung", "Typische Fehler",
-    ],
-  },
-  {
-    id: "kurvendiskussion-2",
-    titel: "Kurvendiskussion II",
-    untertitel: "Gebrochenrationale, Exponential- und Logarithmusfunktionen",
-    stufe: "Matura",
-    reihe: "Analysis",
-    status: "bald verfügbar",
-    kostenlos: true,
-  },
+  // zurzeit keine Skripte online
 ];
 
 // Reihenfolge der Reihen auf der Seite
@@ -978,9 +951,13 @@ function applyFilter(f = filterStufe) {
   filterEl.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.filter === f));
   const leer = $("#no-results");
   leer.hidden = n > 0;
-  leer.textContent = n ? "" : `Nichts gefunden für «${query.trim()}». Versuch es mit einem anderen Begriff, z. B. «Ableitung».`;
+  leer.innerHTML = n ? ""
+    : !DOSSIERS.length
+      ? `Die Skripte erscheinen bald. Folge <a href="https://instagram.com/${esc(CONFIG.instagram)}" target="_blank" rel="noopener">@${esc(CONFIG.instagram)}</a> auf Instagram, dann verpasst du nichts.`
+      : `Nichts gefunden für «${esc(query.trim())}». Versuch es mit einem anderen Begriff, z. B. «Ableitung».`;
 }
 $("#search").addEventListener("input", e => { query = e.target.value; applyFilter(); });
+$(".search").hidden = !DOSSIERS.length;
 applyFilter("Alle");
 
 /* ---------- Videos ---------- */

@@ -1,3 +1,4 @@
 # Nicht veroeffentlichen
 *.docx
 .claude/
+_offline/
