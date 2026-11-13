@@ -393,34 +393,39 @@
   .code-row { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; margin: 0 0 1.25rem; }
   .result .btn { font-size: .95rem; padding: .55em 1.2em; }
 
-  /* ---------- Graphen (Funktionsplotter) ---------- */
+  /* ---------- Funktionsplotter ---------- */
   .page--text .wrap > .plot-layout { max-width: none; }
-  .plot-layout { display: grid; gap: 1.25rem; }
-  @media (min-width: 56rem) { .plot-layout { grid-template-columns: 20rem minmax(0, 1fr); gap: 2rem; align-items: start; } }
-  .plot-stage { position: relative; border: var(--line); background: var(--white); }
-  @media (min-width: 56rem) { .plot-stage { order: 2; position: sticky; top: 4.75rem; } }
-  .plot-canvas { display: block; width: 100%; height: clamp(20rem, 62vh, 42rem); touch-action: none; cursor: grab; }
+  .plot-layout { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "panel" "info"; }
+  @media (min-width: 56rem) {
+    .plot-layout { grid-template-columns: 21rem minmax(0, 1fr); grid-template-rows: auto 1fr; grid-template-areas: "panel stage" "panel info"; column-gap: 2rem; align-items: start; }
+  }
+  .plot-stage { grid-area: stage; position: relative; border: var(--line); background: var(--white); }
+  .plot-canvas { display: block; width: 100%; height: clamp(18rem, 48vh, 40rem); touch-action: none; cursor: grab; }
+  @media (min-width: 56rem) { .plot-canvas { height: clamp(20rem, 62vh, 40rem); } }
   .plot-canvas.is-dragging { cursor: grabbing; }
   .plot-tools { position: absolute; top: .6rem; right: .6rem; display: flex; flex-direction: column; gap: .35rem; }
-  .plot-tools button {
+  .plot-tools button, .play {
     display: grid; place-items: center; width: 2.3rem; height: 2.3rem; padding: 0;
     font: inherit; font-size: 1.1rem; line-height: 1; color: var(--black);
     background: var(--white); border: var(--line); border-radius: 50%; cursor: pointer;
   }
-  .plot-tools button:hover { background: var(--black); color: var(--white); }
+  .plot-tools button:hover, .play:hover, .play[aria-pressed="true"] { background: var(--black); color: var(--white); }
   .plot-readout {
-    position: absolute; left: .6rem; bottom: .6rem; padding: .2rem .6rem;
-    font-family: var(--mono); font-size: .85rem; background: var(--white); border: var(--line);
-    pointer-events: none;
+    position: absolute; left: .6rem; bottom: .6rem; max-width: calc(100% - 1.2rem); padding: .2rem .6rem;
+    font-family: var(--mono); font-size: .85rem; background: var(--white); border: var(--line); pointer-events: none;
   }
-  .plot-panel { display: flex; flex-direction: column; gap: 1.1rem; }
-  .fn-list { display: flex; flex-direction: column; gap: .6rem; }
-  .fn-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .5rem; }
+
+  /* links: Eingabe & was angezeigt wird */
+  .plot-panel { grid-area: panel; display: flex; flex-direction: column; gap: 1.1rem; }
+  .plot-box { padding-top: .9rem; border-top: var(--line); }
+  .plot-box h2, .info-card h2 { margin: 0 0 .55rem; font-size: .9rem; font-weight: 400; font-variant: small-caps; letter-spacing: .08em; }
+  .fn-list { display: flex; flex-direction: column; gap: .5rem; }
+  .fn-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .45rem; }
   .fn-swatch {
-    display: inline-flex; align-items: center; gap: .3rem; padding: 0; border: 0; background: none;
+    display: inline-flex; align-items: center; gap: .35rem; min-width: 2.6rem; padding: 0; border: 0; background: none;
     font: inherit; font-style: italic; color: inherit; cursor: pointer; white-space: nowrap;
   }
-  .fn-swatch i { display: inline-block; width: .9rem; height: .9rem; border: 2px solid var(--c); border-radius: 50%; background: var(--c); }
+  .fn-swatch i { flex: none; display: inline-block; width: .9rem; height: .9rem; border: 2px solid var(--c); border-radius: 50%; background: var(--c); }
   .fn-row.is-off .fn-swatch i { background: transparent; }
   .fn-row.is-off input { opacity: .5; }
   .fn-row input {
@@ -428,28 +433,67 @@
     font-family: var(--mono); font-size: 1rem; color: var(--black);
     background: var(--white); border: var(--line); border-radius: 0;
   }
-  .fn-row input[aria-invalid="true"] { border-width: 2px; border-style: dashed; }
+  .fn-row input:focus { outline: 2px solid var(--black); outline-offset: 0; }
+  .fn-row input[aria-invalid="true"] { border-style: dashed; }
   .fn-del { padding: .2rem .4rem; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; }
-  .fn-del:hover { text-decoration: underline; }
   .fn-err { grid-column: 2 / -1; margin: -.2rem 0 0; font-size: .85rem; font-style: italic; }
-  .plot-box { padding-top: .9rem; border-top: var(--line); }
-  .plot-box h2 { margin: 0 0 .5rem; font-size: .9rem; font-weight: 400; font-variant: small-caps; letter-spacing: .08em; }
-  .checks { display: flex; flex-direction: column; gap: .25rem; font-size: 1rem; }
-  .checks label { display: flex; align-items: center; gap: .55rem; cursor: pointer; }
-  .checks input { width: 1rem; height: 1rem; accent-color: var(--black); }
-  .slider { display: grid; grid-template-columns: 1.4rem 1fr 3.4rem; align-items: center; gap: .6rem; font-size: 1rem; }
+  .fn-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin: .75rem 0 0; }
+  .btn--sm { font-size: .9rem; padding: .45em 1.1em; }
+
+  /* Mathe-Tastatur */
+  .kbd { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .3rem; margin-top: .75rem; user-select: none; -webkit-user-select: none; }
+  .kbd button {
+    height: 2.5rem; padding: 0; font: inherit; font-size: 1.05rem; line-height: 1; color: var(--black);
+    background: var(--white); border: var(--line); border-radius: .45rem; cursor: pointer; touch-action: manipulation;
+  }
+  .kbd button:hover { background: var(--grey); }
+  .kbd button:active { background: var(--black); color: var(--white); }
+  .kbd .k-var { font-style: italic; }
+  .kbd .k-fn { font-size: .92rem; }
+  .kbd .k-num { background: var(--grey); }
+  .kbd .k-num:hover { background: #e4e4e4; }
+  .kbd .k-wide { grid-column: span 2; font-size: .92rem; }
+
+  .checks { display: flex; flex-direction: column; gap: .3rem; font-size: 1rem; }
+  .checks > label { display: flex; align-items: center; gap: .55rem; cursor: pointer; }
+  .checks input[type="checkbox"] { flex: none; width: 1rem; height: 1rem; accent-color: var(--black); }
+  .slider { display: grid; grid-template-columns: auto minmax(0, 1fr) 3.6rem; align-items: center; gap: .6rem; font-size: 1rem; }
+  .slider--param { grid-template-columns: 1.1rem 2.3rem minmax(0, 1fr) 3.6rem; }
   .slider b { font-style: italic; font-weight: 400; }
   .slider input[type="range"] { width: 100%; accent-color: var(--black); }
   .slider output { font-family: var(--mono); font-size: .9rem; text-align: right; }
-  .examples { display: flex; flex-wrap: wrap; gap: .4rem; }
-  .examples button {
-    padding: .3em .9em; font-family: var(--mono); font-size: .85rem; color: var(--black);
-    background: var(--white); border: var(--line); border-radius: var(--radius); cursor: pointer;
-  }
-  .examples button:hover { background: var(--black); color: var(--white); }
-  .points { margin: 0; padding: 0; list-style: none; font-family: var(--mono); font-size: .88rem; line-height: 1.55; }
+  .play { width: 2rem; height: 2rem; font-size: .75rem; }
+  .tool-fn { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; font-style: italic; }
+  .tool-fn select { font: inherit; font-style: italic; padding: .15rem .4rem; border: var(--line); background: var(--white); color: var(--black); }
+  .tool-sub { display: flex; flex-direction: column; gap: .45rem; margin: .1rem 0 .55rem 1.55rem; }
+  .mini { display: flex; flex-wrap: wrap; gap: .4rem 1rem; }
+  .mini label { display: flex; align-items: center; gap: .4rem; font-style: italic; }
+  .mini input { width: 4.5rem; padding: .25rem .45rem; font-family: var(--mono); font-size: .95rem; border: var(--line); border-radius: 0; background: var(--white); color: var(--black); }
+
+  /* unter der Grafik: Ergebnisse */
+  .plot-info { grid-area: info; display: flex; flex-direction: column; gap: 1.5rem; }
+  .info-cards { display: grid; gap: 1.25rem 2rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+  .info-cards:empty { display: none; }
+  .info-card { padding-top: .9rem; border-top: var(--line); min-width: 0; }
+  .info-card p { margin: 0 0 .5rem; }
+  .formel { font-family: var(--mono); font-size: .92rem; line-height: 1.7; }
+  .formel i { font-family: var(--serif); }
+  .points { margin: 0; padding: 0; list-style: none; font-family: var(--mono); font-size: .88rem; line-height: 1.6; }
   .points li span { font-family: var(--serif); font-style: italic; }
-  .plot-help { margin: 0; font-size: .9rem; font-style: italic; line-height: 1.45; }
+  .wt { border-collapse: collapse; font-family: var(--mono); font-size: .88rem; border-top: var(--line); border-bottom: var(--line); }
+  .wt th, .wt td { padding: .2rem .9rem .2rem 0; text-align: right; white-space: nowrap; }
+  .wt thead th { font-family: var(--serif); font-style: italic; font-weight: 400; border-bottom: var(--line); }
+  .wt-wrap { overflow-x: auto; }
+  .ideen { display: grid; gap: .6rem; grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr)); }
+  .ideen button {
+    display: flex; flex-direction: column; gap: .15rem; padding: .7rem .9rem; text-align: left;
+    font: inherit; color: var(--black); background: var(--white); border: var(--line); cursor: pointer;
+  }
+  .ideen button:hover { background: var(--black); color: var(--white); }
+  .ideen b { font-size: 1rem; }
+  .ideen small { font-size: .88rem; font-style: italic; line-height: 1.35; }
+  .plot-help { margin: .6rem 0 0; font-size: .9rem; font-style: italic; line-height: 1.45; }
+  .plot-help code { font-family: var(--mono); font-style: normal; font-size: .88rem; }
 
   /* ---------- FAQ ---------- */
   .faq { border-top: var(--line); }
@@ -497,7 +541,7 @@
     <nav class="nav" aria-label="Hauptnavigation">
       <a href="#/skripte" data-nav="skripte">Skripte</a>
       <a href="#/videos" data-nav="videos">Videos</a>
-      <a href="#/graphen" data-nav="graphen">Graphen</a>
+      <a href="#/plotter" data-nav="plotter">Plotter</a>
       <a href="#/faq" data-nav="faq">FAQ</a>
       <a href="#/bestellen" data-nav="bestellen" data-nur-bestellung hidden>Bestellen<span class="cart-count" id="cart-count" hidden aria-label="Skripte im Warenkorb"></span></a>
     </nav>
@@ -512,7 +556,7 @@
       <h1 tabindex="-1"><span class="logo logo--lg">Lemma</span></h1>
       <p class="claim" data-config="heroSatz">Mathe nicht auswendig lernen, sondern verstehen.</p>
       <p class="sub-line">Kostenlose Mathe-Skripte für Matura &amp; Uni</p>
-      <p class="cta"><a href="#/skripte" class="btn">Zu den Skripten</a> <a href="#/graphen" class="btn btn--ghost">Graphen zeichnen</a></p>
+      <p class="cta"><a href="#/skripte" class="btn">Zu den Skripten</a> <a href="#/plotter" class="btn btn--ghost">Funktionsplotter</a></p>
     </div>
   </section>
 
@@ -595,14 +639,14 @@
     </div>
   </section>
 
-  <!-- ===== Graphen: Funktionen zeichnen und veranschaulichen ===== -->
-  <section class="page page--text" data-page="graphen" data-title="Graphen" hidden>
+  <!-- ===== Funktionsplotter ===== -->
+  <section class="page page--text" data-page="plotter" data-title="Funktionsplotter" hidden>
     <div class="wrap">
-      <h1 class="page-title" tabindex="-1">Graphen</h1>
-      <p class="lead">Tipp eine Funktion ein und sieh sofort, wie sie aussieht. Buchstaben wie <i>a</i>, <i>b</i> oder <i>k</i> werden automatisch zu Schiebereglern.</p>
+      <h1 class="page-title" tabindex="-1">Funktionsplotter</h1>
+      <p class="lead">Zeichne Funktionen, Punkte und Geraden – und sieh, was Parameter, Ableitung und Integral wirklich bedeuten.</p>
       <div class="plot-layout">
         <div class="plot-stage">
-          <canvas class="plot-canvas" id="plot" aria-label="Koordinatensystem mit den Graphen"></canvas>
+          <canvas class="plot-canvas" id="plot" aria-label="Koordinatensystem"></canvas>
           <div class="plot-tools">
             <button type="button" id="zoom-in" aria-label="Hineinzoomen">+</button>
             <button type="button" id="zoom-out" aria-label="Herauszoomen">−</button>
@@ -610,9 +654,17 @@
           </div>
           <div class="plot-readout" id="readout" hidden></div>
         </div>
+
         <div class="plot-panel">
-          <div class="fn-list" id="fn-list"></div>
-          <p><button type="button" class="btn btn--ghost" id="fn-add">+ Funktion hinzufügen</button></p>
+          <div>
+            <div class="fn-list" id="fn-list"></div>
+            <p class="fn-actions">
+              <button type="button" class="btn btn--ghost btn--sm" id="fn-add">+ Neue Eingabe</button>
+              <button type="button" class="btn btn--ghost btn--sm" id="kbd-toggle" aria-expanded="true" aria-controls="kbd">Tastatur ausblenden</button>
+            </p>
+            <div class="kbd" id="kbd" aria-label="Mathe-Tastatur"></div>
+            <p class="plot-help">Funktion <code>x^2</code> · Punkt <code>(2|1)</code> · senkrechte Gerade <code>x = 3</code>. Buchstaben wie <i>a</i> oder <i>k</i> werden zu Schiebereglern.</p>
+          </div>
           <div class="plot-box" id="slider-box" hidden>
             <h2>Parameter</h2>
             <div class="checks" id="sliders"></div>
@@ -620,21 +672,46 @@
           <div class="plot-box">
             <h2>Anzeigen</h2>
             <div class="checks">
-              <label><input type="checkbox" id="opt-deriv"> Ableitung <i>f&thinsp;′</i> einblenden</label>
+              <label><input type="checkbox" id="opt-deriv"> Ableitung <i>f&thinsp;′</i></label>
               <label><input type="checkbox" id="opt-zeros" checked> Nullstellen</label>
-              <label><input type="checkbox" id="opt-extrema" checked> Hoch- und Tiefpunkte</label>
+              <label><input type="checkbox" id="opt-extrema"> Hoch- und Tiefpunkte</label>
               <label><input type="checkbox" id="opt-inflect"> Wendepunkte</label>
+              <label><input type="checkbox" id="opt-intersect" checked> Schnittpunkte</label>
             </div>
           </div>
-          <div class="plot-box" id="points-box" hidden>
-            <h2>Besondere Punkte</h2>
-            <ul class="points" id="points"></ul>
+          <div class="plot-box" id="tool-box">
+            <h2>Werkzeuge</h2>
+            <label class="tool-fn">für die Funktion <select id="tool-fn"></select></label>
+            <div class="checks">
+              <label><input type="checkbox" id="opt-tangent"> Tangente &amp; Steigung</label>
+              <div class="tool-sub" id="sub-tangent" hidden>
+                <label class="slider"><b>x₀</b><input type="range" id="x0" min="-10" max="10" step="0.01" value="1"><output id="x0-out">1</output></label>
+              </div>
+              <label><input type="checkbox" id="opt-area"> Fläche &amp; Integral</label>
+              <div class="tool-sub" id="sub-area" hidden>
+                <div class="mini">
+                  <label>von <input type="text" id="area-a" value="0" autocomplete="off" spellcheck="false"></label>
+                  <label>bis <input type="text" id="area-b" value="2" autocomplete="off" spellcheck="false"></label>
+                </div>
+                <label class="slider"><b>Rechtecke</b><input type="range" id="rect-n" min="0" max="40" step="1" value="0"><output id="rect-out">aus</output></label>
+              </div>
+              <label><input type="checkbox" id="opt-table"> Wertetabelle</label>
+              <div class="tool-sub" id="sub-table" hidden>
+                <div class="mini">
+                  <label>Start <input type="text" id="tab-start" value="-3" autocomplete="off" spellcheck="false"></label>
+                  <label>Schritt <input type="text" id="tab-step" value="1" autocomplete="off" spellcheck="false"></label>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="plot-box">
-            <h2>Beispiele</h2>
-            <div class="examples" id="examples"></div>
+        </div>
+
+        <div class="plot-info">
+          <div class="info-cards" id="info-cards" aria-live="polite"></div>
+          <div class="info-card">
+            <h2>Ideen zum Ausprobieren</h2>
+            <div class="ideen" id="ideen"></div>
           </div>
-          <p class="plot-help">Ziehen verschiebt, Mausrad oder zwei Finger zoomen. Erlaubt sind z.&nbsp;B. <code>x^2</code>, <code>2x+1</code>, <code>sin(x)</code>, <code>sqrt(x)</code>, <code>e^x</code>, <code>ln(x)</code>, <code>|x|</code>, <code>pi</code>.</p>
         </div>
       </div>
     </div>
@@ -1160,6 +1237,7 @@ function route() {
   const parts = location.hash.replace(/^#\/?/, "").split("/").map(decodeURIComponent);
   let page = parts[0] || "home";
   if (page === "bestellen" && !BESTELLUNG_AKTIV) page = "skripte";
+  if (page === "graphen") page = "plotter"; // alter Link
   let title = "";
   if (page === "skripte" && parts[1]) {
     const s = byId(parts[1]);
@@ -1176,7 +1254,7 @@ function route() {
   document.title = title ? `${title} – Lemma` : "Lemma – Kostenlose Mathe-Skripte für Matura & Uni";
   currentPage = page;
   document.body.dataset.view = page;
-  document.body.classList.toggle("is-fit", !["skripte", "detail", "videos", "graphen"].includes(page) || (page === "videos" && !VIDEOS.length));
+  document.body.classList.toggle("is-fit", !["skripte", "detail", "videos", "plotter"].includes(page) || (page === "videos" && !VIDEOS.length));
   section.scrollTop = 0;
   updateCartBar();
   if (lb.open) lb.close();
@@ -1341,18 +1419,19 @@ $("#again-btn").addEventListener("click", () => {
 });
 
 /* =====================================================================
-   GRAPHEN – kleiner Funktionsplotter (ähnlich wie GeoGebra)
+   FUNKTIONSPLOTTER – Funktionen, Punkte, Geraden, Tangente, Integral
    ===================================================================== */
 (() => {
   const canvas = $("#plot");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
   const FARBEN = ["#111111", "#c8102e", "#1f5fbf", "#1d8a4a", "#b35c00", "#7a3fb0"];
-  const NAMEN = ["f", "g", "h", "p", "q", "r"];
-  const BEISPIELE = ["x^3 - 3x", "a(x - b)^2 + c", "a·sin(b·x)", "e^x", "ln(x)", "1/x", "sqrt(x)", "|x - 2| - 1", "(x^2 - 1)/(x - 2)"];
+  const FN_NAMEN = "fghpqrsuvw".split("");
+  const PT_NAMEN = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  const MAX_EINGABEN = 10;
 
   /* ---------- Parser: Text → Funktion (ohne eval) ---------- */
-  // Kubikwurzel & Co.: (-8)^(1/3) = -2 wie im Unterricht
+  // (-8)^(1/3) = -2 wie im Unterricht
   function pow(b, e) {
     if (b >= 0 || Number.isInteger(e)) return Math.pow(b, e);
     for (const q of [3, 5, 7, 9]) {
@@ -1404,7 +1483,7 @@ $("#again-btn").addEventListener("click", () => {
     const tokens = tokenize(src);
     if (!tokens.length) return null;
     const params = new Set();
-    let pos = 0, absTiefe = 0;
+    let pos = 0, absTiefe = 0, usesX = false;
     const peek = () => tokens[pos];
     const isOp = (tok, v) => tok && tok.t === "op" && tok.v === v;
     const expect = v => {
@@ -1452,7 +1531,7 @@ $("#again-btn").addEventListener("click", () => {
       if (!tok) throw new Error("Der Ausdruck ist unvollständig");
       if (tok.t === "num") { const v = tok.v; return () => v; }
       if (tok.t === "id") {
-        if (tok.v === "x") return x => x;
+        if (tok.v === "x") { usesX = true; return x => x; }
         if (tok.v === "e") return () => Math.E;
         const name = tok.v;
         params.add(name);
@@ -1478,102 +1557,306 @@ $("#again-btn").addEventListener("click", () => {
 
     const f = summe();
     if (pos < tokens.length) throw new Error(isOp(peek(), ")") ? "Eine Klammer ( fehlt" : `Unerwartetes «${peek().v}»`);
-    return { f, params };
+    return { f, params, usesX };
+  }
+
+  // Was ist die Eingabe? Funktion, Punkt (2|1) oder senkrechte Gerade x = 3
+  function deuten(text) {
+    const s = text.trim();
+    if (!s) return { kind: "leer", params: new Set() };
+    const pm = /^(?:([A-Z])\s*=\s*)?\((.*)\)$/s.exec(s);
+    if (pm) {
+      const inner = pm[2];
+      for (let i = 0; i < inner.length; i++) {
+        const ch = inner[i];
+        const trenner = ch === "|" || ch === ";" || (ch === "," && !(/\d/.test(inner[i - 1] || "") && /\d/.test(inner[i + 1] || "")));
+        if (!trenner) continue;
+        try {
+          const a = compile(inner.slice(0, i)), b = compile(inner.slice(i + 1));
+          if (a && b && !a.usesX && !b.usesX) return { kind: "punkt", name: pm[1], px: a, py: b, params: new Set([...a.params, ...b.params]) };
+        } catch { /* nächsten Trenner versuchen */ }
+      }
+      if (pm[1]) throw new Error("Einen Punkt schreibt man so: (2|1)");
+    }
+    const vm = /^x\s*=(.*)$/s.exec(s);
+    if (vm) {
+      const c = compile(vm[1]);
+      if (!c) throw new Error("Nach «x =» fehlt eine Zahl");
+      if (c.usesX) throw new Error("Rechts von «x =» darf kein x stehen");
+      return { kind: "senkrecht", c, params: c.params };
+    }
+    const nm = /^\s*([a-z])\s*\(\s*x\s*\)\s*=/.exec(s);
+    const c = compile(s);
+    if (!c) return { kind: "leer", params: new Set() };
+    return { kind: "fn", name: nm ? nm[1] : null, c, params: c.params };
   }
 
   /* ---------- Zustand ---------- */
-  let fns = [];
-  let nextFarbe = 0;
+  let eingaben = [];
+  let naechsteId = 1, naechsteFarbe = 0, toolId = null;
   const paramWerte = {};
   const view = { cx: 0, cy: 0, scale: 40 };
-  let W = 0, H = 0, dpr = 1, hover = null, specials = [];
-  const opt = { deriv: $("#opt-deriv"), zeros: $("#opt-zeros"), extrema: $("#opt-extrema"), inflect: $("#opt-inflect") };
+  let W = 0, H = 0, dpr = 1, hover = null;
+  let tanX0 = 1, areaA = 0, areaB = 2, tabStart = -3, tabStep = 1;
+  const opt = {
+    deriv: $("#opt-deriv"), zeros: $("#opt-zeros"), extrema: $("#opt-extrema"), inflect: $("#opt-inflect"),
+    intersect: $("#opt-intersect"), tangent: $("#opt-tangent"), area: $("#opt-area"), table: $("#opt-table"),
+  };
+  const auswerten = e => x => e.d.c.f(x, paramWerte);
+  const funktionen = () => eingaben.filter(e => e.an && e.d.kind === "fn");
+  const toolEingabe = () => funktionen().find(e => e.id === toolId) || funktionen()[0] || null;
 
-  function addFn(expr = "") {
-    if (fns.length >= NAMEN.length) return;
-    const used = new Set(fns.map(f => f.name));
-    const fn = { name: NAMEN.find(n => !used.has(n)), expr, farbe: FARBEN[nextFarbe++ % FARBEN.length], an: true, c: null, err: "" };
-    setExpr(fn, expr);
-    fns.push(fn);
-    renderRows();
+  function setText(e, text) {
+    e.text = text;
+    try { e.d = deuten(text); e.err = ""; }
+    catch (err) { e.d = { kind: "fehler", params: new Set() }; e.err = err.message; }
   }
-  function setExpr(fn, expr) {
-    fn.expr = expr;
-    try { fn.c = compile(expr); fn.err = ""; }
-    catch (e) { fn.c = null; fn.err = e.message; }
+  function neueEingabe(text = "") {
+    if (eingaben.length >= MAX_EINGABEN) return null;
+    const e = { id: naechsteId++, farbe: FARBEN[naechsteFarbe++ % FARBEN.length], an: true };
+    setText(e, text);
+    eingaben.push(e);
+    return e;
   }
+  function benennen() {
+    const usedF = new Set(), usedP = new Set();
+    eingaben.forEach(e => { if (e.d.kind === "fn" && e.d.name) usedF.add(e.d.name); if (e.d.kind === "punkt" && e.d.name) usedP.add(e.d.name); });
+    const frei = (liste, used) => { const n = liste.find(k => !used.has(k)) || "?"; used.add(n); return n; };
+    eingaben.forEach(e => {
+      e.name = e.d.kind === "fn" ? (e.d.name || frei(FN_NAMEN, usedF))
+             : e.d.kind === "punkt" ? (e.d.name || frei(PT_NAMEN, usedP)) : "";
+    });
+  }
+  const label = e => e.d.kind === "fn" ? `${e.name}(x)` : e.d.kind === "punkt" ? e.name : e.d.kind === "senkrecht" ? "x =" : "";
 
+  /* ---------- Eingabezeilen ---------- */
+  const liste = $("#fn-list");
+  let lastInput = 0;
   function renderRows() {
-    $("#fn-list").innerHTML = fns.map((fn, i) => `
-      <div class="fn-row${fn.an ? "" : " is-off"}" data-i="${i}">
-        <button type="button" class="fn-swatch" style="--c:${fn.farbe}" data-toggle="${i}" aria-pressed="${fn.an}" aria-label="${fn.name} ein- oder ausblenden"><i></i>${fn.name}(x) =</button>
-        <input type="text" value="${esc(fn.expr)}" data-expr="${i}" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" aria-label="Term von ${fn.name}(x)" aria-invalid="${!!fn.err}" placeholder="z. B. x^2">
-        <button type="button" class="fn-del" data-del="${i}" aria-label="${fn.name} entfernen">✕</button>
-        <p class="fn-err" ${fn.err ? "" : "hidden"}>${esc(fn.err)}</p>
+    benennen();
+    liste.innerHTML = eingaben.map((e, i) => `
+      <div class="fn-row${e.an ? "" : " is-off"}">
+        <button type="button" class="fn-swatch" style="--c:${e.farbe}" data-toggle="${i}" aria-pressed="${e.an}" title="Ein- oder ausblenden"><i></i><span class="fn-name">${esc(label(e))}</span></button>
+        <input type="text" value="${esc(e.text)}" data-expr="${i}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Eingabe ${i + 1}" aria-invalid="${!!e.err}" placeholder="${i ? "z. B. (2|1) oder 2x + 1" : "z. B. x^2"}">
+        <button type="button" class="fn-del" data-del="${i}" aria-label="Eingabe ${i + 1} entfernen">✕</button>
+        <p class="fn-err" ${e.err ? "" : "hidden"}>${esc(e.err)}</p>
       </div>`).join("");
-    $("#fn-add").hidden = fns.length >= NAMEN.length;
+    $("#fn-add").hidden = eingaben.length >= MAX_EINGABEN;
+    tastaturModus();
+    nachAenderung();
+  }
+  function nachAenderung() {
+    benennen();
+    liste.querySelectorAll(".fn-name").forEach((el, i) => (el.textContent = label(eingaben[i])));
     updateSliders();
+    updateToolSelect();
     schedule();
   }
+  liste.addEventListener("input", ev => {
+    const i = ev.target.dataset.expr;
+    if (i === undefined) return;
+    const e = eingaben[i];
+    setText(e, ev.target.value);
+    ev.target.setAttribute("aria-invalid", !!e.err);
+    const err = ev.target.parentElement.querySelector(".fn-err");
+    err.hidden = !e.err;
+    err.textContent = e.err;
+    nachAenderung();
+  });
+  liste.addEventListener("focusin", ev => { if (ev.target.dataset.expr !== undefined) lastInput = +ev.target.dataset.expr; });
+  liste.addEventListener("keydown", ev => {
+    if (ev.key === "Enter" && ev.target.dataset.expr !== undefined) { ev.preventDefault(); neueZeileFokus(+ev.target.dataset.expr + 1); }
+  });
+  liste.addEventListener("click", ev => {
+    const t = ev.target.closest("[data-toggle]"), d = ev.target.closest("[data-del]");
+    if (t) { const e = eingaben[t.dataset.toggle]; e.an = !e.an; renderRows(); }
+    if (d) { eingaben.splice(+d.dataset.del, 1); lastInput = Math.max(0, Math.min(lastInput, eingaben.length - 1)); renderRows(); }
+  });
+  function neueZeileFokus(nach = eingaben.length) {
+    if (nach < eingaben.length && !eingaben[nach].text) { fokus(nach); return; }
+    if (eingaben.length >= MAX_EINGABEN) return;
+    neueEingabe("");
+    const e = eingaben.pop();
+    eingaben.splice(nach, 0, e);
+    renderRows();
+    fokus(nach);
+  }
+  const fokus = i => { const inp = liste.querySelectorAll("input")[i]; if (inp) { inp.focus(); lastInput = i; } };
+  $("#fn-add").addEventListener("click", () => neueZeileFokus());
 
+  /* ---------- Mathe-Tastatur ---------- */
+  // l = Beschriftung, t = eingefügter Text, z = Cursor so viele Zeichen zurück
+  const TASTEN = [
+    { l: "x", c: "k-var" }, { l: "a", c: "k-var" }, { l: "b", c: "k-var" }, { l: "c", c: "k-var" }, { l: "π", t: "pi", c: "k-var" }, { l: "e", c: "k-var" }, { l: "⌫", t: "BS", a: "Löschen" },
+    { l: "x²", t: "^2" }, { l: "x³", t: "^3" }, { l: "xⁿ", t: "^", a: "Hoch" }, { l: "√", t: "sqrt()", z: 1, a: "Wurzel" }, { l: "|x|", t: "||", z: 1, a: "Betrag" }, { l: "(" }, { l: ")" },
+    { l: "sin", t: "sin()", z: 1, c: "k-fn" }, { l: "cos", t: "cos()", z: 1, c: "k-fn" }, { l: "tan", t: "tan()", z: 1, c: "k-fn" }, { l: "ln", t: "ln()", z: 1, c: "k-fn" }, { l: "log", t: "log()", z: 1, c: "k-fn" }, { l: "eˣ", t: "e^()", z: 1 }, { l: "=" },
+    { l: "7", c: "k-num" }, { l: "8", c: "k-num" }, { l: "9", c: "k-num" }, { l: "÷", t: "/", a: "geteilt" }, { l: "·", a: "mal" }, { l: "←", t: "LEFT", a: "Cursor links" }, { l: "→", t: "RIGHT", a: "Cursor rechts" },
+    { l: "4", c: "k-num" }, { l: "5", c: "k-num" }, { l: "6", c: "k-num" }, { l: "+" }, { l: "−", t: "-", a: "minus" }, { l: "(□|□)", t: "(|)", z: 2, c: "k-fn", a: "Punkt" }, { l: "k", c: "k-var" },
+    { l: "1", c: "k-num" }, { l: "2", c: "k-num" }, { l: "3", c: "k-num" }, { l: "0", c: "k-num" }, { l: ".", c: "k-num", a: "Komma" }, { l: "↵ Neue Zeile", t: "ENTER", c: "k-wide" },
+  ];
+  const kbd = $("#kbd");
+  kbd.innerHTML = TASTEN.map((k, i) => `<button type="button" data-k="${i}" class="${k.c || ""}"${k.a ? ` aria-label="${esc(k.a)}"` : ""}>${esc(k.l)}</button>`).join("");
+  kbd.addEventListener("pointerdown", ev => { if (ev.target.closest("button")) ev.preventDefault(); }); // Fokus im Eingabefeld behalten
+  kbd.addEventListener("click", ev => {
+    const b = ev.target.closest("[data-k]");
+    if (!b) return;
+    const k = TASTEN[+b.dataset.k], t = k.t ?? k.l;
+    if (t === "ENTER") { neueZeileFokus(lastInput + 1); return; }
+    if (!eingaben.length) { neueEingabe(""); renderRows(); }
+    const inputs = liste.querySelectorAll("input");
+    const inp = liste.contains(document.activeElement) && document.activeElement.tagName === "INPUT"
+      ? document.activeElement : inputs[Math.min(lastInput, inputs.length - 1)];
+    if (!inp) return;
+    const s = inp.selectionStart ?? inp.value.length, en = inp.selectionEnd ?? s;
+    inp.focus({ preventScroll: true });
+    if (t === "LEFT" || t === "RIGHT") {
+      const p = Math.max(0, Math.min(inp.value.length, (t === "LEFT" ? Math.min(s, en) - (s === en) : Math.max(s, en) + (s === en))));
+      inp.setSelectionRange(p, p);
+      return;
+    }
+    if (t === "BS") inp.setRangeText("", s === en ? Math.max(0, s - 1) : s, en, "end");
+    else {
+      inp.setRangeText(t, s, en, "end");
+      if (k.z) { const p = inp.selectionStart - k.z; inp.setSelectionRange(p, p); }
+    }
+    inp.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  // Auf Handy/Tablet: solange die Mathe-Tastatur offen ist, keine Handy-Tastatur einblenden
+  const touchGeraet = matchMedia("(pointer: coarse)").matches;
+  function tastaturModus() {
+    const offen = !kbd.hidden;
+    liste.querySelectorAll("input").forEach(inp => (inp.inputMode = offen && touchGeraet ? "none" : "text"));
+  }
+  $("#kbd-toggle").addEventListener("click", ev => {
+    kbd.hidden = !kbd.hidden;
+    ev.currentTarget.setAttribute("aria-expanded", !kbd.hidden);
+    ev.currentTarget.textContent = kbd.hidden ? "Tastatur einblenden" : "Tastatur ausblenden";
+    tastaturModus();
+  });
+
+  /* ---------- Parameter-Regler (mit Abspielen) ---------- */
   let sliderKey = "";
+  const anim = new Map(); // Name → Richtung
   function updateSliders() {
-    const names = [...new Set(fns.flatMap(fn => fn.c ? [...fn.c.params] : []))].sort();
+    const names = [...new Set(eingaben.flatMap(e => [...e.d.params]))].sort();
     const key = names.join();
     if (key === sliderKey) return;
     sliderKey = key;
     names.forEach(n => { if (!(n in paramWerte)) paramWerte[n] = 1; });
+    [...anim.keys()].forEach(n => { if (!names.includes(n)) anim.delete(n); });
     $("#slider-box").hidden = !names.length;
     $("#sliders").innerHTML = names.map(n => `
-      <label class="slider"><b>${n}</b>
+      <div class="slider slider--param"><b>${n}</b>
+        <button type="button" class="play" data-play="${n}" aria-pressed="${anim.has(n)}" aria-label="${n} automatisch bewegen">${anim.has(n) ? "❚❚" : "▶"}</button>
         <input type="range" min="-5" max="5" step="0.1" value="${paramWerte[n]}" data-param="${n}" aria-label="Parameter ${n}">
         <output>${fmt(paramWerte[n])}</output>
-      </label>`).join("");
+      </div>`).join("");
+  }
+  $("#sliders").addEventListener("input", ev => {
+    const n = ev.target.dataset.param;
+    if (!n) return;
+    paramWerte[n] = +ev.target.value;
+    ev.target.nextElementSibling.textContent = fmt(paramWerte[n]);
+    schedule();
+  });
+  $("#sliders").addEventListener("click", ev => {
+    const b = ev.target.closest("[data-play]");
+    if (!b) return;
+    const n = b.dataset.play;
+    if (anim.has(n)) anim.delete(n); else anim.set(n, 1);
+    b.setAttribute("aria-pressed", anim.has(n));
+    b.textContent = anim.has(n) ? "❚❚" : "▶";
+    if (anim.size === 1 && anim.has(n)) { animZeit = 0; requestAnimationFrame(animSchritt); }
+  });
+  let animZeit = 0;
+  function animSchritt(t) {
+    if (!anim.size) return;
+    const dt = animZeit ? Math.min(.05, (t - animZeit) / 1000) : 0;
+    animZeit = t;
+    anim.forEach((dir, n) => {
+      let v = paramWerte[n] + dir * 1.6 * dt;
+      if (v > 5) { v = 5; anim.set(n, -1); }
+      if (v < -5) { v = -5; anim.set(n, 1); }
+      paramWerte[n] = v;
+      const inp = document.querySelector(`[data-param="${n}"]`);
+      if (inp) { inp.value = v; inp.nextElementSibling.textContent = fmt(v); }
+    });
+    draw();
+    requestAnimationFrame(animSchritt);
   }
 
-  $("#fn-list").addEventListener("input", e => {
-    const i = e.target.dataset.expr;
-    if (i === undefined) return;
-    const fn = fns[i];
-    setExpr(fn, e.target.value);
-    e.target.setAttribute("aria-invalid", !!fn.err);
-    const err = e.target.parentElement.querySelector(".fn-err");
-    err.hidden = !fn.err;
-    err.textContent = fn.err;
-    updateSliders();
-    schedule();
+  /* ---------- Werkzeuge ---------- */
+  let toolKey = "";
+  function updateToolSelect() {
+    const fs = eingaben.filter(e => e.d.kind === "fn");
+    const key = fs.map(e => e.id + e.name).join();
+    $("#tool-box").querySelector(".tool-fn").hidden = fs.length < 2;
+    if (key !== toolKey) {
+      toolKey = key;
+      $("#tool-fn").innerHTML = fs.map(e => `<option value="${e.id}">${e.name}</option>`).join("");
+    }
+    const t = toolEingabe();
+    if (t) $("#tool-fn").value = t.id;
+  }
+  $("#tool-fn").addEventListener("change", ev => { toolId = +ev.target.value; schedule(); });
+  function subPanels() {
+    $("#sub-tangent").hidden = !opt.tangent.checked;
+    $("#sub-area").hidden = !opt.area.checked;
+    $("#sub-table").hidden = !opt.table.checked;
+  }
+  Object.values(opt).forEach(o => o.addEventListener("change", () => { subPanels(); schedule(); }));
+  $("#x0").addEventListener("input", ev => { tanX0 = +ev.target.value; schedule(); });
+  $("#rect-n").addEventListener("input", schedule);
+  const konstante = text => { try { const c = compile(text); return c && !c.usesX ? c.f(0, paramWerte) : NaN; } catch { return NaN; } };
+  const zahlFeld = (id, setzen) => $(id).addEventListener("input", ev => {
+    const v = konstante(ev.target.value);
+    ev.target.setAttribute("aria-invalid", !Number.isFinite(v));
+    if (Number.isFinite(v)) { setzen(v); schedule(); }
   });
-  $("#fn-list").addEventListener("click", e => {
-    const t = e.target.closest("[data-toggle]"), d = e.target.closest("[data-del]");
-    if (t) { const fn = fns[t.dataset.toggle]; fn.an = !fn.an; renderRows(); }
-    if (d) { fns.splice(+d.dataset.del, 1); renderRows(); }
+  zahlFeld("#area-a", v => (areaA = v));
+  zahlFeld("#area-b", v => (areaB = v));
+  zahlFeld("#tab-start", v => (tabStart = v));
+  zahlFeld("#tab-step", v => (tabStep = v || 1));
+
+  /* ---------- Ideen ---------- */
+  const IDEEN = [
+    { titel: "Parabel verschieben", text: "Was bewirken a, b und c? Zieh an den Reglern.", e: ["a(x - b)^2 + c"] },
+    { titel: "Gerade y = mx + q", text: "m ist die Steigung, q der y-Achsenabschnitt.", e: ["m x + q"] },
+    { titel: "Sinus verformen", text: "Amplitude, Periode und Verschiebung – drück ▶.", e: ["a·sin(b(x - c))"] },
+    { titel: "Was ist die Ableitung?", text: "Zieh den Punkt: Die Tangentensteigung wird zum Graphen von f′.", e: ["x^3 - 3x"], an: ["deriv", "tangent", "extrema"], x0: -1.5 },
+    { titel: "Fläche unter der Kurve", text: "Mehr Rechtecke – die Summe nähert sich dem Integral.", e: ["0.5x^2 + 1"], an: ["area"], area: [0, 3], n: 6 },
+    { titel: "Wer wächst schneller?", text: "2^x gegen x^2 – wo schneiden sie sich?", e: ["2^x", "x^2"], an: ["intersect"] },
+    { titel: "Umkehrfunktion", text: "e^x und ln(x) sind an y = x gespiegelt.", e: ["e^x", "ln(x)", "x"] },
+    { titel: "Punkt auf dem Graphen", text: "Bewege a – der Punkt wandert auf der Parabel mit.", e: ["x^2", "(a|a^2)"] },
+    { titel: "Polstelle & Asymptote", text: "Was passiert in der Nähe von x = 1?", e: ["1/(x - 1) + 2", "x = 1", "2"] },
+  ];
+  $("#ideen").innerHTML = IDEEN.map((d, i) => `<button type="button" data-idee="${i}"><b>${esc(d.titel)}</b><small>${esc(d.text)}</small></button>`).join("");
+  $("#ideen").addEventListener("click", ev => {
+    const b = ev.target.closest("[data-idee]");
+    if (b) idee(IDEEN[+b.dataset.idee], true);
   });
-  $("#fn-add").addEventListener("click", () => {
-    addFn("");
-    const inputs = document.querySelectorAll("#fn-list input");
-    inputs[inputs.length - 1]?.focus();
-  });
-  $("#sliders").addEventListener("input", e => {
-    const n = e.target.dataset.param;
-    if (!n) return;
-    paramWerte[n] = +e.target.value;
-    e.target.nextElementSibling.textContent = fmt(paramWerte[n]);
-    schedule();
-  });
-  Object.values(opt).forEach(o => o.addEventListener("change", schedule));
-  $("#examples").innerHTML = BEISPIELE.map(b => `<button type="button" data-ex="${esc(b)}">${esc(b)}</button>`).join("");
-  $("#examples").addEventListener("click", e => {
-    const b = e.target.closest("[data-ex]");
-    if (!b) return;
-    if (!fns.length) addFn("");
-    // Beispiel ersetzt die zuletzt bearbeitete (bzw. erste) Funktion
-    const fn = fns[Math.min(lastEdited, fns.length - 1)];
-    setExpr(fn, b.dataset.ex);
-    fn.an = true;
+  function idee(d, scroll) {
+    eingaben = [];
+    naechsteFarbe = 0;
+    d.e.forEach(t => neueEingabe(t));
+    benennen();
+    eingaben.forEach(e => e.d.params.forEach(n => (paramWerte[n] = 1)));
+    toolId = null;
+    const an = new Set(d.an || []);
+    ["deriv", "inflect", "tangent", "area", "table"].forEach(k => (opt[k].checked = an.has(k)));
+    opt.extrema.checked = an.has("extrema");
+    opt.zeros.checked = true;
+    opt.intersect.checked = true;
+    if (d.x0 !== undefined) { tanX0 = d.x0; $("#x0").value = d.x0; }
+    if (d.area) { [areaA, areaB] = d.area; $("#area-a").value = d.area[0]; $("#area-b").value = d.area[1]; }
+    $("#rect-n").value = d.n || 0;
+    anim.clear();
+    sliderKey = null;
+    subPanels();
     renderRows();
-  });
-  let lastEdited = 0;
-  $("#fn-list").addEventListener("focusin", e => { if (e.target.dataset.expr !== undefined) lastEdited = +e.target.dataset.expr; });
+    resetView();
+    if (scroll) $(".plot-stage").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   /* ---------- Hilfsfunktionen ---------- */
   function fmt(v) {
@@ -1587,12 +1870,28 @@ $("#again-btn").addEventListener("click", () => {
   const toPy = y => H / 2 - (y - view.cy) * view.scale;
   const fromPx = px => view.cx + (px - W / 2) / view.scale;
   const fromPy = py => view.cy - (py - H / 2) / view.scale;
+  const clampPy = py => Math.max(-4 * H - 1000, Math.min(5 * H + 1000, py));
   function niceStep(raw) {
     const p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p;
     return (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p;
   }
+  function alpha(hex, a) {
+    const n = parseInt(hex.slice(1), 16);
+    return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`;
+  }
   const ableitung = f => x => { const h = 1e-5 * Math.max(1, Math.abs(x)); return (f(x + h) - f(x - h)) / (2 * h); };
   const ableitung2 = f => x => { const h = 1e-3 * Math.max(1, Math.abs(x)); return (f(x + h) - 2 * f(x) + f(x - h)) / (h * h); };
+  function simpson(f, a, b, n = 2000) {
+    const h = (b - a) / n;
+    let s = f(a) + f(b);
+    for (let i = 1; i < n; i++) s += (i % 2 ? 4 : 2) * f(a + i * h);
+    return s * h / 3;
+  }
+  function geradeText(m, q) {
+    if (Math.abs(m) < 1e-9) return fmt(q);
+    const mt = Math.abs(m - 1) < 1e-9 ? "" : Math.abs(m + 1) < 1e-9 ? "−" : fmt(m);
+    return Math.abs(q) < 1e-9 ? `${mt}x` : `${mt}x ${q < 0 ? "−" : "+"} ${fmt(Math.abs(q))}`;
+  }
 
   // Vorzeichenwechsel von g suchen und per Bisektion verfeinern
   function wechsel(g, a, b, n) {
@@ -1614,34 +1913,45 @@ $("#again-btn").addEventListener("click", () => {
         }
       }
       x0 = x1; y0 = y1;
-      if (out.length > 60) return null; // zu viele – z. B. sin(x) weit herausgezoomt
+      if (out.length > 60) return []; // zu viele – z. B. sin(x) weit herausgezoomt
     }
     return out;
   }
 
-  function besonderePunkte(fn, f) {
+  function besonderePunkte(e, f) {
     const a = fromPx(0), b = fromPx(W), n = 800, pts = [];
     const d1 = ableitung(f), d2 = ableitung2(f);
     const tol = 1e-6 * (1 + Math.abs(fromPy(0) - fromPy(H)));
     if (opt.zeros.checked) {
-      (wechsel(f, a, b, n) || []).forEach(({ x }) => { if (Math.abs(f(x)) < tol) pts.push({ fn, x, y: 0, art: "Nullstelle" }); });
+      wechsel(f, a, b, n).forEach(({ x }) => { if (Math.abs(f(x)) < tol) pts.push({ e, x, y: 0, art: "Nullstelle" }); });
     }
     if (opt.extrema.checked || opt.zeros.checked) {
-      (wechsel(d1, a, b, n) || []).forEach(({ x, vorher }) => {
+      wechsel(d1, a, b, n).forEach(({ x, vorher }) => {
         const y = f(x);
         if (!Number.isFinite(y) || Math.abs(d1(x)) > 1e-3 * (1 + Math.abs(y))) return; // Polstelle
         const hoch = vorher > 0 || (Number.isNaN(vorher) && d1(x + 1e-4) < 0);
-        if (opt.extrema.checked) pts.push({ fn, x, y, art: hoch ? "Hochpunkt" : "Tiefpunkt" });
+        if (opt.extrema.checked) pts.push({ e, x, y, art: hoch ? "Hochpunkt" : "Tiefpunkt" });
         // doppelte Nullstelle (Graph berührt die x-Achse)
         if (opt.zeros.checked && Math.abs(y) < tol && !pts.some(p => p.art === "Nullstelle" && Math.abs(p.x - x) < 1e-4)) {
-          pts.push({ fn, x, y: 0, art: "Nullstelle" });
+          pts.push({ e, x, y: 0, art: "Nullstelle" });
         }
       });
     }
     if (opt.inflect.checked) {
-      (wechsel(d2, a, b, n) || []).forEach(({ x }) => {
+      wechsel(d2, a, b, n).forEach(({ x }) => {
         const y = f(x);
-        if (Number.isFinite(y) && Number.isFinite(d1(x)) && Math.abs(d1(x)) < 1e6) pts.push({ fn, x, y, art: "Wendepunkt" });
+        if (Number.isFinite(y) && Number.isFinite(d1(x)) && Math.abs(d1(x)) < 1e6) pts.push({ e, x, y, art: "Wendepunkt" });
+      });
+    }
+    return pts;
+  }
+  function schnittpunkte(fs) {
+    const pts = [], a = fromPx(0), b = fromPx(W);
+    const tol = 1e-6 * (1 + Math.abs(fromPy(0) - fromPy(H)));
+    for (let i = 0; i < fs.length; i++) for (let j = i + 1; j < fs.length; j++) {
+      const f = auswerten(fs[i]), g = auswerten(fs[j]), d = x => f(x) - g(x);
+      wechsel(d, a, b, 800).forEach(({ x }) => {
+        if (Math.abs(d(x)) < tol && Number.isFinite(f(x))) pts.push({ e: fs[i], e2: fs[j], x, y: f(x), art: "Schnittpunkt" });
       });
     }
     return pts;
@@ -1652,18 +1962,15 @@ $("#again-btn").addEventListener("click", () => {
   function schedule() { if (!geplant) { geplant = true; requestAnimationFrame(draw); } }
   const FONT = '15px "Computer Modern Serif", Georgia, serif';
   const FONT_IT = 'italic 17px "Computer Modern Serif", Georgia, serif';
-
   function textHalo(t, x, y) {
-    ctx.lineWidth = 4; ctx.strokeStyle = "#fff"; ctx.strokeText(t, x, y);
+    ctx.lineWidth = 4; ctx.strokeStyle = "#fff"; ctx.lineJoin = "round"; ctx.strokeText(t, x, y);
     ctx.fillText(t, x, y);
   }
-
   function kurve(f, farbe, dashed, name) {
     ctx.beginPath();
     ctx.strokeStyle = farbe; ctx.lineWidth = 2.2;
     ctx.setLineDash(dashed ? [7, 6] : []);
-    let offen = false, prevPy = 0, label = null;
-    const lim = 4 * H + 1000;
+    let offen = false, prevPy = 0, lab = null;
     for (let px = -1; px <= W + 1; px += 1) {
       const y = f(fromPx(px));
       if (!Number.isFinite(y)) { offen = false; continue; }
@@ -1673,23 +1980,17 @@ $("#again-btn").addEventListener("click", () => {
         const ym = toPy(f(fromPx(px - .5)));
         if (!(Number.isFinite(ym) && (ym - prevPy) * (py - ym) >= 0)) offen = false;
       }
-      py = Math.max(-lim, Math.min(lim, py));
+      py = clampPy(py);
       offen ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
       offen = true; prevPy = py;
-      if (px < W - 60 && py > 32 && py < H - 14) label = { px, py };
+      if (px < W - 60 && py > 32 && py < H - 14) lab = { px, py };
     }
     ctx.stroke();
     ctx.setLineDash([]);
-    if (label) { ctx.fillStyle = farbe; ctx.font = FONT_IT; ctx.textAlign = "left"; ctx.textBaseline = "bottom"; textHalo(name, label.px + 6, label.py - 6); }
+    if (lab && name) { ctx.fillStyle = farbe; ctx.font = FONT_IT; ctx.textAlign = "left"; ctx.textBaseline = "bottom"; textHalo(name, lab.px + 6, lab.py - 6); }
   }
 
-  function draw() {
-    geplant = false;
-    if (!W || !H) return;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, W, H);
-
-    // Gitter
+  function gitter() {
     const step = niceStep(90 / view.scale);
     const minor = step / (Math.round(step / Math.pow(10, Math.floor(Math.log10(step)))) === 2 ? 4 : 5);
     const x0 = fromPx(0), x1 = fromPx(W), y0 = fromPy(H), y1 = fromPy(0);
@@ -1706,92 +2007,223 @@ $("#again-btn").addEventListener("click", () => {
     ctx.lineWidth = 1.3;
     linie(false, 0, "#111"); linie(true, 0, "#111");
 
-    // Beschriftung der Achsen
     ctx.fillStyle = "#111"; ctx.font = FONT;
     const ax = Math.min(Math.max(toPx(0), 0), W), ay = Math.min(Math.max(toPy(0), 0), H);
     const dez = Math.max(0, -Math.floor(Math.log10(step) + 1e-9));
     const zahl = v => (Math.abs(v) < step / 2 ? "0" : v.toFixed(dez)).replace("-", "−");
     ctx.textAlign = "center"; ctx.textBaseline = "top";
     const ly = Math.min(ay + 5, H - 20);
-    for (let v = Math.ceil(x0 / step) * step; v <= x1; v += step) {
-      if (Math.abs(v) < step / 2) continue;
-      textHalo(zahl(v), toPx(v), ly);
-    }
+    for (let v = Math.ceil(x0 / step) * step; v <= x1; v += step) if (Math.abs(v) >= step / 2) textHalo(zahl(v), toPx(v), ly);
     ctx.textBaseline = "middle";
     const links = ax > 40;
     ctx.textAlign = links ? "right" : "left";
     const lx = links ? Math.min(ax - 6, W - 6) : ax + 6;
-    for (let v = Math.ceil(y0 / step) * step; v <= y1; v += step) {
-      if (Math.abs(v) < step / 2) continue;
-      textHalo(zahl(v), lx, toPy(v));
-    }
+    for (let v = Math.ceil(y0 / step) * step; v <= y1; v += step) if (Math.abs(v) >= step / 2) textHalo(zahl(v), lx, toPy(v));
     if (toPx(0) > 0 && toPx(0) < W && toPy(0) > 0 && toPy(0) < H) { ctx.textAlign = "right"; ctx.textBaseline = "top"; textHalo("0", toPx(0) - 5, toPy(0) + 5); }
     ctx.font = FONT_IT;
     ctx.textAlign = "right"; ctx.textBaseline = "bottom"; textHalo("x", W - 8, ay - 4 < 18 ? ay + 24 : ay - 4);
     ctx.textAlign = "left"; ctx.textBaseline = "top"; textHalo("y", ax + 8 > W - 20 ? ax - 20 : ax + 8, 6);
+    return { step, ay };
+  }
 
-    // Funktionen
-    const aktiv = fns.filter(fn => fn.an && fn.c);
-    specials = [];
-    aktiv.forEach(fn => {
-      const f = x => fn.c.f(x, paramWerte);
-      if (opt.deriv.checked) kurve(ableitung(f), fn.farbe, true, fn.name + "′");
-      kurve(f, fn.farbe, false, fn.name);
-      specials.push(...besonderePunkte(fn, f));
+  function flaecheZeichnen(e, f) {
+    if (!Number.isFinite(areaA) || !Number.isFinite(areaB) || areaA === areaB) return null;
+    const lo = Math.min(areaA, areaB), hi = Math.max(areaA, areaB), y0 = toPy(0);
+    const steps = Math.max(2, Math.min(3000, Math.ceil(toPx(hi) - toPx(lo))));
+    ctx.beginPath(); ctx.moveTo(toPx(lo), y0);
+    for (let i = 0; i <= steps; i++) {
+      const x = lo + (hi - lo) * i / steps, y = f(x);
+      ctx.lineTo(toPx(x), Number.isFinite(y) ? clampPy(toPy(y)) : y0);
+    }
+    ctx.lineTo(toPx(hi), y0); ctx.closePath();
+    ctx.fillStyle = alpha(e.farbe, .16); ctx.fill();
+    // Rechtecke (Mittelpunktsregel)
+    const n = +$("#rect-n").value;
+    let summe = null;
+    if (n > 0) {
+      const w = (hi - lo) / n;
+      summe = 0;
+      ctx.lineWidth = 1.2; ctx.strokeStyle = e.farbe; ctx.fillStyle = alpha(e.farbe, .14);
+      for (let k = 0; k < n; k++) {
+        const y = f(lo + (k + .5) * w);
+        if (!Number.isFinite(y)) { summe = NaN; continue; }
+        summe += y * w;
+        const xa = toPx(lo + k * w), xb = toPx(lo + (k + 1) * w), yt = clampPy(toPy(y));
+        ctx.fillRect(xa, Math.min(yt, y0), xb - xa, Math.abs(yt - y0));
+        ctx.strokeRect(xa, Math.min(yt, y0), xb - xa, Math.abs(yt - y0));
+      }
+      if (areaB < areaA) summe = -summe;
+    }
+    // Grenzen (ziehbar)
+    ctx.setLineDash([4, 4]); ctx.lineWidth = 1.3; ctx.strokeStyle = e.farbe;
+    [areaA, areaB].forEach(v => { const px = Math.round(toPx(v)) + .5; ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, H); ctx.stroke(); });
+    ctx.setLineDash([]);
+    [areaA, areaB].forEach(v => {
+      ctx.beginPath(); ctx.rect(toPx(v) - 5, Math.min(Math.max(y0, 6), H - 6) - 5, 10, 10);
+      ctx.fillStyle = "#fff"; ctx.fill(); ctx.lineWidth = 2; ctx.stroke();
+    });
+    const integral = simpson(f, areaA, areaB), betrag = simpson(x => Math.abs(f(x)), lo, hi);
+    return { e, integral, betrag, summe, n };
+  }
+
+  function tangenteZeichnen(e, f) {
+    const y0 = f(tanX0), m = ableitung(f)(tanX0);
+    if (!Number.isFinite(y0) || !Number.isFinite(m)) return { e, x0: tanX0, y0, m: NaN };
+    const xl = fromPx(0), xr = fromPx(W);
+    ctx.beginPath(); ctx.lineWidth = 1.6; ctx.strokeStyle = e.farbe;
+    ctx.moveTo(0, clampPy(toPy(y0 + m * (xl - tanX0)))); ctx.lineTo(W, clampPy(toPy(y0 + m * (xr - tanX0))));
+    ctx.stroke();
+    // Steigungsdreieck
+    const dx = niceStep(45 / view.scale), dy = m * dx;
+    const p0 = [toPx(tanX0), toPy(y0)], p1 = [toPx(tanX0 + dx), toPy(y0)], p2 = [toPx(tanX0 + dx), clampPy(toPy(y0 + dy))];
+    ctx.beginPath(); ctx.moveTo(...p0); ctx.lineTo(...p1); ctx.lineTo(...p2);
+    ctx.fillStyle = alpha(e.farbe, .08); ctx.fill();
+    ctx.setLineDash([5, 4]); ctx.lineWidth = 1.4; ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = e.farbe; ctx.font = FONT;
+    ctx.textAlign = "center"; ctx.textBaseline = dy > 0 ? "top" : "bottom";
+    textHalo(`Δx = ${fmt(dx)}`, (p0[0] + p1[0]) / 2, p1[1] + (dy > 0 ? 5 : -5));
+    ctx.textAlign = "left"; ctx.textBaseline = "middle";
+    if (Math.abs(p2[1] - p1[1]) > 14) textHalo(`Δy = ${fmt(dy)}`, p1[0] + 6, (p1[1] + p2[1]) / 2);
+    // Punkt zum Ziehen
+    ctx.beginPath(); ctx.arc(p0[0], p0[1], 7, 0, 2 * Math.PI);
+    ctx.fillStyle = "#fff"; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = e.farbe; ctx.stroke();
+    return { e, x0: tanX0, y0, m };
+  }
+
+  let letzteInfos = { punkte: [] };
+  function draw() {
+    geplant = false;
+    if (!W || !H) return;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, W, H);
+    const { step, ay } = gitter();
+    const fs = funktionen();
+    const tool = toolEingabe();
+    const tf = tool && auswerten(tool);
+
+    // Regler für x₀ folgt dem sichtbaren Bereich
+    const x0El = $("#x0");
+    x0El.min = fromPx(0); x0El.max = fromPx(W); x0El.step = (fromPx(W) - fromPx(0)) / 1000; x0El.value = tanX0;
+    $("#x0-out").textContent = fmt(tanX0);
+    const n = +$("#rect-n").value;
+    $("#rect-out").textContent = n ? n : "aus";
+
+    const flaeche = opt.area.checked && tf ? flaecheZeichnen(tool, tf) : null;
+
+    fs.forEach(e => {
+      const f = auswerten(e);
+      if (opt.deriv.checked) kurve(ableitung(f), e.farbe, true, e.name + "′");
+      kurve(f, e.farbe, false, e.name);
+    });
+    // senkrechte Geraden
+    eingaben.filter(e => e.an && e.d.kind === "senkrecht").forEach(e => {
+      const x = e.d.c.f(0, paramWerte);
+      if (!Number.isFinite(x)) return;
+      const px = toPx(x);
+      ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, H); ctx.lineWidth = 2.2; ctx.strokeStyle = e.farbe; ctx.stroke();
+      ctx.fillStyle = e.farbe; ctx.font = FONT_IT; ctx.textAlign = "left"; ctx.textBaseline = "top";
+      textHalo(`x = ${fmt(x)}`, px + 6, 30);
     });
 
-    // Besondere Punkte
-    specials.forEach(p => {
+    const tangente = opt.tangent.checked && tf ? tangenteZeichnen(tool, tf) : null;
+
+    // besondere Punkte
+    let punkte = [];
+    fs.forEach(e => punkte.push(...besonderePunkte(e, auswerten(e))));
+    if (opt.intersect.checked && fs.length > 1) punkte.push(...schnittpunkte(fs));
+    punkte.forEach(p => {
       const px = toPx(p.x), py = toPy(p.y);
       ctx.beginPath();
       if (p.art === "Wendepunkt") ctx.rect(px - 4, py - 4, 8, 8);
+      else if (p.art === "Schnittpunkt") { ctx.moveTo(px, py - 6); ctx.lineTo(px + 6, py); ctx.lineTo(px, py + 6); ctx.lineTo(px - 6, py); ctx.closePath(); }
       else ctx.arc(px, py, 4.5, 0, 2 * Math.PI);
-      ctx.fillStyle = p.art === "Nullstelle" ? "#fff" : p.fn.farbe;
-      ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = p.fn.farbe; ctx.stroke();
+      ctx.fillStyle = p.art === "Nullstelle" || p.art === "Schnittpunkt" ? "#fff" : p.e.farbe;
+      ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = p.art === "Schnittpunkt" ? "#111" : p.e.farbe; ctx.stroke();
     });
 
-    // Maus / Finger: Wert anzeigen
-    const ro = $("#readout");
-    ro.hidden = !hover;
-    if (hover) {
-      const nah = specials
-        .map(p => ({ p, d: Math.hypot(toPx(p.x) - hover.px, toPy(p.y) - hover.py) }))
-        .sort((a, b) => a.d - b.d)[0];
-      const x = fromPx(hover.px);
-      let best = null;
-      aktiv.forEach(fn => {
-        const y = fn.c.f(x, paramWerte);
-        if (!Number.isFinite(y)) return;
-        const d = Math.abs(toPy(y) - hover.py);
-        if (d < (hover.touch ? 44 : 26) && (!best || d < best.d)) best = { fn, y, d };
-      });
-      if (nah && nah.d < (hover.touch ? 22 : 12)) {
-        const p = nah.p;
-        ctx.beginPath(); ctx.arc(toPx(p.x), toPy(p.y), 8, 0, 2 * Math.PI); ctx.lineWidth = 1.5; ctx.strokeStyle = p.fn.farbe; ctx.stroke();
-        ro.textContent = `${p.art} von ${p.fn.name}: (${fmt(p.x)} | ${fmt(p.y)})`;
-      } else if (best) {
-        const px = hover.px, py = toPy(best.y);
-        ctx.beginPath(); ctx.arc(px, py, 5, 0, 2 * Math.PI); ctx.fillStyle = best.fn.farbe; ctx.fill();
-        ctx.setLineDash([3, 4]); ctx.lineWidth = 1; ctx.strokeStyle = best.fn.farbe;
-        ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, ay); ctx.stroke(); ctx.setLineDash([]);
-        ro.textContent = `${best.fn.name}(${fmt(x)}) = ${fmt(best.y)}`;
-      } else {
-        ro.textContent = `(${fmt(x)} | ${fmt(fromPy(hover.py))})`;
-      }
-    }
-    renderPunkte();
+    // eingegebene Punkte
+    eingaben.filter(e => e.an && e.d.kind === "punkt").forEach(e => {
+      const x = e.d.px.f(0, paramWerte), y = e.d.py.f(0, paramWerte);
+      if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+      const px = toPx(x), py = toPy(y);
+      ctx.beginPath(); ctx.arc(px, py, 5.5, 0, 2 * Math.PI); ctx.fillStyle = e.farbe; ctx.fill();
+      ctx.font = FONT_IT; ctx.textAlign = "left"; ctx.textBaseline = "bottom";
+      textHalo(e.name, px + 7, py - 5);
+      punkte.push({ e, x, y, art: "Punkt", eigen: true });
+    });
+
+    hoverZeichnen(fs, punkte, ay);
+    letzteInfos = { punkte, tangente, flaeche, fs };
+    renderInfo();
   }
 
-  let punkteHtml = "";
-  function renderPunkte() {
-    const html = specials
-      .slice().sort((a, b) => a.fn.name.localeCompare(b.fn.name) || a.x - b.x)
-      .slice(0, 24)
-      .map(p => `<li><span>${p.fn.name}: ${p.art}</span> (${fmt(p.x)} | ${fmt(p.y)})</li>`).join("");
-    if (html === punkteHtml) return;
-    punkteHtml = html;
-    $("#points").innerHTML = html;
-    $("#points-box").hidden = !html;
+  function hoverZeichnen(fs, punkte, ay) {
+    const ro = $("#readout");
+    ro.hidden = !hover;
+    if (!hover) return;
+    const nah = punkte
+      .map(p => ({ p, d: Math.hypot(toPx(p.x) - hover.px, toPy(p.y) - hover.py) }))
+      .sort((a, b) => a.d - b.d)[0];
+    const x = fromPx(hover.px);
+    let best = null;
+    fs.forEach(e => {
+      const y = auswerten(e)(x);
+      if (!Number.isFinite(y)) return;
+      const d = Math.abs(toPy(y) - hover.py);
+      if (d < (hover.touch ? 44 : 26) && (!best || d < best.d)) best = { e, y, d };
+    });
+    if (nah && nah.d < (hover.touch ? 22 : 12)) {
+      const p = nah.p;
+      ctx.beginPath(); ctx.arc(toPx(p.x), toPy(p.y), 9, 0, 2 * Math.PI); ctx.lineWidth = 1.5; ctx.strokeStyle = p.e.farbe; ctx.stroke();
+      ro.textContent = `${punktName(p)}: (${fmt(p.x)} | ${fmt(p.y)})`;
+    } else if (best) {
+      const px = hover.px, py = toPy(best.y);
+      ctx.beginPath(); ctx.arc(px, py, 5, 0, 2 * Math.PI); ctx.fillStyle = best.e.farbe; ctx.fill();
+      ctx.setLineDash([3, 4]); ctx.lineWidth = 1; ctx.strokeStyle = best.e.farbe;
+      ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, ay); ctx.stroke(); ctx.setLineDash([]);
+      ro.textContent = `${best.e.name}(${fmt(x)}) = ${fmt(best.y)}`;
+    } else {
+      ro.textContent = `(${fmt(x)} | ${fmt(fromPy(hover.py))})`;
+    }
+  }
+  const punktName = p => p.eigen ? `Punkt ${p.e.name}` : p.art === "Schnittpunkt" ? `Schnittpunkt ${p.e.name}, ${p.e2.name}` : `${p.art} von ${p.e.name}`;
+
+  /* ---------- Ergebnisse unter der Grafik ---------- */
+  let infoHtml = "";
+  function renderInfo() {
+    const { punkte, tangente, flaeche, fs } = letzteInfos;
+    const karten = [];
+    const besondere = punkte.filter(p => !p.eigen).sort((a, b) => a.e.name.localeCompare(b.e.name) || a.x - b.x);
+    if (besondere.length) {
+      karten.push(`<div class="info-card"><h2>Besondere Punkte</h2><ul class="points">${besondere.slice(0, 30).map(p =>
+        `<li><span>${esc(p.art === "Schnittpunkt" ? `Schnittpunkt ${p.e.name}, ${p.e2.name}` : `${p.e.name}: ${p.art}`)}</span> (${fmt(p.x)} | ${fmt(p.y)})</li>`).join("")}</ul></div>`);
+    }
+    if (tangente) {
+      const { e, x0, y0, m } = tangente, f = e.name;
+      karten.push(`<div class="info-card"><h2>Tangente an ${f}</h2>
+        <p class="formel"><i>x</i>₀ = ${fmt(x0)}<br><i>${f}</i>(<i>x</i>₀) = ${fmt(y0)}<br>Steigung <i>m</i> = <i>${f}</i>′(<i>x</i>₀) = ${fmt(m)}<br>
+        ${Number.isFinite(m) ? `<i>t</i>(<i>x</i>) = ${geradeText(m, y0 - m * x0)}` : "keine Tangente an dieser Stelle"}</p>
+        <p class="plot-help">Zieh den Punkt auf dem Graphen. Die Steigung der Tangente ist die Ableitung an dieser Stelle: <i>m</i> = Δ<i>y</i> / Δ<i>x</i>.</p></div>`);
+    }
+    if (flaeche) {
+      const { e, integral, betrag, summe, n } = flaeche, f = e.name;
+      karten.push(`<div class="info-card"><h2>Fläche unter ${f}</h2>
+        <p class="formel">∫ von ${fmt(areaA)} bis ${fmt(areaB)} <i>${f}</i>(<i>x</i>) d<i>x</i> = ${fmt(integral)}<br>
+        Fläche zwischen Graph und <i>x</i>-Achse = ${fmt(betrag)}
+        ${summe !== null ? `<br>${n} Rechtecke: Summe = ${fmt(summe)}` : ""}</p>
+        <p class="plot-help">${summe !== null ? "Mehr Rechtecke → die Summe kommt dem Integral immer näher." : "Teile unter der x-Achse zählen im Integral negativ. Zieh die Grenzen im Bild oder schalte Rechtecke ein."}</p></div>`);
+    }
+    if (opt.table.checked && fs.length) {
+      const xs = Array.from({ length: 9 }, (_, i) => tabStart + i * tabStep);
+      karten.push(`<div class="info-card"><h2>Wertetabelle</h2><div class="wt-wrap"><table class="wt">
+        <thead><tr><th>x</th>${fs.map(e => `<th style="color:${e.farbe}">${e.name}(x)</th>`).join("")}</tr></thead>
+        <tbody>${xs.map(x => `<tr><td>${fmt(x)}</td>${fs.map(e => `<td>${fmt(auswerten(e)(x))}</td>`).join("")}</tr>`).join("")}</tbody>
+      </table></div></div>`);
+    }
+    const html = karten.join("");
+    if (html === infoHtml) return;
+    infoHtml = html;
+    $("#info-cards").innerHTML = html;
   }
 
   /* ---------- Grösse, Zoom & Verschieben ---------- */
@@ -1818,7 +2250,6 @@ $("#again-btn").addEventListener("click", () => {
   $("#zoom-in").addEventListener("click", () => zoomAt(W / 2, H / 2, 1.5));
   $("#zoom-out").addEventListener("click", () => zoomAt(W / 2, H / 2, 1 / 1.5));
   $("#zoom-reset").addEventListener("click", resetView);
-
   canvas.addEventListener("wheel", e => {
     e.preventDefault();
     const r = canvas.getBoundingClientRect();
@@ -1826,31 +2257,63 @@ $("#again-btn").addEventListener("click", () => {
     zoomAt(e.clientX - r.left, e.clientY - r.top, Math.exp(-dy * 0.0015));
   }, { passive: false });
 
+  // Was liegt unter dem Zeiger? Tangentenpunkt oder Integralgrenze → ziehen statt verschieben
+  function ziehziel(p, touch) {
+    const tool = toolEingabe();
+    if (!tool) return null;
+    const r = touch ? 24 : 13;
+    if (opt.tangent.checked) {
+      const y = auswerten(tool)(tanX0);
+      if (Number.isFinite(y) && Math.hypot(toPx(tanX0) - p.x, toPy(y) - p.y) < r) return "tan";
+    }
+    if (opt.area.checked) {
+      if (Math.abs(toPx(areaA) - p.x) < r - 4) return "a";
+      if (Math.abs(toPx(areaB) - p.x) < r - 4) return "b";
+    }
+    return null;
+  }
+  const runden = v => { const s = niceStep(90 / view.scale) / 20; return +(Math.round(v / s) * s).toFixed(6); };
+  function ziehen(ziel, p) {
+    const x = fromPx(p.x);
+    if (ziel === "tan") tanX0 = x;
+    if (ziel === "a") { areaA = runden(x); $("#area-a").value = fmt(areaA).replace("−", "-"); }
+    if (ziel === "b") { areaB = runden(x); $("#area-b").value = fmt(areaB).replace("−", "-"); }
+  }
+
   const pointers = new Map();
-  let bewegt = 0;
+  let bewegt = 0, ziel = null;
   const pos = e => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
   canvas.addEventListener("pointerdown", e => {
     canvas.setPointerCapture(e.pointerId);
-    pointers.set(e.pointerId, pos(e));
-    bewegt = 0;
+    const p = pos(e);
+    if (!pointers.size) { ziel = ziehziel(p, e.pointerType !== "mouse"); bewegt = 0; }
+    else ziel = null;
+    pointers.set(e.pointerId, p);
     canvas.classList.add("is-dragging");
   });
   canvas.addEventListener("pointermove", e => {
     const p = pos(e);
     if (!pointers.has(e.pointerId)) {
-      if (e.pointerType === "mouse") { hover = { px: p.x, py: p.y }; schedule(); }
+      if (e.pointerType === "mouse") {
+        hover = { px: p.x, py: p.y };
+        const z = ziehziel(p, false);
+        canvas.style.cursor = z === "tan" ? "pointer" : z ? "ew-resize" : "";
+        schedule();
+      }
       return;
     }
     const alt = pointers.get(e.pointerId);
     if (pointers.size === 1) {
-      view.cx -= (p.x - alt.x) / view.scale;
-      view.cy += (p.y - alt.y) / view.scale;
       bewegt += Math.abs(p.x - alt.x) + Math.abs(p.y - alt.y);
-      if (e.pointerType === "mouse") hover = { px: p.x, py: p.y };
+      if (ziel) ziehen(ziel, p);
+      else {
+        view.cx -= (p.x - alt.x) / view.scale;
+        view.cy += (p.y - alt.y) / view.scale;
+      }
+      hover = e.pointerType === "mouse" || ziel ? { px: p.x, py: p.y, touch: e.pointerType !== "mouse" } : null;
     } else if (pointers.size === 2) {
-      const [a, b] = [...pointers.entries()].map(([id, q]) => (id === e.pointerId ? alt : q));
       const andere = [...pointers.entries()].find(([id]) => id !== e.pointerId)[1];
-      const d0 = Math.hypot(a.x - b.x, a.y - b.y);
+      const d0 = Math.hypot(alt.x - andere.x, alt.y - andere.y);
       const d1 = Math.hypot(p.x - andere.x, p.y - andere.y);
       const m0 = { x: (alt.x + andere.x) / 2, y: (alt.y + andere.y) / 2 };
       const m1 = { x: (p.x + andere.x) / 2, y: (p.y + andere.y) / 2 };
@@ -1870,14 +2333,14 @@ $("#again-btn").addEventListener("click", () => {
       schedule();
     }
     pointers.delete(e.pointerId);
-    if (!pointers.size) canvas.classList.remove("is-dragging");
+    if (!pointers.size) { canvas.classList.remove("is-dragging"); ziel = null; }
   };
   canvas.addEventListener("pointerup", ende);
   canvas.addEventListener("pointercancel", ende);
   canvas.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") { hover = null; schedule(); } });
 
-  // Startbeispiel
-  addFn("x^3 - 3x");
+  // Start
+  idee(IDEEN[0], false);
   document.fonts?.load(FONT).then(schedule, () => {});
 })();
 
