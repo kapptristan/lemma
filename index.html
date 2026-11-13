@@ -157,7 +157,7 @@
   .home .logo--lg { font-size: clamp(3.5rem, 16vw, 6.5rem); }
   .home .claim { margin: 1.25rem auto .5rem; max-width: 26ch; font-size: clamp(1.2rem, 4.5vw, 1.5rem); font-style: italic; line-height: 1.45; }
   .home .sub-line { margin: 0 0 1.5rem; font-size: .95rem; font-variant: small-caps; letter-spacing: .06em; }
-  .home .cta { margin: 0; }
+  .home .cta { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; margin: 0; }
 
   /* ---------- Shop: Vorteile & Filter ---------- */
   .perks {
@@ -393,12 +393,63 @@
   .code-row { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; margin: 0 0 1.25rem; }
   .result .btn { font-size: .95rem; padding: .55em 1.2em; }
 
-  /* ---------- Über mich ---------- */
-  .about { font-size: 1.05rem; }
-  @media (min-width: 40rem) { .about { font-size: inherit; } }
-  .about p { margin: 0 0 1rem; }
-  .about p:last-child { margin-bottom: 0; }
-  .about p:last-child::after { content: ""; display: inline-block; width: .5em; height: .5em; margin-left: .4em; border: var(--line); vertical-align: baseline; }
+  /* ---------- Graphen (Funktionsplotter) ---------- */
+  .page--text .wrap > .plot-layout { max-width: none; }
+  .plot-layout { display: grid; gap: 1.25rem; }
+  @media (min-width: 56rem) { .plot-layout { grid-template-columns: 20rem minmax(0, 1fr); gap: 2rem; align-items: start; } }
+  .plot-stage { position: relative; border: var(--line); background: var(--white); }
+  @media (min-width: 56rem) { .plot-stage { order: 2; position: sticky; top: 4.75rem; } }
+  .plot-canvas { display: block; width: 100%; height: clamp(20rem, 62vh, 42rem); touch-action: none; cursor: grab; }
+  .plot-canvas.is-dragging { cursor: grabbing; }
+  .plot-tools { position: absolute; top: .6rem; right: .6rem; display: flex; flex-direction: column; gap: .35rem; }
+  .plot-tools button {
+    display: grid; place-items: center; width: 2.3rem; height: 2.3rem; padding: 0;
+    font: inherit; font-size: 1.1rem; line-height: 1; color: var(--black);
+    background: var(--white); border: var(--line); border-radius: 50%; cursor: pointer;
+  }
+  .plot-tools button:hover { background: var(--black); color: var(--white); }
+  .plot-readout {
+    position: absolute; left: .6rem; bottom: .6rem; padding: .2rem .6rem;
+    font-family: var(--mono); font-size: .85rem; background: var(--white); border: var(--line);
+    pointer-events: none;
+  }
+  .plot-panel { display: flex; flex-direction: column; gap: 1.1rem; }
+  .fn-list { display: flex; flex-direction: column; gap: .6rem; }
+  .fn-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .5rem; }
+  .fn-swatch {
+    display: inline-flex; align-items: center; gap: .3rem; padding: 0; border: 0; background: none;
+    font: inherit; font-style: italic; color: inherit; cursor: pointer; white-space: nowrap;
+  }
+  .fn-swatch i { display: inline-block; width: .9rem; height: .9rem; border: 2px solid var(--c); border-radius: 50%; background: var(--c); }
+  .fn-row.is-off .fn-swatch i { background: transparent; }
+  .fn-row.is-off input { opacity: .5; }
+  .fn-row input {
+    width: 100%; min-width: 0; padding: .45rem .7rem;
+    font-family: var(--mono); font-size: 1rem; color: var(--black);
+    background: var(--white); border: var(--line); border-radius: 0;
+  }
+  .fn-row input[aria-invalid="true"] { border-width: 2px; border-style: dashed; }
+  .fn-del { padding: .2rem .4rem; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; }
+  .fn-del:hover { text-decoration: underline; }
+  .fn-err { grid-column: 2 / -1; margin: -.2rem 0 0; font-size: .85rem; font-style: italic; }
+  .plot-box { padding-top: .9rem; border-top: var(--line); }
+  .plot-box h2 { margin: 0 0 .5rem; font-size: .9rem; font-weight: 400; font-variant: small-caps; letter-spacing: .08em; }
+  .checks { display: flex; flex-direction: column; gap: .25rem; font-size: 1rem; }
+  .checks label { display: flex; align-items: center; gap: .55rem; cursor: pointer; }
+  .checks input { width: 1rem; height: 1rem; accent-color: var(--black); }
+  .slider { display: grid; grid-template-columns: 1.4rem 1fr 3.4rem; align-items: center; gap: .6rem; font-size: 1rem; }
+  .slider b { font-style: italic; font-weight: 400; }
+  .slider input[type="range"] { width: 100%; accent-color: var(--black); }
+  .slider output { font-family: var(--mono); font-size: .9rem; text-align: right; }
+  .examples { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .examples button {
+    padding: .3em .9em; font-family: var(--mono); font-size: .85rem; color: var(--black);
+    background: var(--white); border: var(--line); border-radius: var(--radius); cursor: pointer;
+  }
+  .examples button:hover { background: var(--black); color: var(--white); }
+  .points { margin: 0; padding: 0; list-style: none; font-family: var(--mono); font-size: .88rem; line-height: 1.55; }
+  .points li span { font-family: var(--serif); font-style: italic; }
+  .plot-help { margin: 0; font-size: .9rem; font-style: italic; line-height: 1.45; }
 
   /* ---------- FAQ ---------- */
   .faq { border-top: var(--line); }
@@ -446,7 +497,7 @@
     <nav class="nav" aria-label="Hauptnavigation">
       <a href="#/skripte" data-nav="skripte">Skripte</a>
       <a href="#/videos" data-nav="videos">Videos</a>
-      <a href="#/ueber-mich" data-nav="ueber-mich">Über mich</a>
+      <a href="#/graphen" data-nav="graphen">Graphen</a>
       <a href="#/faq" data-nav="faq">FAQ</a>
       <a href="#/bestellen" data-nav="bestellen" data-nur-bestellung hidden>Bestellen<span class="cart-count" id="cart-count" hidden aria-label="Skripte im Warenkorb"></span></a>
     </nav>
@@ -461,7 +512,7 @@
       <h1 tabindex="-1"><span class="logo logo--lg">Lemma</span></h1>
       <p class="claim" data-config="heroSatz">Mathe nicht auswendig lernen, sondern verstehen.</p>
       <p class="sub-line">Kostenlose Mathe-Skripte für Matura &amp; Uni</p>
-      <p class="cta"><a href="#/skripte" class="btn">Zu den Skripten</a></p>
+      <p class="cta"><a href="#/skripte" class="btn">Zu den Skripten</a> <a href="#/graphen" class="btn btn--ghost">Graphen zeichnen</a></p>
     </div>
   </section>
 
@@ -544,11 +595,48 @@
     </div>
   </section>
 
-  <!-- ===== 4 Über mich ===== -->
-  <section class="page page--text" data-page="ueber-mich" data-title="Über mich" hidden>
+  <!-- ===== Graphen: Funktionen zeichnen und veranschaulichen ===== -->
+  <section class="page page--text" data-page="graphen" data-title="Graphen" hidden>
     <div class="wrap">
-      <h1 class="page-title" tabindex="-1">Über mich</h1>
-      <div class="about" data-config="ueberMich"></div>
+      <h1 class="page-title" tabindex="-1">Graphen</h1>
+      <p class="lead">Tipp eine Funktion ein und sieh sofort, wie sie aussieht. Buchstaben wie <i>a</i>, <i>b</i> oder <i>k</i> werden automatisch zu Schiebereglern.</p>
+      <div class="plot-layout">
+        <div class="plot-stage">
+          <canvas class="plot-canvas" id="plot" aria-label="Koordinatensystem mit den Graphen"></canvas>
+          <div class="plot-tools">
+            <button type="button" id="zoom-in" aria-label="Hineinzoomen">+</button>
+            <button type="button" id="zoom-out" aria-label="Herauszoomen">−</button>
+            <button type="button" id="zoom-reset" aria-label="Ansicht zurücksetzen">⌂</button>
+          </div>
+          <div class="plot-readout" id="readout" hidden></div>
+        </div>
+        <div class="plot-panel">
+          <div class="fn-list" id="fn-list"></div>
+          <p><button type="button" class="btn btn--ghost" id="fn-add">+ Funktion hinzufügen</button></p>
+          <div class="plot-box" id="slider-box" hidden>
+            <h2>Parameter</h2>
+            <div class="checks" id="sliders"></div>
+          </div>
+          <div class="plot-box">
+            <h2>Anzeigen</h2>
+            <div class="checks">
+              <label><input type="checkbox" id="opt-deriv"> Ableitung <i>f&thinsp;′</i> einblenden</label>
+              <label><input type="checkbox" id="opt-zeros" checked> Nullstellen</label>
+              <label><input type="checkbox" id="opt-extrema" checked> Hoch- und Tiefpunkte</label>
+              <label><input type="checkbox" id="opt-inflect"> Wendepunkte</label>
+            </div>
+          </div>
+          <div class="plot-box" id="points-box" hidden>
+            <h2>Besondere Punkte</h2>
+            <ul class="points" id="points"></ul>
+          </div>
+          <div class="plot-box">
+            <h2>Beispiele</h2>
+            <div class="examples" id="examples"></div>
+          </div>
+          <p class="plot-help">Ziehen verschiebt, Mausrad oder zwei Finger zoomen. Erlaubt sind z.&nbsp;B. <code>x^2</code>, <code>2x+1</code>, <code>sin(x)</code>, <code>sqrt(x)</code>, <code>e^x</code>, <code>ln(x)</code>, <code>|x|</code>, <code>pi</code>.</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -671,13 +759,6 @@ const CONFIG = {
 
   // Satz auf der Titelseite
   heroSatz: "Mathe nicht auswendig lernen, sondern verstehen.",
-
-  // Text «Über mich» – jeder Eintrag ist ein Absatz
-  ueberMich: [
-    "Ich bin Tristan, Maturand mit Schwerpunktfach AM Mathematik & Physik. Nach der Matura möchte ich Mathematik studieren.",
-    "Ehrlich gesagt mochte ich Mathe lange nicht – nicht, weil sie zu schwierig war, sondern weil sie mir nie richtig erklärt wurde. Fasziniert hat mich höhere Mathematik trotzdem schon immer. Mit dem Schwerpunktfach wollte ich nicht mehr nur staunen, sondern so etwas selbst verstehen und lösen können.",
-    "Ein Lemma ist in der Mathematik ein Hilfssatz: ein kleiner Baustein, mit dem man Grösseres beweist. Genau das sollen diese Skripte sein – die Erklärungen, die ich selbst gern gehabt hätte."
-  ],
 };
 
 /* =====================================================================
@@ -1095,7 +1176,7 @@ function route() {
   document.title = title ? `${title} – Lemma` : "Lemma – Kostenlose Mathe-Skripte für Matura & Uni";
   currentPage = page;
   document.body.dataset.view = page;
-  document.body.classList.toggle("is-fit", !["skripte", "detail", "videos"].includes(page) || (page === "videos" && !VIDEOS.length));
+  document.body.classList.toggle("is-fit", !["skripte", "detail", "videos", "graphen"].includes(page) || (page === "videos" && !VIDEOS.length));
   section.scrollTop = 0;
   updateCartBar();
   if (lb.open) lb.close();
@@ -1258,6 +1339,547 @@ $("#again-btn").addEventListener("click", () => {
   renderCart();
   location.hash = "#/skripte";
 });
+
+/* =====================================================================
+   GRAPHEN – kleiner Funktionsplotter (ähnlich wie GeoGebra)
+   ===================================================================== */
+(() => {
+  const canvas = $("#plot");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const FARBEN = ["#111111", "#c8102e", "#1f5fbf", "#1d8a4a", "#b35c00", "#7a3fb0"];
+  const NAMEN = ["f", "g", "h", "p", "q", "r"];
+  const BEISPIELE = ["x^3 - 3x", "a(x - b)^2 + c", "a·sin(b·x)", "e^x", "ln(x)", "1/x", "sqrt(x)", "|x - 2| - 1", "(x^2 - 1)/(x - 2)"];
+
+  /* ---------- Parser: Text → Funktion (ohne eval) ---------- */
+  // Kubikwurzel & Co.: (-8)^(1/3) = -2 wie im Unterricht
+  function pow(b, e) {
+    if (b >= 0 || Number.isInteger(e)) return Math.pow(b, e);
+    for (const q of [3, 5, 7, 9]) {
+      const k = Math.round(e * q);
+      if (Math.abs(e * q - k) < 1e-9) return (k % 2 ? -1 : 1) * Math.pow(-b, e);
+    }
+    return NaN;
+  }
+  const FUNKTIONEN = {
+    sin: Math.sin, cos: Math.cos, tan: Math.tan,
+    arcsin: Math.asin, arccos: Math.acos, arctan: Math.atan, asin: Math.asin, acos: Math.acos, atan: Math.atan,
+    sinh: Math.sinh, cosh: Math.cosh, tanh: Math.tanh,
+    sqrt: Math.sqrt, wurzel: Math.sqrt, cbrt: Math.cbrt, abs: Math.abs, betrag: Math.abs,
+    ln: Math.log, log: Math.log10, lg: Math.log10, exp: Math.exp,
+    floor: Math.floor, ceil: Math.ceil, round: Math.round, sign: Math.sign, sgn: Math.sign,
+  };
+  const WOERTER = [...Object.keys(FUNKTIONEN), "pi"].sort((a, b) => b.length - a.length);
+
+  function tokenize(src) {
+    const s = src
+      .replace(/^\s*(?:[a-zA-Z]\s*\(\s*x\s*\)|y)\s*=/, "")
+      .replace(/(\d),(\d)/g, "$1.$2")
+      .replace(/[−–]/g, "-").replace(/[·×∙⋅]/g, "*").replace(/÷/g, "/").replace(/\*\*/g, "^")
+      .replace(/²/g, "^2").replace(/³/g, "^3").replace(/√/g, "sqrt");
+    const tokens = [];
+    let i = 0;
+    while (i < s.length) {
+      const ch = s[i];
+      if (/\s/.test(ch)) { i++; continue; }
+      const num = /^(\d+(\.\d*)?|\.\d+)/.exec(s.slice(i));
+      if (num) { tokens.push({ t: "num", v: parseFloat(num[0]) }); i += num[0].length; continue; }
+      if (ch === "π") { tokens.push({ t: "num", v: Math.PI }); i++; continue; }
+      if (/[a-zA-Z]/.test(ch)) {
+        const low = s.slice(i).toLowerCase();
+        const wort = WOERTER.find(w => low.startsWith(w));
+        if (wort === "pi") tokens.push({ t: "num", v: Math.PI });
+        else if (wort) tokens.push({ t: "fn", v: wort });
+        else tokens.push({ t: "id", v: ch });
+        i += wort ? wort.length : 1;
+        continue;
+      }
+      if ("+-*/^()|".includes(ch)) { tokens.push({ t: "op", v: ch }); i++; continue; }
+      throw new Error(`Unbekanntes Zeichen «${ch}»`);
+    }
+    return tokens;
+  }
+
+  function compile(src) {
+    const tokens = tokenize(src);
+    if (!tokens.length) return null;
+    const params = new Set();
+    let pos = 0, absTiefe = 0;
+    const peek = () => tokens[pos];
+    const isOp = (tok, v) => tok && tok.t === "op" && tok.v === v;
+    const expect = v => {
+      if (!isOp(peek(), v)) throw new Error(v === ")" ? "Eine Klammer ) fehlt" : `«${v}» fehlt`);
+      pos++;
+    };
+    const startetFaktor = tok => tok && (tok.t !== "op" || tok.v === "(" || (tok.v === "|" && absTiefe === 0));
+
+    function summe() {
+      let n = produkt();
+      while (isOp(peek(), "+") || isOp(peek(), "-")) {
+        const op = tokens[pos++].v, a = n, b = produkt();
+        n = op === "+" ? (x, p) => a(x, p) + b(x, p) : (x, p) => a(x, p) - b(x, p);
+      }
+      return n;
+    }
+    function produkt() {
+      let n = vorzeichen();
+      for (;;) {
+        const tok = peek();
+        if (isOp(tok, "*") || isOp(tok, "/")) {
+          pos++;
+          const a = n, b = vorzeichen();
+          n = tok.v === "*" ? (x, p) => a(x, p) * b(x, p) : (x, p) => a(x, p) / b(x, p);
+        } else if (startetFaktor(tok)) { // 2x, 3(x+1), x sin(x)
+          const a = n, b = potenz();
+          n = (x, p) => a(x, p) * b(x, p);
+        } else return n;
+      }
+    }
+    function vorzeichen() {
+      if (isOp(peek(), "-")) { pos++; const a = vorzeichen(); return (x, p) => -a(x, p); }
+      if (isOp(peek(), "+")) { pos++; return vorzeichen(); }
+      return potenz();
+    }
+    function potenz() {
+      const basis = faktor();
+      if (!isOp(peek(), "^")) return basis;
+      pos++;
+      const exp = vorzeichen();
+      return (x, p) => pow(basis(x, p), exp(x, p));
+    }
+    function faktor() {
+      const tok = tokens[pos++];
+      if (!tok) throw new Error("Der Ausdruck ist unvollständig");
+      if (tok.t === "num") { const v = tok.v; return () => v; }
+      if (tok.t === "id") {
+        if (tok.v === "x") return x => x;
+        if (tok.v === "e") return () => Math.E;
+        const name = tok.v;
+        params.add(name);
+        return (x, p) => p[name];
+      }
+      if (tok.t === "fn") {
+        const f = FUNKTIONEN[tok.v];
+        let arg;
+        if (isOp(peek(), "(")) { pos++; arg = summe(); expect(")"); }
+        else arg = potenz(); // sin x
+        return (x, p) => f(arg(x, p));
+      }
+      if (tok.v === "(") { const a = summe(); expect(")"); return a; }
+      if (tok.v === "|") {
+        absTiefe++;
+        const a = summe();
+        expect("|");
+        absTiefe--;
+        return (x, p) => Math.abs(a(x, p));
+      }
+      throw new Error(`Unerwartetes «${tok.v}»`);
+    }
+
+    const f = summe();
+    if (pos < tokens.length) throw new Error(isOp(peek(), ")") ? "Eine Klammer ( fehlt" : `Unerwartetes «${peek().v}»`);
+    return { f, params };
+  }
+
+  /* ---------- Zustand ---------- */
+  let fns = [];
+  let nextFarbe = 0;
+  const paramWerte = {};
+  const view = { cx: 0, cy: 0, scale: 40 };
+  let W = 0, H = 0, dpr = 1, hover = null, specials = [];
+  const opt = { deriv: $("#opt-deriv"), zeros: $("#opt-zeros"), extrema: $("#opt-extrema"), inflect: $("#opt-inflect") };
+
+  function addFn(expr = "") {
+    if (fns.length >= NAMEN.length) return;
+    const used = new Set(fns.map(f => f.name));
+    const fn = { name: NAMEN.find(n => !used.has(n)), expr, farbe: FARBEN[nextFarbe++ % FARBEN.length], an: true, c: null, err: "" };
+    setExpr(fn, expr);
+    fns.push(fn);
+    renderRows();
+  }
+  function setExpr(fn, expr) {
+    fn.expr = expr;
+    try { fn.c = compile(expr); fn.err = ""; }
+    catch (e) { fn.c = null; fn.err = e.message; }
+  }
+
+  function renderRows() {
+    $("#fn-list").innerHTML = fns.map((fn, i) => `
+      <div class="fn-row${fn.an ? "" : " is-off"}" data-i="${i}">
+        <button type="button" class="fn-swatch" style="--c:${fn.farbe}" data-toggle="${i}" aria-pressed="${fn.an}" aria-label="${fn.name} ein- oder ausblenden"><i></i>${fn.name}(x) =</button>
+        <input type="text" value="${esc(fn.expr)}" data-expr="${i}" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" aria-label="Term von ${fn.name}(x)" aria-invalid="${!!fn.err}" placeholder="z. B. x^2">
+        <button type="button" class="fn-del" data-del="${i}" aria-label="${fn.name} entfernen">✕</button>
+        <p class="fn-err" ${fn.err ? "" : "hidden"}>${esc(fn.err)}</p>
+      </div>`).join("");
+    $("#fn-add").hidden = fns.length >= NAMEN.length;
+    updateSliders();
+    schedule();
+  }
+
+  let sliderKey = "";
+  function updateSliders() {
+    const names = [...new Set(fns.flatMap(fn => fn.c ? [...fn.c.params] : []))].sort();
+    const key = names.join();
+    if (key === sliderKey) return;
+    sliderKey = key;
+    names.forEach(n => { if (!(n in paramWerte)) paramWerte[n] = 1; });
+    $("#slider-box").hidden = !names.length;
+    $("#sliders").innerHTML = names.map(n => `
+      <label class="slider"><b>${n}</b>
+        <input type="range" min="-5" max="5" step="0.1" value="${paramWerte[n]}" data-param="${n}" aria-label="Parameter ${n}">
+        <output>${fmt(paramWerte[n])}</output>
+      </label>`).join("");
+  }
+
+  $("#fn-list").addEventListener("input", e => {
+    const i = e.target.dataset.expr;
+    if (i === undefined) return;
+    const fn = fns[i];
+    setExpr(fn, e.target.value);
+    e.target.setAttribute("aria-invalid", !!fn.err);
+    const err = e.target.parentElement.querySelector(".fn-err");
+    err.hidden = !fn.err;
+    err.textContent = fn.err;
+    updateSliders();
+    schedule();
+  });
+  $("#fn-list").addEventListener("click", e => {
+    const t = e.target.closest("[data-toggle]"), d = e.target.closest("[data-del]");
+    if (t) { const fn = fns[t.dataset.toggle]; fn.an = !fn.an; renderRows(); }
+    if (d) { fns.splice(+d.dataset.del, 1); renderRows(); }
+  });
+  $("#fn-add").addEventListener("click", () => {
+    addFn("");
+    const inputs = document.querySelectorAll("#fn-list input");
+    inputs[inputs.length - 1]?.focus();
+  });
+  $("#sliders").addEventListener("input", e => {
+    const n = e.target.dataset.param;
+    if (!n) return;
+    paramWerte[n] = +e.target.value;
+    e.target.nextElementSibling.textContent = fmt(paramWerte[n]);
+    schedule();
+  });
+  Object.values(opt).forEach(o => o.addEventListener("change", schedule));
+  $("#examples").innerHTML = BEISPIELE.map(b => `<button type="button" data-ex="${esc(b)}">${esc(b)}</button>`).join("");
+  $("#examples").addEventListener("click", e => {
+    const b = e.target.closest("[data-ex]");
+    if (!b) return;
+    if (!fns.length) addFn("");
+    // Beispiel ersetzt die zuletzt bearbeitete (bzw. erste) Funktion
+    const fn = fns[Math.min(lastEdited, fns.length - 1)];
+    setExpr(fn, b.dataset.ex);
+    fn.an = true;
+    renderRows();
+  });
+  let lastEdited = 0;
+  $("#fn-list").addEventListener("focusin", e => { if (e.target.dataset.expr !== undefined) lastEdited = +e.target.dataset.expr; });
+
+  /* ---------- Hilfsfunktionen ---------- */
+  function fmt(v) {
+    if (!Number.isFinite(v)) return "–";
+    if (Math.abs(v) < 1e-9) return "0";
+    const a = Math.abs(v);
+    const s = a >= 1e6 || a < 1e-3 ? v.toPrecision(3) : String(+v.toFixed(3));
+    return s.replace("-", "−");
+  }
+  const toPx = x => W / 2 + (x - view.cx) * view.scale;
+  const toPy = y => H / 2 - (y - view.cy) * view.scale;
+  const fromPx = px => view.cx + (px - W / 2) / view.scale;
+  const fromPy = py => view.cy - (py - H / 2) / view.scale;
+  function niceStep(raw) {
+    const p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p;
+    return (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p;
+  }
+  const ableitung = f => x => { const h = 1e-5 * Math.max(1, Math.abs(x)); return (f(x + h) - f(x - h)) / (2 * h); };
+  const ableitung2 = f => x => { const h = 1e-3 * Math.max(1, Math.abs(x)); return (f(x + h) - 2 * f(x) + f(x - h)) / (h * h); };
+
+  // Vorzeichenwechsel von g suchen und per Bisektion verfeinern
+  function wechsel(g, a, b, n) {
+    const out = [];
+    const dx = (b - a) / n;
+    let x0 = a, y0 = g(a);
+    for (let i = 1; i <= n; i++) {
+      const x1 = a + i * dx, y1 = g(x1);
+      if (Number.isFinite(y0) && Number.isFinite(y1)) {
+        if (y0 === 0) out.push({ x: x0, vorher: NaN });
+        else if (y0 * y1 < 0) {
+          let lo = x0, hi = x1, glo = y0;
+          for (let k = 0; k < 60; k++) {
+            const m = (lo + hi) / 2, gm = g(m);
+            if (!Number.isFinite(gm)) break;
+            if (gm * glo <= 0) hi = m; else { lo = m; glo = gm; }
+          }
+          out.push({ x: (lo + hi) / 2, vorher: y0 });
+        }
+      }
+      x0 = x1; y0 = y1;
+      if (out.length > 60) return null; // zu viele – z. B. sin(x) weit herausgezoomt
+    }
+    return out;
+  }
+
+  function besonderePunkte(fn, f) {
+    const a = fromPx(0), b = fromPx(W), n = 800, pts = [];
+    const d1 = ableitung(f), d2 = ableitung2(f);
+    const tol = 1e-6 * (1 + Math.abs(fromPy(0) - fromPy(H)));
+    if (opt.zeros.checked) {
+      (wechsel(f, a, b, n) || []).forEach(({ x }) => { if (Math.abs(f(x)) < tol) pts.push({ fn, x, y: 0, art: "Nullstelle" }); });
+    }
+    if (opt.extrema.checked || opt.zeros.checked) {
+      (wechsel(d1, a, b, n) || []).forEach(({ x, vorher }) => {
+        const y = f(x);
+        if (!Number.isFinite(y) || Math.abs(d1(x)) > 1e-3 * (1 + Math.abs(y))) return; // Polstelle
+        const hoch = vorher > 0 || (Number.isNaN(vorher) && d1(x + 1e-4) < 0);
+        if (opt.extrema.checked) pts.push({ fn, x, y, art: hoch ? "Hochpunkt" : "Tiefpunkt" });
+        // doppelte Nullstelle (Graph berührt die x-Achse)
+        if (opt.zeros.checked && Math.abs(y) < tol && !pts.some(p => p.art === "Nullstelle" && Math.abs(p.x - x) < 1e-4)) {
+          pts.push({ fn, x, y: 0, art: "Nullstelle" });
+        }
+      });
+    }
+    if (opt.inflect.checked) {
+      (wechsel(d2, a, b, n) || []).forEach(({ x }) => {
+        const y = f(x);
+        if (Number.isFinite(y) && Number.isFinite(d1(x)) && Math.abs(d1(x)) < 1e6) pts.push({ fn, x, y, art: "Wendepunkt" });
+      });
+    }
+    return pts;
+  }
+
+  /* ---------- Zeichnen ---------- */
+  let geplant = false;
+  function schedule() { if (!geplant) { geplant = true; requestAnimationFrame(draw); } }
+  const FONT = '15px "Computer Modern Serif", Georgia, serif';
+  const FONT_IT = 'italic 17px "Computer Modern Serif", Georgia, serif';
+
+  function textHalo(t, x, y) {
+    ctx.lineWidth = 4; ctx.strokeStyle = "#fff"; ctx.strokeText(t, x, y);
+    ctx.fillText(t, x, y);
+  }
+
+  function kurve(f, farbe, dashed, name) {
+    ctx.beginPath();
+    ctx.strokeStyle = farbe; ctx.lineWidth = 2.2;
+    ctx.setLineDash(dashed ? [7, 6] : []);
+    let offen = false, prevPy = 0, label = null;
+    const lim = 4 * H + 1000;
+    for (let px = -1; px <= W + 1; px += 1) {
+      const y = f(fromPx(px));
+      if (!Number.isFinite(y)) { offen = false; continue; }
+      let py = toPy(y);
+      if (offen && Math.abs(py - prevPy) > H) {
+        // grosser Sprung: Mitte prüfen – liegt sie nicht dazwischen, ist es eine Polstelle
+        const ym = toPy(f(fromPx(px - .5)));
+        if (!(Number.isFinite(ym) && (ym - prevPy) * (py - ym) >= 0)) offen = false;
+      }
+      py = Math.max(-lim, Math.min(lim, py));
+      offen ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+      offen = true; prevPy = py;
+      if (px < W - 60 && py > 32 && py < H - 14) label = { px, py };
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+    if (label) { ctx.fillStyle = farbe; ctx.font = FONT_IT; ctx.textAlign = "left"; ctx.textBaseline = "bottom"; textHalo(name, label.px + 6, label.py - 6); }
+  }
+
+  function draw() {
+    geplant = false;
+    if (!W || !H) return;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, W, H);
+
+    // Gitter
+    const step = niceStep(90 / view.scale);
+    const minor = step / (Math.round(step / Math.pow(10, Math.floor(Math.log10(step)))) === 2 ? 4 : 5);
+    const x0 = fromPx(0), x1 = fromPx(W), y0 = fromPy(H), y1 = fromPy(0);
+    const linie = (horiz, v, farbe) => {
+      ctx.strokeStyle = farbe; ctx.beginPath();
+      if (horiz) { const p = Math.round(toPy(v)) + .5; ctx.moveTo(0, p); ctx.lineTo(W, p); }
+      else { const p = Math.round(toPx(v)) + .5; ctx.moveTo(p, 0); ctx.lineTo(p, H); }
+      ctx.stroke();
+    };
+    ctx.lineWidth = 1;
+    const isMajor = v => Math.abs(v / step - Math.round(v / step)) < 1e-6;
+    for (let v = Math.ceil(x0 / minor) * minor; v <= x1; v += minor) linie(false, v, isMajor(v) ? "#d6d6d6" : "#efefef");
+    for (let v = Math.ceil(y0 / minor) * minor; v <= y1; v += minor) linie(true, v, isMajor(v) ? "#d6d6d6" : "#efefef");
+    ctx.lineWidth = 1.3;
+    linie(false, 0, "#111"); linie(true, 0, "#111");
+
+    // Beschriftung der Achsen
+    ctx.fillStyle = "#111"; ctx.font = FONT;
+    const ax = Math.min(Math.max(toPx(0), 0), W), ay = Math.min(Math.max(toPy(0), 0), H);
+    const dez = Math.max(0, -Math.floor(Math.log10(step) + 1e-9));
+    const zahl = v => (Math.abs(v) < step / 2 ? "0" : v.toFixed(dez)).replace("-", "−");
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    const ly = Math.min(ay + 5, H - 20);
+    for (let v = Math.ceil(x0 / step) * step; v <= x1; v += step) {
+      if (Math.abs(v) < step / 2) continue;
+      textHalo(zahl(v), toPx(v), ly);
+    }
+    ctx.textBaseline = "middle";
+    const links = ax > 40;
+    ctx.textAlign = links ? "right" : "left";
+    const lx = links ? Math.min(ax - 6, W - 6) : ax + 6;
+    for (let v = Math.ceil(y0 / step) * step; v <= y1; v += step) {
+      if (Math.abs(v) < step / 2) continue;
+      textHalo(zahl(v), lx, toPy(v));
+    }
+    if (toPx(0) > 0 && toPx(0) < W && toPy(0) > 0 && toPy(0) < H) { ctx.textAlign = "right"; ctx.textBaseline = "top"; textHalo("0", toPx(0) - 5, toPy(0) + 5); }
+    ctx.font = FONT_IT;
+    ctx.textAlign = "right"; ctx.textBaseline = "bottom"; textHalo("x", W - 8, ay - 4 < 18 ? ay + 24 : ay - 4);
+    ctx.textAlign = "left"; ctx.textBaseline = "top"; textHalo("y", ax + 8 > W - 20 ? ax - 20 : ax + 8, 6);
+
+    // Funktionen
+    const aktiv = fns.filter(fn => fn.an && fn.c);
+    specials = [];
+    aktiv.forEach(fn => {
+      const f = x => fn.c.f(x, paramWerte);
+      if (opt.deriv.checked) kurve(ableitung(f), fn.farbe, true, fn.name + "′");
+      kurve(f, fn.farbe, false, fn.name);
+      specials.push(...besonderePunkte(fn, f));
+    });
+
+    // Besondere Punkte
+    specials.forEach(p => {
+      const px = toPx(p.x), py = toPy(p.y);
+      ctx.beginPath();
+      if (p.art === "Wendepunkt") ctx.rect(px - 4, py - 4, 8, 8);
+      else ctx.arc(px, py, 4.5, 0, 2 * Math.PI);
+      ctx.fillStyle = p.art === "Nullstelle" ? "#fff" : p.fn.farbe;
+      ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = p.fn.farbe; ctx.stroke();
+    });
+
+    // Maus / Finger: Wert anzeigen
+    const ro = $("#readout");
+    ro.hidden = !hover;
+    if (hover) {
+      const nah = specials
+        .map(p => ({ p, d: Math.hypot(toPx(p.x) - hover.px, toPy(p.y) - hover.py) }))
+        .sort((a, b) => a.d - b.d)[0];
+      const x = fromPx(hover.px);
+      let best = null;
+      aktiv.forEach(fn => {
+        const y = fn.c.f(x, paramWerte);
+        if (!Number.isFinite(y)) return;
+        const d = Math.abs(toPy(y) - hover.py);
+        if (d < (hover.touch ? 44 : 26) && (!best || d < best.d)) best = { fn, y, d };
+      });
+      if (nah && nah.d < (hover.touch ? 22 : 12)) {
+        const p = nah.p;
+        ctx.beginPath(); ctx.arc(toPx(p.x), toPy(p.y), 8, 0, 2 * Math.PI); ctx.lineWidth = 1.5; ctx.strokeStyle = p.fn.farbe; ctx.stroke();
+        ro.textContent = `${p.art} von ${p.fn.name}: (${fmt(p.x)} | ${fmt(p.y)})`;
+      } else if (best) {
+        const px = hover.px, py = toPy(best.y);
+        ctx.beginPath(); ctx.arc(px, py, 5, 0, 2 * Math.PI); ctx.fillStyle = best.fn.farbe; ctx.fill();
+        ctx.setLineDash([3, 4]); ctx.lineWidth = 1; ctx.strokeStyle = best.fn.farbe;
+        ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, ay); ctx.stroke(); ctx.setLineDash([]);
+        ro.textContent = `${best.fn.name}(${fmt(x)}) = ${fmt(best.y)}`;
+      } else {
+        ro.textContent = `(${fmt(x)} | ${fmt(fromPy(hover.py))})`;
+      }
+    }
+    renderPunkte();
+  }
+
+  let punkteHtml = "";
+  function renderPunkte() {
+    const html = specials
+      .slice().sort((a, b) => a.fn.name.localeCompare(b.fn.name) || a.x - b.x)
+      .slice(0, 24)
+      .map(p => `<li><span>${p.fn.name}: ${p.art}</span> (${fmt(p.x)} | ${fmt(p.y)})</li>`).join("");
+    if (html === punkteHtml) return;
+    punkteHtml = html;
+    $("#points").innerHTML = html;
+    $("#points-box").hidden = !html;
+  }
+
+  /* ---------- Grösse, Zoom & Verschieben ---------- */
+  function resetView() {
+    view.cx = 0; view.cy = 0;
+    view.scale = Math.max(20, Math.min(W, H) / 14);
+    schedule();
+  }
+  new ResizeObserver(() => {
+    const neu = !W;
+    dpr = window.devicePixelRatio || 1;
+    W = canvas.clientWidth; H = canvas.clientHeight;
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    if (neu && W) resetView(); else schedule();
+  }).observe(canvas);
+
+  function zoomAt(px, py, factor) {
+    const wx = fromPx(px), wy = fromPy(py);
+    view.scale = Math.min(1e6, Math.max(1e-3, view.scale * factor));
+    view.cx = wx - (px - W / 2) / view.scale;
+    view.cy = wy + (py - H / 2) / view.scale;
+    schedule();
+  }
+  $("#zoom-in").addEventListener("click", () => zoomAt(W / 2, H / 2, 1.5));
+  $("#zoom-out").addEventListener("click", () => zoomAt(W / 2, H / 2, 1 / 1.5));
+  $("#zoom-reset").addEventListener("click", resetView);
+
+  canvas.addEventListener("wheel", e => {
+    e.preventDefault();
+    const r = canvas.getBoundingClientRect();
+    const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+    zoomAt(e.clientX - r.left, e.clientY - r.top, Math.exp(-dy * 0.0015));
+  }, { passive: false });
+
+  const pointers = new Map();
+  let bewegt = 0;
+  const pos = e => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+  canvas.addEventListener("pointerdown", e => {
+    canvas.setPointerCapture(e.pointerId);
+    pointers.set(e.pointerId, pos(e));
+    bewegt = 0;
+    canvas.classList.add("is-dragging");
+  });
+  canvas.addEventListener("pointermove", e => {
+    const p = pos(e);
+    if (!pointers.has(e.pointerId)) {
+      if (e.pointerType === "mouse") { hover = { px: p.x, py: p.y }; schedule(); }
+      return;
+    }
+    const alt = pointers.get(e.pointerId);
+    if (pointers.size === 1) {
+      view.cx -= (p.x - alt.x) / view.scale;
+      view.cy += (p.y - alt.y) / view.scale;
+      bewegt += Math.abs(p.x - alt.x) + Math.abs(p.y - alt.y);
+      if (e.pointerType === "mouse") hover = { px: p.x, py: p.y };
+    } else if (pointers.size === 2) {
+      const [a, b] = [...pointers.entries()].map(([id, q]) => (id === e.pointerId ? alt : q));
+      const andere = [...pointers.entries()].find(([id]) => id !== e.pointerId)[1];
+      const d0 = Math.hypot(a.x - b.x, a.y - b.y);
+      const d1 = Math.hypot(p.x - andere.x, p.y - andere.y);
+      const m0 = { x: (alt.x + andere.x) / 2, y: (alt.y + andere.y) / 2 };
+      const m1 = { x: (p.x + andere.x) / 2, y: (p.y + andere.y) / 2 };
+      view.cx -= (m1.x - m0.x) / view.scale;
+      view.cy += (m1.y - m0.y) / view.scale;
+      if (d0 > 0) zoomAt(m1.x, m1.y, d1 / d0);
+      bewegt += 100;
+      hover = null;
+    }
+    pointers.set(e.pointerId, p);
+    schedule();
+  });
+  const ende = e => {
+    if (pointers.has(e.pointerId) && e.pointerType !== "mouse" && pointers.size === 1 && bewegt < 8) {
+      const p = pos(e);
+      hover = { px: p.x, py: p.y, touch: true }; // Antippen zeigt den Wert
+      schedule();
+    }
+    pointers.delete(e.pointerId);
+    if (!pointers.size) canvas.classList.remove("is-dragging");
+  };
+  canvas.addEventListener("pointerup", ende);
+  canvas.addEventListener("pointercancel", ende);
+  canvas.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") { hover = null; schedule(); } });
+
+  // Startbeispiel
+  addFn("x^3 - 3x");
+  document.fonts?.load(FONT).then(schedule, () => {});
+})();
 
 addEventListener("hashchange", route);
 renderCart();
