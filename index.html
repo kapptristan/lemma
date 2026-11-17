@@ -457,7 +457,7 @@
   .fn-del { padding: .3rem .2rem; border: 0; background: none; font: inherit; font-size: .95rem; color: #8a8a8a; cursor: pointer; }
   .fn-del:hover { color: var(--black); }
   .fn-err { grid-column: 2 / -1; margin: -.35rem 0 .45rem; font-size: .85rem; font-style: italic; }
-  .fn-actions { display: flex; justify-content: space-between; gap: 1rem; margin: .55rem 0 0; font-size: .95rem; }
+  .fn-actions { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .3rem 1rem; margin: .55rem 0 0; font-size: .95rem; }
 
   /* Mathe-Tastatur: wie eine Tabelle, keine Kacheln */
   .kbd {
@@ -491,9 +491,12 @@
   .plot-layout input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: .75rem; height: .75rem; margin-top: -.34rem; background: var(--black); border: 0; border-radius: 0; }
   .plot-layout input[type="range"]::-moz-range-track { height: 1px; background: var(--black); }
   .plot-layout input[type="range"]::-moz-range-thumb { width: .75rem; height: .75rem; background: var(--black); border: 0; border-radius: 0; }
-  .slider { display: grid; grid-template-columns: 5.2rem minmax(0, 1fr); align-items: center; gap: .8rem; font-size: 1.05rem; }
-  .slider--param { grid-template-columns: 5.2rem minmax(0, 1fr) 1.4rem; }
+  .slider { display: grid; grid-template-columns: 6.2rem minmax(0, 1fr); align-items: center; gap: .8rem; font-size: 1.05rem; }
+  .slider--param { grid-template-columns: 6.2rem minmax(0, 1fr) 1.4rem; }
   .slider output { font-family: var(--serif); }
+  .pval { width: 3.3rem; padding: 0 .1rem; font: inherit; font-family: var(--serif); color: var(--black); background: none; border: 0; border-bottom: 1px dotted var(--black); border-radius: 0; }
+  .pval:focus { outline: 0; border-bottom: 1px solid var(--black); }
+  .pval[aria-invalid="true"] { border-bottom: 1px dashed #c8102e; }
   .play { width: 1.4rem; height: 1.4rem; padding: 0; border: 0; background: none; font: inherit; font-size: .8rem; color: var(--black); cursor: pointer; }
   .play:hover { text-decoration: underline; }
   .tool-fn { display: flex; align-items: baseline; gap: .4rem; margin-bottom: .45rem; font-size: .95rem; font-style: italic; }
@@ -520,12 +523,6 @@
   .wt th, .wt td { padding: .18rem 1.1rem .18rem 0; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .wt thead th { font-weight: 400; border-bottom: var(--line); }
   .wt-wrap { overflow-x: auto; }
-  .exp { margin: 0; padding: 0; list-style: none; counter-reset: exp; columns: 2 18rem; column-gap: 2.5rem; }
-  .exp li { counter-increment: exp; break-inside: avoid; display: grid; grid-template-columns: 1.6rem 1fr; padding: .25rem 0; }
-  .exp li::before { content: counter(exp) "."; font-weight: 700; }
-  .exp button { justify-self: start; padding: 0; border: 0; background: none; font: inherit; font-weight: 700; color: inherit; text-align: left; cursor: pointer; }
-  .exp button:hover { text-decoration: underline; }
-  .exp span { grid-column: 2; font-size: .95rem; }
   .plot-help { margin: .7rem 0 0; font-size: .9rem; line-height: 1.5; color: #555; }
   .plot-help code { font-family: var(--mono); font-size: .88rem; color: var(--black); }
 
@@ -710,6 +707,7 @@
             <p class="fn-actions">
               <button type="button" class="link-btn" id="fn-add">+ Neue Zeile</button>
               <button type="button" class="link-btn" id="kbd-toggle" aria-expanded="false" aria-controls="kbd">Tastatur</button>
+              <button type="button" class="link-btn" id="reset">Zurücksetzen</button>
             </p>
             <div class="kbd" id="kbd" aria-label="Mathe-Tastatur" hidden></div>
             <p class="plot-help">Funktion <code>x^2</code>, Punkt <code>(2|1)</code>, Gerade <code>x = 3</code>. Buchstaben wie <i>a</i> oder <i>k</i> werden zu Reglern.</p>
@@ -734,7 +732,7 @@
             <div class="checks">
               <label><input type="checkbox" id="opt-tangent"> Tangente</label>
               <div class="tool-sub" id="sub-tangent" hidden>
-                <label class="slider"><span class="m"><i>x</i><sub>0</sub> = <output id="x0-out">1</output></span><input type="range" id="x0" min="-10" max="10" step="0.01" value="1"></label>
+                <div class="slider"><label class="m"><i>x</i><sub>0</sub> = <input type="text" class="pval" id="x0-val" value="1" autocomplete="off" spellcheck="false" aria-label="Stelle x0"></label><input type="range" id="x0" min="-10" max="10" step="0.01" value="1" aria-label="Stelle x0 verschieben"></div>
               </div>
               <label><input type="checkbox" id="opt-area"> Integral</label>
               <div class="tool-sub" id="sub-area" hidden>
@@ -742,7 +740,7 @@
                   <label>von <input type="text" id="area-a" value="0" autocomplete="off" spellcheck="false"></label>
                   <label>bis <input type="text" id="area-b" value="2" autocomplete="off" spellcheck="false"></label>
                 </div>
-                <label class="slider"><span class="m"><i>n</i> = <output id="rect-out">0</output></span><input type="range" id="rect-n" min="0" max="40" step="1" value="0" aria-label="Anzahl Rechtecke"></label>
+                <div class="slider"><span>Rechtecke <output id="rect-out">0</output></span><input type="range" id="rect-n" min="0" max="40" step="1" value="0" aria-label="Anzahl Rechtecke"></div>
               </div>
               <label><input type="checkbox" id="opt-table"> Wertetabelle</label>
               <div class="tool-sub" id="sub-table" hidden>
@@ -757,10 +755,6 @@
 
         <div class="plot-info">
           <div class="info-cards" id="info-cards" aria-live="polite"></div>
-          <section class="info-sec">
-            <h2>Experimente</h2>
-            <ol class="exp" id="ideen"></ol>
-          </section>
         </div>
       </div>
     </div>
@@ -1840,7 +1834,12 @@ $("#again-btn").addEventListener("click", () => {
   liste.addEventListener("click", ev => {
     const t = ev.target.closest("[data-toggle]"), d = ev.target.closest("[data-del]");
     if (t) { const e = eingaben[t.dataset.toggle]; e.an = !e.an; renderRows(); }
-    if (d) { eingaben.splice(+d.dataset.del, 1); lastInput = Math.max(0, Math.min(lastInput, eingaben.length - 1)); renderRows(); }
+    if (d) {
+      eingaben.splice(+d.dataset.del, 1);
+      if (!eingaben.length) neueEingabe(""); // immer mindestens eine Zeile
+      lastInput = Math.max(0, Math.min(lastInput, eingaben.length - 1));
+      renderRows();
+    }
   });
   function neueZeileFokus(nach = eingaben.length) {
     if (nach < eingaben.length && !eingaben[nach].text) { fokus(nach); return; }
@@ -1915,17 +1914,27 @@ $("#again-btn").addEventListener("click", () => {
     $("#slider-box").hidden = !names.length;
     $("#sliders").innerHTML = names.map(n => `
       <div class="slider slider--param">
-        <span class="m"><i>${n}</i> = <output>${fmt(paramWerte[n])}</output></span>
-        <input type="range" min="-5" max="5" step="0.1" value="${paramWerte[n]}" data-param="${n}" aria-label="Parameter ${n}">
+        <label class="m"><i>${n}</i> = <input type="text" class="pval" data-pval="${n}" value="${zahlText(paramWerte[n])}" autocomplete="off" spellcheck="false" aria-label="Wert von ${n}"></label>
+        <input type="range" min="${Math.min(-5, paramWerte[n])}" max="${Math.max(5, paramWerte[n])}" step="0.1" value="${paramWerte[n]}" data-param="${n}" aria-label="Parameter ${n} verschieben">
         <button type="button" class="play" data-play="${n}" aria-pressed="${anim.has(n)}" aria-label="${n} automatisch bewegen" title="automatisch bewegen">${anim.has(n) ? "❚❚" : "▶"}</button>
       </div>`).join("");
   }
   $("#sliders").addEventListener("input", ev => {
-    const n = ev.target.dataset.param;
-    if (!n) return;
-    paramWerte[n] = +ev.target.value;
-    ev.target.parentElement.querySelector("output").textContent = fmt(paramWerte[n]);
-    schedule();
+    const n = ev.target.dataset.param, nv = ev.target.dataset.pval;
+    if (n) {
+      paramWerte[n] = +ev.target.value;
+      ev.target.parentElement.querySelector(".pval").value = zahlText(paramWerte[n]);
+      schedule();
+    }
+    if (nv) { // Wert eintippen; der Regler wächst mit, wenn nötig
+      const v = konstante(ev.target.value);
+      ev.target.setAttribute("aria-invalid", !Number.isFinite(v));
+      if (!Number.isFinite(v)) return;
+      paramWerte[nv] = v;
+      const r = ev.target.closest(".slider").querySelector("[data-param]");
+      r.min = Math.min(-5, v, +r.min); r.max = Math.max(5, v, +r.max); r.value = v;
+      schedule();
+    }
   });
   $("#sliders").addEventListener("click", ev => {
     const b = ev.target.closest("[data-play]");
@@ -1942,12 +1951,13 @@ $("#again-btn").addEventListener("click", () => {
     const dt = animZeit ? Math.min(.05, (t - animZeit) / 1000) : 0;
     animZeit = t;
     anim.forEach((dir, n) => {
-      let v = paramWerte[n] + dir * 1.6 * dt;
-      if (v > 5) { v = 5; anim.set(n, -1); }
-      if (v < -5) { v = -5; anim.set(n, 1); }
+      const r = document.querySelector(`[data-param="${n}"]`), lo = r ? +r.min : -5, hi = r ? +r.max : 5;
+      let v = paramWerte[n] + dir * (hi - lo) / 6 * dt;
+      if (v > hi) { v = hi; anim.set(n, -1); }
+      if (v < lo) { v = lo; anim.set(n, 1); }
       paramWerte[n] = v;
       const inp = document.querySelector(`[data-param="${n}"]`);
-      if (inp) { inp.value = v; inp.parentElement.querySelector("output").textContent = fmt(v); }
+      if (inp) { inp.value = v; inp.parentElement.querySelector(".pval").value = zahlText(v); }
     });
     draw();
     requestAnimationFrame(animSchritt);
@@ -1958,6 +1968,7 @@ $("#again-btn").addEventListener("click", () => {
   function updateToolSelect() {
     const fs = eingaben.filter(e => e.d.kind === "fn");
     const key = fs.map(e => e.id + e.name).join();
+    $("#tool-box").hidden = !fs.length; // Werkzeuge brauchen eine Funktion
     $("#tool-box").querySelector(".tool-fn").hidden = fs.length < 2;
     if (key !== toolKey) {
       toolKey = key;
@@ -1974,6 +1985,11 @@ $("#again-btn").addEventListener("click", () => {
   }
   Object.values(opt).forEach(o => o.addEventListener("change", () => { subPanels(); schedule(); }));
   $("#x0").addEventListener("input", ev => { tanX0 = +ev.target.value; schedule(); });
+  $("#x0-val").addEventListener("input", ev => {
+    const v = konstante(ev.target.value);
+    ev.target.setAttribute("aria-invalid", !Number.isFinite(v));
+    if (Number.isFinite(v)) { tanX0 = v; schedule(); }
+  });
   $("#rect-n").addEventListener("input", schedule);
   const konstante = text => { try { const c = compile(text); return c && !c.usesX ? c.f(0, paramWerte) : NaN; } catch { return NaN; } };
   const zahlFeld = (id, setzen) => $(id).addEventListener("input", ev => {
@@ -1986,47 +2002,31 @@ $("#again-btn").addEventListener("click", () => {
   zahlFeld("#tab-start", v => (tabStart = v));
   zahlFeld("#tab-step", v => (tabStep = v || 1));
 
-  /* ---------- Ideen ---------- */
-  const IDEEN = [
-    { titel: "Parabel verschieben", text: "Was bewirken {a}, {b} und {c} in {a(x - b)^2 + c}?", e: ["a(x - b)^2 + c"] },
-    { titel: "Steigung einer Geraden", text: "In {m x + q} ist {m} die Steigung und {q} der Achsenabschnitt.", e: ["m x + q"] },
-    { titel: "Sinus verformen", text: "Amplitude, Periode, Verschiebung. Mit ▶ bewegt sich ein Regler von selbst.", e: ["a·sin(b(x - c))"] },
-    { titel: "Die Ableitung sehen", text: "Zieh den Punkt über den Graphen und vergleiche die Tangentensteigung mit {f}′.", e: ["x^3 - 3x"], an: ["deriv", "tangent", "extrema"], x0: -1.5 },
-    { titel: "Fläche unter der Kurve", text: "Je mehr Rechtecke, desto näher liegt ihre Summe am Integral.", e: ["0.5x^2 + 1"], an: ["area"], area: [0, 3], n: 6 },
-    { titel: "Wer wächst schneller?", text: "{2^x} oder {x^2}, und wo schneiden sie sich?", e: ["2^x", "x^2"], an: ["intersect"] },
-    { titel: "Umkehrfunktion", text: "{e^x} und {ln(x)}, gespiegelt an der Winkelhalbierenden.", e: ["e^x", "ln(x)", "x"] },
-    { titel: "Punkt auf dem Graphen", text: "Bewege {a}: Der Punkt wandert auf der Parabel mit.", e: ["x^2", "(a|a^2)"] },
-    { titel: "Polstelle und Asymptote", text: "Was passiert in der Nähe von {x} = 1?", e: ["1/(x - 1) + 2", "x = 1", "2"] },
-  ];
-  $("#ideen").innerHTML = IDEEN.map((d, i) => `<li><button type="button" data-idee="${i}">${esc(d.titel)}</button><span>${esc(d.text).replace(/\{([^}]+)\}/g, (_, m) => satz(m))}</span></li>`).join("");
-  $("#ideen").addEventListener("click", ev => {
-    const b = ev.target.closest("[data-idee]");
-    if (b) idee(IDEEN[+b.dataset.idee], true);
-  });
-  function idee(d, scroll) {
+  /* ---------- Start & Zurücksetzen ---------- */
+  function startzustand() {
     eingaben = [];
     naechsteFarbe = 0;
-    d.e.forEach(t => neueEingabe(t));
-    benennen();
-    eingaben.forEach(e => e.d.params.forEach(n => (paramWerte[n] = 1)));
+    neueEingabe("a(x - b)^2 + c");
+    Object.keys(paramWerte).forEach(n => delete paramWerte[n]);
     toolId = null;
-    const an = new Set(d.an || []);
-    ["deriv", "inflect", "tangent", "area", "table"].forEach(k => (opt[k].checked = an.has(k)));
-    opt.extrema.checked = an.has("extrema");
+    ["deriv", "extrema", "inflect", "tangent", "area", "table"].forEach(k => (opt[k].checked = false));
     opt.zeros.checked = true;
     opt.intersect.checked = true;
-    if (d.x0 !== undefined) { tanX0 = d.x0; $("#x0").value = d.x0; }
-    if (d.area) { [areaA, areaB] = d.area; $("#area-a").value = d.area[0]; $("#area-b").value = d.area[1]; }
-    $("#rect-n").value = d.n || 0;
+    tanX0 = 1; areaA = 0; areaB = 2; tabStart = -3; tabStep = 1;
+    $("#area-a").value = "0"; $("#area-b").value = "2"; $("#tab-start").value = "-3"; $("#tab-step").value = "1";
+    $("#rect-n").value = 0;
     anim.clear();
     sliderKey = null;
+    hover = null;
     subPanels();
     renderRows();
     resetView();
-    if (scroll) $(".plot-stage").scrollIntoView({ behavior: "smooth", block: "start" });
   }
+  $("#reset").addEventListener("click", startzustand);
 
   /* ---------- Hilfsfunktionen ---------- */
+  // Zahl zum Weiterbearbeiten im Eingabefeld (mit normalem Minus)
+  const zahlText = v => Number.isFinite(v) ? String(+v.toFixed(4)) : "";
   function fmt(v) {
     if (!Number.isFinite(v)) return "–";
     if (Math.abs(v) < 1e-9) return "0";
@@ -2282,7 +2282,7 @@ $("#again-btn").addEventListener("click", () => {
     // Regler für x₀ folgt dem sichtbaren Bereich
     const x0El = $("#x0");
     x0El.min = fromPx(0); x0El.max = fromPx(W); x0El.step = (fromPx(W) - fromPx(0)) / 1000; x0El.value = tanX0;
-    $("#x0-out").textContent = fmt(tanX0);
+    if (document.activeElement !== $("#x0-val")) $("#x0-val").value = zahlText(tanX0);
     const n = +$("#rect-n").value;
     $("#rect-out").textContent = n;
 
@@ -2541,7 +2541,7 @@ $("#again-btn").addEventListener("click", () => {
   canvas.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") { hover = null; schedule(); } });
 
   // Start
-  idee(IDEEN[0], false);
+  startzustand();
   document.fonts?.load(FONT).then(schedule, () => {});
 })();
 
