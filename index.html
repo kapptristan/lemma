@@ -547,11 +547,10 @@
   .tile--raetsel img { object-position: center 40%; }
   .tile:hover img { transform: scale(1.03); }
   .tile:focus-visible { outline-offset: 2px; }
-  .tile-art, .tile-count {
+  .tile-count {
     position: absolute; top: .5rem; padding: .05em .55em; font-size: .78rem; line-height: 1.4;
     background: var(--white); border: var(--line);
   }
-  .tile-art { left: .5rem; font-variant: small-caps; letter-spacing: .06em; }
   .tile-count { right: .5rem; }
   .tile-count::before { content: ""; display: inline-block; width: .55em; height: .55em; margin-right: .3em; border: 1px solid currentColor; box-shadow: 2px -2px 0 -1px var(--white), 2px -2px 0 0 currentColor; vertical-align: .02em; }
 
@@ -616,7 +615,7 @@
       <h1 tabindex="-1"><span class="logo logo--lg">Lemma</span></h1>
       <p class="claim" data-config="heroSatz">Mathe nicht auswendig lernen, sondern verstehen.</p>
       <p class="sub-line">Kostenlose Mathe-Skripte für Matura &amp; Uni</p>
-      <p class="cta"><a href="#/skripte" class="btn">Zu den Skripten</a> <a href="#/labor" class="btn btn--ghost">Zum Funktionslabor</a></p>
+      <p class="cta"><a href="#/labor" class="btn">Zum Funktionslabor</a> <a href="#/entdecken" class="btn btn--ghost">Mathematik entdecken</a></p>
     </div>
   </section>
 
@@ -1260,7 +1259,6 @@ function postHtml(post) {
   return `
     <button type="button" class="tile tile--${art}" data-post="${i}" data-id="${i}" aria-label="${esc(artName)}: ${esc(post.titel)}">
       <img src="${esc(bilder[0])}" alt="" loading="lazy">
-      <span class="tile-art">${esc(artName)}</span>
       ${art !== "raetsel" && bilder.length > 1 ? `<span class="tile-count" aria-hidden="true">${bilder.length}</span>` : ""}
     </button>`;
 }
