@@ -393,107 +393,156 @@
   .code-row { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; margin: 0 0 1.25rem; }
   .result .btn { font-size: .95rem; padding: .55em 1.2em; }
 
-  /* ---------- Funktionsplotter ---------- */
+  /* ---------- Funktionsplotter ----------
+     Gestaltung wie ein Mathe-Dokument: gesetzte Formeln, wenige Linien, ∎ als Kästchen */
   .page--text .wrap > .plot-layout { max-width: none; }
-  .plot-layout { display: grid; gap: 1.5rem; grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "panel" "info"; }
+  .plot-layout { display: grid; gap: 1.75rem; grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "panel" "info"; }
   @media (min-width: 56rem) {
-    .plot-layout { grid-template-columns: 21rem minmax(0, 1fr); grid-template-rows: auto 1fr; grid-template-areas: "panel stage" "panel info"; column-gap: 2rem; align-items: start; }
+    .plot-layout { grid-template-columns: 19rem minmax(0, 1fr); grid-template-rows: auto 1fr; grid-template-areas: "panel stage" "panel info"; column-gap: 2.5rem; row-gap: 2.25rem; align-items: start; }
   }
   .plot-stage { grid-area: stage; position: relative; border: var(--line); background: var(--white); }
   .plot-canvas { display: block; width: 100%; height: clamp(18rem, 48vh, 40rem); touch-action: none; cursor: grab; }
-  @media (min-width: 56rem) { .plot-canvas { height: clamp(20rem, 62vh, 40rem); } }
+  @media (min-width: 56rem) { .plot-canvas { height: clamp(20rem, 64vh, 40rem); } }
   .plot-canvas.is-dragging { cursor: grabbing; }
-  .plot-tools { position: absolute; top: .6rem; right: .6rem; display: flex; flex-direction: column; gap: .35rem; }
-  .plot-tools button, .play {
-    display: grid; place-items: center; width: 2.3rem; height: 2.3rem; padding: 0;
-    font: inherit; font-size: 1.1rem; line-height: 1; color: var(--black);
-    background: var(--white); border: var(--line); border-radius: 50%; cursor: pointer;
+  .plot-tools { position: absolute; top: .6rem; right: .6rem; display: flex; flex-direction: column; border: var(--line); background: var(--white); }
+  .plot-tools button {
+    width: 2rem; height: 2rem; padding: 0; border: 0; background: none;
+    font: inherit; font-size: 1.05rem; line-height: 1; color: var(--black); cursor: pointer;
   }
-  .plot-tools button:hover, .play:hover, .play[aria-pressed="true"] { background: var(--black); color: var(--white); }
+  .plot-tools button + button { border-top: var(--line); }
+  .plot-tools button:hover { background: var(--black); color: var(--white); }
   .plot-readout {
-    position: absolute; left: .6rem; bottom: .6rem; max-width: calc(100% - 1.2rem); padding: .2rem .6rem;
-    font-family: var(--mono); font-size: .85rem; background: var(--white); border: var(--line); pointer-events: none;
+    position: absolute; left: .7rem; bottom: .5rem; max-width: calc(100% - 1.4rem);
+    font-size: .95rem; background: rgba(255, 255, 255, .9); pointer-events: none;
   }
+
+  /* Formelsatz */
+  .m { font-family: var(--serif); white-space: nowrap; }
+  .m i { font-style: italic; }
+  .m sup { font-size: .72em; line-height: 0; vertical-align: .55em; }
+  .m sub { font-size: .72em; line-height: 0; vertical-align: -.25em; }
+  .m .rad { border-top: 1px solid currentColor; padding: .08em .1em 0 .05em; }
+  .m .op { padding: 0 .22em; }
+  .int { display: inline-flex; align-items: center; gap: .1em; }
+  .int-lim { display: inline-flex; flex-direction: column; justify-content: space-between; font-size: .68em; line-height: 1.05; }
+  .int-lim span:last-child { margin-left: -.35em; }
+  .int-sign { font-size: 1.45em; line-height: 1; }
 
   /* links: Eingabe & was angezeigt wird */
-  .plot-panel { grid-area: panel; display: flex; flex-direction: column; gap: 1.1rem; }
-  .plot-box { padding-top: .9rem; border-top: var(--line); }
-  .plot-box h2, .info-card h2 { margin: 0 0 .55rem; font-size: .9rem; font-weight: 400; font-variant: small-caps; letter-spacing: .08em; }
-  .fn-list { display: flex; flex-direction: column; gap: .5rem; }
-  .fn-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .45rem; }
-  .fn-swatch {
-    display: inline-flex; align-items: center; gap: .35rem; min-width: 2.6rem; padding: 0; border: 0; background: none;
-    font: inherit; font-style: italic; color: inherit; cursor: pointer; white-space: nowrap;
-  }
-  .fn-swatch i { flex: none; display: inline-block; width: .9rem; height: .9rem; border: 2px solid var(--c); border-radius: 50%; background: var(--c); }
-  .fn-row.is-off .fn-swatch i { background: transparent; }
-  .fn-row.is-off input { opacity: .5; }
-  .fn-row input {
-    width: 100%; min-width: 0; padding: .45rem .7rem;
+  .plot-panel { grid-area: panel; display: flex; flex-direction: column; gap: 1.6rem; }
+  .plot-box h2, .info-sec h2 { margin: 0 0 .5rem; font-size: .9rem; font-weight: 400; font-variant: small-caps; letter-spacing: .08em; }
+  .fn-list { border-top: var(--line); }
+  .fn-row { display: grid; grid-template-columns: 1.6rem minmax(0, 1fr) auto; align-items: center; column-gap: .4rem; border-bottom: var(--line); }
+  .fn-swatch { display: grid; place-items: center; width: 1.6rem; height: 2.6rem; padding: 0; border: 0; background: none; cursor: pointer; }
+  .fn-swatch i { display: block; width: 1.1rem; border-top: 2.5px solid var(--c); }
+  .fn-swatch[data-kind="punkt"] i { width: .55rem; height: .55rem; border: 0; border-radius: 50%; background: var(--c); }
+  .fn-swatch[data-kind="senkrecht"] i { width: 0; height: 1.1rem; border-top: 0; border-left: 2.5px solid var(--c); }
+  .fn-row.is-off .fn-swatch i { opacity: .25; }
+  .fn-row.is-off .fn-math { opacity: .4; }
+  .fn-field { position: relative; min-width: 0; }
+  .fn-field input {
+    display: block; width: 100%; height: 2.6rem; padding: 0 .1rem;
     font-family: var(--mono); font-size: 1rem; color: var(--black);
-    background: var(--white); border: var(--line); border-radius: 0;
+    background: none; border: 0; border-radius: 0; outline: 0;
   }
-  .fn-row input:focus { outline: 2px solid var(--black); outline-offset: 0; }
-  .fn-row input[aria-invalid="true"] { border-style: dashed; }
-  .fn-del { padding: .2rem .4rem; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; }
-  .fn-err { grid-column: 2 / -1; margin: -.2rem 0 0; font-size: .85rem; font-style: italic; }
-  .fn-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin: .75rem 0 0; }
-  .btn--sm { font-size: .9rem; padding: .45em 1.1em; }
+  .fn-field input::placeholder { color: #8a8a8a; font-family: var(--serif); font-style: italic; }
+  .fn-math {
+    position: absolute; inset: 0; display: block; padding: 0 .1rem; line-height: 2.6rem;
+    font-size: 1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none;
+  }
+  .fn-field:not(:focus-within) input:not(:placeholder-shown) { color: transparent; }
+  .fn-field:focus-within .fn-math { display: none; }
+  .fn-field:focus-within { box-shadow: inset 0 -2px 0 var(--black); }
+  .fn-field.has-err .fn-math { text-decoration: underline wavy #c8102e; text-underline-offset: .3em; }
+  .fn-del { padding: .3rem .2rem; border: 0; background: none; font: inherit; font-size: .95rem; color: #8a8a8a; cursor: pointer; }
+  .fn-del:hover { color: var(--black); }
+  .fn-err { grid-column: 2 / -1; margin: -.35rem 0 .45rem; font-size: .85rem; font-style: italic; }
+  .fn-actions { display: flex; justify-content: space-between; gap: 1rem; margin: .55rem 0 0; font-size: .95rem; }
 
-  /* Mathe-Tastatur */
-  .kbd { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .3rem; margin-top: .75rem; user-select: none; -webkit-user-select: none; }
+  /* Mathe-Tastatur: wie eine Tabelle, keine Kacheln */
+  .kbd {
+    display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); margin-top: .9rem;
+    border-top: var(--line); border-left: var(--line); user-select: none; -webkit-user-select: none;
+  }
   .kbd button {
     height: 2.5rem; padding: 0; font: inherit; font-size: 1.05rem; line-height: 1; color: var(--black);
-    background: var(--white); border: var(--line); border-radius: .45rem; cursor: pointer; touch-action: manipulation;
+    background: var(--white); border: 0; border-right: var(--line); border-bottom: var(--line); border-radius: 0;
+    cursor: pointer; touch-action: manipulation;
   }
   .kbd button:hover { background: var(--grey); }
   .kbd button:active { background: var(--black); color: var(--white); }
   .kbd .k-var { font-style: italic; }
-  .kbd .k-fn { font-size: .92rem; }
-  .kbd .k-num { background: var(--grey); }
-  .kbd .k-num:hover { background: #e4e4e4; }
-  .kbd .k-wide { grid-column: span 2; font-size: .92rem; }
+  .kbd .k-fn { font-size: .95rem; }
+  .kbd .k-wide { grid-column: span 2; font-size: .95rem; }
 
-  .checks { display: flex; flex-direction: column; gap: .3rem; font-size: 1rem; }
-  .checks > label { display: flex; align-items: center; gap: .55rem; cursor: pointer; }
-  .checks input[type="checkbox"] { flex: none; width: 1rem; height: 1rem; accent-color: var(--black); }
-  .slider { display: grid; grid-template-columns: auto minmax(0, 1fr) 3.6rem; align-items: center; gap: .6rem; font-size: 1rem; }
-  .slider--param { grid-template-columns: 1.1rem 2.3rem minmax(0, 1fr) 3.6rem; }
-  .slider b { font-style: italic; font-weight: 400; }
-  .slider input[type="range"] { width: 100%; accent-color: var(--black); }
-  .slider output { font-family: var(--mono); font-size: .9rem; text-align: right; }
-  .play { width: 2rem; height: 2rem; font-size: .75rem; }
-  .tool-fn { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; font-style: italic; }
-  .tool-fn select { font: inherit; font-style: italic; padding: .15rem .4rem; border: var(--line); background: var(--white); color: var(--black); }
-  .tool-sub { display: flex; flex-direction: column; gap: .45rem; margin: .1rem 0 .55rem 1.55rem; }
-  .mini { display: flex; flex-wrap: wrap; gap: .4rem 1rem; }
-  .mini label { display: flex; align-items: center; gap: .4rem; font-style: italic; }
-  .mini input { width: 4.5rem; padding: .25rem .45rem; font-family: var(--mono); font-size: .95rem; border: var(--line); border-radius: 0; background: var(--white); color: var(--black); }
-
-  /* unter der Grafik: Ergebnisse */
-  .plot-info { grid-area: info; display: flex; flex-direction: column; gap: 1.5rem; }
-  .info-cards { display: grid; gap: 1.25rem 2rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
-  .info-cards:empty { display: none; }
-  .info-card { padding-top: .9rem; border-top: var(--line); min-width: 0; }
-  .info-card p { margin: 0 0 .5rem; }
-  .formel { font-family: var(--mono); font-size: .92rem; line-height: 1.7; }
-  .formel i { font-family: var(--serif); }
-  .points { margin: 0; padding: 0; list-style: none; font-family: var(--mono); font-size: .88rem; line-height: 1.6; }
-  .points li span { font-family: var(--serif); font-style: italic; }
-  .wt { border-collapse: collapse; font-family: var(--mono); font-size: .88rem; border-top: var(--line); border-bottom: var(--line); }
-  .wt th, .wt td { padding: .2rem .9rem .2rem 0; text-align: right; white-space: nowrap; }
-  .wt thead th { font-family: var(--serif); font-style: italic; font-weight: 400; border-bottom: var(--line); }
-  .wt-wrap { overflow-x: auto; }
-  .ideen { display: grid; gap: .6rem; grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr)); }
-  .ideen button {
-    display: flex; flex-direction: column; gap: .15rem; padding: .7rem .9rem; text-align: left;
-    font: inherit; color: var(--black); background: var(--white); border: var(--line); cursor: pointer;
+  /* Kästchen im Stil des Halmos-Quadrats */
+  .checks { display: flex; flex-direction: column; gap: .25rem; font-size: 1rem; }
+  .checks > label { display: flex; align-items: center; gap: .6rem; cursor: pointer; }
+  .checks input[type="checkbox"] {
+    flex: none; appearance: none; -webkit-appearance: none; width: .72rem; height: .72rem; margin: 0;
+    border: 1px solid var(--black); border-radius: 0; background: var(--white); cursor: pointer;
   }
-  .ideen button:hover { background: var(--black); color: var(--white); }
-  .ideen b { font-size: 1rem; }
-  .ideen small { font-size: .88rem; font-style: italic; line-height: 1.35; }
-  .plot-help { margin: .6rem 0 0; font-size: .9rem; font-style: italic; line-height: 1.45; }
-  .plot-help code { font-family: var(--mono); font-style: normal; font-size: .88rem; }
+  .checks input[type="checkbox"]:checked { background: var(--black); }
+  .checks input[type="checkbox"]:focus-visible { outline: 2px solid var(--black); outline-offset: 2px; }
+
+  /* Schieberegler: feine Linie, quadratischer Griff */
+  .plot-layout input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 1.4rem; margin: 0; background: none; cursor: pointer; }
+  .plot-layout input[type="range"]::-webkit-slider-runnable-track { height: 1px; background: var(--black); }
+  .plot-layout input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: .75rem; height: .75rem; margin-top: -.34rem; background: var(--black); border: 0; border-radius: 0; }
+  .plot-layout input[type="range"]::-moz-range-track { height: 1px; background: var(--black); }
+  .plot-layout input[type="range"]::-moz-range-thumb { width: .75rem; height: .75rem; background: var(--black); border: 0; border-radius: 0; }
+  .slider { display: grid; grid-template-columns: 5.2rem minmax(0, 1fr); align-items: center; gap: .8rem; font-size: 1.05rem; }
+  .slider--param { grid-template-columns: 5.2rem minmax(0, 1fr) 1.4rem; }
+  .slider output { font-family: var(--serif); }
+  .play { width: 1.4rem; height: 1.4rem; padding: 0; border: 0; background: none; font: inherit; font-size: .8rem; color: var(--black); cursor: pointer; }
+  .play:hover { text-decoration: underline; }
+  .tool-fn { display: flex; align-items: baseline; gap: .4rem; margin-bottom: .45rem; font-size: .95rem; font-style: italic; }
+  .tool-fn select { font: inherit; font-style: italic; padding: 0 .2rem; border: 0; border-bottom: var(--line); border-radius: 0; background: none; color: var(--black); }
+  .tool-sub { display: flex; flex-direction: column; gap: .4rem; margin: .15rem 0 .55rem 1.32rem; }
+  .mini { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; }
+  .mini label { display: flex; align-items: baseline; gap: .4rem; font-style: italic; }
+  .mini input { width: 3.6rem; padding: .1rem .15rem; font-family: var(--mono); font-size: .95rem; border: 0; border-bottom: var(--line); border-radius: 0; background: none; color: var(--black); }
+  .mini input:focus { outline: 0; border-bottom-width: 2px; }
+  .mini input[aria-invalid="true"] { border-bottom-style: dashed; }
+
+  /* unter der Grafik: Ergebnisse wie im Skript */
+  .plot-info { grid-area: info; display: flex; flex-direction: column; gap: 2rem; }
+  .info-cards { display: grid; gap: 1.5rem 2.5rem; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+  .info-cards:empty { display: none; }
+  .info-sec { min-width: 0; }
+  .res { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: .25rem 1rem; margin: 0; font-size: 1.02rem; }
+  .res dt { font-style: italic; }
+  .res dd { margin: 0; }
+  .res .m { white-space: normal; }
+  .res .nw { white-space: nowrap; }
+  .note { margin: .6rem 0 0; font-size: .9rem; font-style: italic; line-height: 1.45; }
+  .wt { border-collapse: collapse; font-size: .98rem; border-top: var(--line); border-bottom: var(--line); }
+  .wt th, .wt td { padding: .18rem 1.1rem .18rem 0; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .wt thead th { font-weight: 400; border-bottom: var(--line); }
+  .wt-wrap { overflow-x: auto; }
+  .exp { margin: 0; padding: 0; list-style: none; counter-reset: exp; columns: 2 18rem; column-gap: 2.5rem; }
+  .exp li { counter-increment: exp; break-inside: avoid; display: grid; grid-template-columns: 1.6rem 1fr; padding: .25rem 0; }
+  .exp li::before { content: counter(exp) "."; font-weight: 700; }
+  .exp button { justify-self: start; padding: 0; border: 0; background: none; font: inherit; font-weight: 700; color: inherit; text-align: left; cursor: pointer; }
+  .exp button:hover { text-decoration: underline; }
+  .exp span { grid-column: 2; font-size: .95rem; }
+  .plot-help { margin: .7rem 0 0; font-size: .9rem; line-height: 1.5; color: #555; }
+  .plot-help code { font-family: var(--mono); font-size: .88rem; color: var(--black); }
+
+  /* ---------- Entdecken ---------- */
+  .posts { display: grid; gap: 2.25rem 1.75rem; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); }
+  .post { display: flex; flex-direction: column; min-width: 0; }
+  .post-media {
+    position: relative; display: block; width: 100%; aspect-ratio: 4 / 5; padding: 0; overflow: hidden;
+    background: var(--white); border: var(--line); cursor: zoom-in;
+  }
+  .post-media img { width: 100%; height: 100%; object-fit: cover; transition: transform .25s; }
+  .post-media:hover img { transform: scale(1.02); }
+  .post-count { position: absolute; top: .55rem; right: .55rem; padding: 0 .5em; font-size: .8rem; background: var(--white); border: var(--line); }
+  .post-meta { margin: .75rem 0 0; font-size: .85rem; font-variant: small-caps; letter-spacing: .06em; }
+  .post-title { margin: .15rem 0 0; font-size: 1.2rem; font-weight: 400; line-height: 1.3; }
+  .post-text { margin: .35rem 0 0; font-size: .98rem; }
+  .post-link { margin: .35rem 0 0; font-size: .95rem; }
 
   /* ---------- FAQ ---------- */
   .faq { border-top: var(--line); }
@@ -541,8 +590,8 @@
     <nav class="nav" aria-label="Hauptnavigation">
       <a href="#/skripte" data-nav="skripte">Skripte</a>
       <a href="#/videos" data-nav="videos">Videos</a>
-      <a href="#/plotter" data-nav="plotter">Plotter</a>
-      <a href="#/faq" data-nav="faq">FAQ</a>
+      <a href="#/labor" data-nav="labor">Labor</a>
+      <a href="#/entdecken" data-nav="entdecken">Entdecken</a>
       <a href="#/bestellen" data-nav="bestellen" data-nur-bestellung hidden>Bestellen<span class="cart-count" id="cart-count" hidden aria-label="Skripte im Warenkorb"></span></a>
     </nav>
   </div>
@@ -556,7 +605,7 @@
       <h1 tabindex="-1"><span class="logo logo--lg">Lemma</span></h1>
       <p class="claim" data-config="heroSatz">Mathe nicht auswendig lernen, sondern verstehen.</p>
       <p class="sub-line">Kostenlose Mathe-Skripte für Matura &amp; Uni</p>
-      <p class="cta"><a href="#/skripte" class="btn">Zu den Skripten</a> <a href="#/plotter" class="btn btn--ghost">Funktionsplotter</a></p>
+      <p class="cta"><a href="#/skripte" class="btn">Zu den Skripten</a> <a href="#/labor" class="btn btn--ghost">Zum Funktionslabor</a></p>
     </div>
   </section>
 
@@ -639,11 +688,11 @@
     </div>
   </section>
 
-  <!-- ===== Funktionsplotter ===== -->
-  <section class="page page--text" data-page="plotter" data-title="Funktionsplotter" hidden>
+  <!-- ===== Funktionslabor ===== -->
+  <section class="page page--text" data-page="labor" data-title="Funktionslabor" hidden>
     <div class="wrap">
-      <h1 class="page-title" tabindex="-1">Funktionsplotter</h1>
-      <p class="lead">Zeichne Funktionen, Punkte und Geraden – und sieh, was Parameter, Ableitung und Integral wirklich bedeuten.</p>
+      <h1 class="page-title" tabindex="-1">Funktionslabor</h1>
+      <p class="lead">Funktionen zeichnen, verschieben, ableiten und integrieren.</p>
       <div class="plot-layout">
         <div class="plot-stage">
           <canvas class="plot-canvas" id="plot" aria-label="Koordinatensystem"></canvas>
@@ -652,18 +701,18 @@
             <button type="button" id="zoom-out" aria-label="Herauszoomen">−</button>
             <button type="button" id="zoom-reset" aria-label="Ansicht zurücksetzen">⌂</button>
           </div>
-          <div class="plot-readout" id="readout" hidden></div>
+          <div class="plot-readout m" id="readout" hidden></div>
         </div>
 
         <div class="plot-panel">
           <div>
             <div class="fn-list" id="fn-list"></div>
             <p class="fn-actions">
-              <button type="button" class="btn btn--ghost btn--sm" id="fn-add">+ Neue Eingabe</button>
-              <button type="button" class="btn btn--ghost btn--sm" id="kbd-toggle" aria-expanded="true" aria-controls="kbd">Tastatur ausblenden</button>
+              <button type="button" class="link-btn" id="fn-add">+ Neue Zeile</button>
+              <button type="button" class="link-btn" id="kbd-toggle" aria-expanded="false" aria-controls="kbd">Tastatur</button>
             </p>
-            <div class="kbd" id="kbd" aria-label="Mathe-Tastatur"></div>
-            <p class="plot-help">Funktion <code>x^2</code> · Punkt <code>(2|1)</code> · senkrechte Gerade <code>x = 3</code>. Buchstaben wie <i>a</i> oder <i>k</i> werden zu Schiebereglern.</p>
+            <div class="kbd" id="kbd" aria-label="Mathe-Tastatur" hidden></div>
+            <p class="plot-help">Funktion <code>x^2</code>, Punkt <code>(2|1)</code>, Gerade <code>x = 3</code>. Buchstaben wie <i>a</i> oder <i>k</i> werden zu Reglern.</p>
           </div>
           <div class="plot-box" id="slider-box" hidden>
             <h2>Parameter</h2>
@@ -672,7 +721,7 @@
           <div class="plot-box">
             <h2>Anzeigen</h2>
             <div class="checks">
-              <label><input type="checkbox" id="opt-deriv"> Ableitung <i>f&thinsp;′</i></label>
+              <label><input type="checkbox" id="opt-deriv"> Ableitung</label>
               <label><input type="checkbox" id="opt-zeros" checked> Nullstellen</label>
               <label><input type="checkbox" id="opt-extrema"> Hoch- und Tiefpunkte</label>
               <label><input type="checkbox" id="opt-inflect"> Wendepunkte</label>
@@ -681,24 +730,24 @@
           </div>
           <div class="plot-box" id="tool-box">
             <h2>Werkzeuge</h2>
-            <label class="tool-fn">für die Funktion <select id="tool-fn"></select></label>
+            <label class="tool-fn">angewendet auf <select id="tool-fn"></select></label>
             <div class="checks">
-              <label><input type="checkbox" id="opt-tangent"> Tangente &amp; Steigung</label>
+              <label><input type="checkbox" id="opt-tangent"> Tangente</label>
               <div class="tool-sub" id="sub-tangent" hidden>
-                <label class="slider"><b>x₀</b><input type="range" id="x0" min="-10" max="10" step="0.01" value="1"><output id="x0-out">1</output></label>
+                <label class="slider"><span class="m"><i>x</i><sub>0</sub> = <output id="x0-out">1</output></span><input type="range" id="x0" min="-10" max="10" step="0.01" value="1"></label>
               </div>
-              <label><input type="checkbox" id="opt-area"> Fläche &amp; Integral</label>
+              <label><input type="checkbox" id="opt-area"> Integral</label>
               <div class="tool-sub" id="sub-area" hidden>
                 <div class="mini">
                   <label>von <input type="text" id="area-a" value="0" autocomplete="off" spellcheck="false"></label>
                   <label>bis <input type="text" id="area-b" value="2" autocomplete="off" spellcheck="false"></label>
                 </div>
-                <label class="slider"><b>Rechtecke</b><input type="range" id="rect-n" min="0" max="40" step="1" value="0"><output id="rect-out">aus</output></label>
+                <label class="slider"><span class="m"><i>n</i> = <output id="rect-out">0</output></span><input type="range" id="rect-n" min="0" max="40" step="1" value="0" aria-label="Anzahl Rechtecke"></label>
               </div>
               <label><input type="checkbox" id="opt-table"> Wertetabelle</label>
               <div class="tool-sub" id="sub-table" hidden>
                 <div class="mini">
-                  <label>Start <input type="text" id="tab-start" value="-3" autocomplete="off" spellcheck="false"></label>
+                  <label>ab <input type="text" id="tab-start" value="-3" autocomplete="off" spellcheck="false"></label>
                   <label>Schritt <input type="text" id="tab-step" value="1" autocomplete="off" spellcheck="false"></label>
                 </div>
               </div>
@@ -708,12 +757,20 @@
 
         <div class="plot-info">
           <div class="info-cards" id="info-cards" aria-live="polite"></div>
-          <div class="info-card">
-            <h2>Ideen zum Ausprobieren</h2>
-            <div class="ideen" id="ideen"></div>
-          </div>
+          <section class="info-sec">
+            <h2>Experimente</h2>
+            <ol class="exp" id="ideen"></ol>
+          </section>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ===== Entdecken (Liste kommt aus ENTDECKEN) ===== -->
+  <section class="page" data-page="entdecken" data-title="Mathematik entdecken" hidden>
+    <div class="wrap">
+      <div class="page-head"><h1 class="page-title" tabindex="-1">Mathematik entdecken</h1></div>
+      <div id="entdecken"></div>
     </div>
   </section>
 
@@ -878,6 +935,26 @@ const REIHEN = ["Analysis", "Algebra", "Geometrie", "Stochastik"];
      dauer: "8 Min.", skript: "kurvendiskussion-1", beschreibung: "…" },
    ===================================================================== */
 const VIDEOS = [];
+
+/* =====================================================================
+   ENTDECKEN – deine Instagram-Beiträge. Solange die Liste leer ist,
+   steht auf der Seite «erscheint bald».
+   Neuer Beitrag: Bilder (JPG/PNG, am besten 1080 × 1350) in den Ordner
+   entdecken/ legen und oben in der Liste einen Eintrag ergänzen
+   (neueste zuerst).
+   - bilder:     Liste der Bilder, bei Karussell-Posts mehrere, in Reihenfolge
+   - titel:      kurzer Titel
+   - text:       optional, ein, zwei Sätze zum Beitrag
+   - thema:      optional, z. B. "Geometrie", "Zahlen", "Rätsel"
+   - datum:      optional, z. B. "November 2026"
+   - instagram:  optional, Link zum Post
+   Beispiel:
+   { bilder: ["entdecken/goldener-schnitt-1.jpg", "entdecken/goldener-schnitt-2.jpg"],
+     titel: "Der goldene Schnitt", thema: "Geometrie", datum: "November 2026",
+     text: "Warum taucht 1,618 … überall auf?",
+     instagram: "https://www.instagram.com/p/ABC123/" },
+   ===================================================================== */
+const ENTDECKEN = [];
 
 /* =====================================================================
    Ab hier muss nichts mehr angepasst werden
@@ -1141,6 +1218,28 @@ $("#videos").innerHTML = VIDEOS.length
   : `<p class="lead">Hier kommen bald Videos zu den Skripten.</p>
      <p>Folge <a href="https://instagram.com/${esc(CONFIG.instagram)}" target="_blank" rel="noopener">@${esc(CONFIG.instagram)}</a> auf Instagram, dann verpasst du nichts.</p>`;
 
+/* ---------- Entdecken ---------- */
+function postHtml(post, i) {
+  const n = post.bilder?.length || 0;
+  const meta = [post.thema, post.datum].filter(Boolean).map(esc).join(" · ");
+  return `
+    <article class="post">
+      ${n ? `<button type="button" class="post-media" data-post="${i}" aria-label="${esc(post.titel)} gross ansehen">
+        <img src="${esc(post.bilder[0])}" alt="" loading="lazy">
+        ${n > 1 ? `<span class="post-count">1 / ${n}</span>` : ""}
+      </button>` : ""}
+      ${meta ? `<p class="post-meta">${meta}</p>` : ""}
+      <h2 class="post-title">${esc(post.titel)}</h2>
+      ${post.text ? `<p class="post-text">${esc(post.text)}</p>` : ""}
+      ${post.instagram ? `<p class="post-link"><a href="${esc(post.instagram)}" target="_blank" rel="noopener">Auf Instagram ansehen</a></p>` : ""}
+    </article>`;
+}
+$("#entdecken").innerHTML = ENTDECKEN.length
+  ? `<p class="lead">Kleine Entdeckungen aus der Mathematik, dieselben Beiträge wie auf Instagram.</p>
+     <div class="posts">${ENTDECKEN.map(postHtml).join("")}</div>`
+  : `<p class="lead">Hier erscheinen bald kleine Entdeckungen aus der Mathematik, dieselben Beiträge wie auf Instagram.</p>
+     <p>Folge <a href="https://instagram.com/${esc(CONFIG.instagram)}" target="_blank" rel="noopener">@${esc(CONFIG.instagram)}</a>, dann verpasst du keinen.</p>`;
+
 /* ---------- Skript-Detailseite ---------- */
 function renderDetail(s) {
   const soon = !isAvailable(s);
@@ -1234,7 +1333,7 @@ function route() {
   const parts = location.hash.replace(/^#\/?/, "").split("/").map(decodeURIComponent);
   let page = parts[0] || "home";
   if (page === "bestellen" && !BESTELLUNG_AKTIV) page = "skripte";
-  if (page === "graphen") page = "plotter"; // alter Link
+  if (page === "graphen" || page === "plotter") page = "labor"; // alte Links
   let title = "";
   if (page === "skripte" && parts[1]) {
     const s = byId(parts[1]);
@@ -1251,7 +1350,7 @@ function route() {
   document.title = title ? `${title} – Lemma` : "Lemma – Kostenlose Mathe-Skripte für Matura & Uni";
   currentPage = page;
   document.body.dataset.view = page;
-  document.body.classList.toggle("is-fit", !["skripte", "detail", "videos", "plotter"].includes(page) || (page === "videos" && !VIDEOS.length));
+  document.body.classList.toggle("is-fit", !["skripte", "detail", "videos", "labor", "entdecken"].includes(page) || (page === "videos" && !VIDEOS.length) || (page === "entdecken" && !ENTDECKEN.length));
   section.scrollTop = 0;
   updateCartBar();
   if (lb.open) lb.close();
@@ -1303,6 +1402,12 @@ document.addEventListener("click", e => {
     const seiten = vorschauUrls(s);
     lbList = seiten.filter((_, i) => !missing[i]);
     showLb(Math.max(0, lbList.indexOf(seiten[+thumb.dataset.index])));
+    lb.showModal();
+  }
+  const post = e.target.closest("[data-post]");
+  if (post) {
+    lbList = ENTDECKEN[+post.dataset.post].bilder;
+    showLb(0);
     lb.showModal();
   }
   const add = e.target.closest("[data-add]");
@@ -1570,7 +1675,7 @@ $("#again-btn").addEventListener("click", () => {
         if (!trenner) continue;
         try {
           const a = compile(inner.slice(0, i)), b = compile(inner.slice(i + 1));
-          if (a && b && !a.usesX && !b.usesX) return { kind: "punkt", name: pm[1], px: a, py: b, params: new Set([...a.params, ...b.params]) };
+          if (a && b && !a.usesX && !b.usesX) return { kind: "punkt", name: pm[1], px: a, py: b, sx: inner.slice(0, i), sy: inner.slice(i + 1), params: new Set([...a.params, ...b.params]) };
         } catch { /* nächsten Trenner versuchen */ }
       }
       if (pm[1]) throw new Error("Einen Punkt schreibt man so: (2|1)");
@@ -1580,7 +1685,7 @@ $("#again-btn").addEventListener("click", () => {
       const c = compile(vm[1]);
       if (!c) throw new Error("Nach «x =» fehlt eine Zahl");
       if (c.usesX) throw new Error("Rechts von «x =» darf kein x stehen");
-      return { kind: "senkrecht", c, params: c.params };
+      return { kind: "senkrecht", c, s: vm[1], params: c.params };
     }
     const nm = /^\s*([a-z])\s*\(\s*x\s*\)\s*=/.exec(s);
     const c = compile(s);
@@ -1624,7 +1729,67 @@ $("#again-btn").addEventListener("click", () => {
              : e.d.kind === "punkt" ? (e.d.name || frei(PT_NAMEN, usedP)) : "";
     });
   }
-  const label = e => e.d.kind === "fn" ? `${e.name}(x)` : e.d.kind === "punkt" ? e.name : e.d.kind === "senkrecht" ? "x =" : "";
+
+  /* ---------- Formelsatz: Eingabe → schön gesetzte Formel ---------- */
+  function satz(src) {
+    let tokens;
+    try { tokens = tokenize(src); } catch { return esc(src); }
+    let i = 0;
+    const OPS = { "+": "+", "-": "−", "*": "·", "/": "/" };
+    const ist = (t, v) => t && t.t === "op" && t.v === v;
+    const bisZu = () => { const inner = folge(t => ist(t, ")")); if (ist(tokens[i], ")")) i++; return inner; };
+    function atom() {
+      const t = tokens[i++];
+      if (!t) return "";
+      if (t.t === "num") return t.v === Math.PI ? "π" : String(t.v);
+      if (t.t === "id") return `<i>${t.v}</i>`;
+      if (t.t === "fn") {
+        const n = t.v, wurzel = n === "sqrt" || n === "wurzel";
+        if (!ist(tokens[i], "(")) return wurzel ? "√" + atom() : `${n}&thinsp;${atom()}`;
+        i++;
+        const inner = bisZu();
+        if (wurzel) return `√<span class="rad">${inner}</span>`;
+        if (n === "abs" || n === "betrag") return `|${inner}|`;
+        if (n === "exp") return `<i>e</i><sup>${inner}</sup>`;
+        return `${n}(${inner})`;
+      }
+      if (t.v === "(") return `(${bisZu()})`;
+      if (t.v === "|") { const inner = folge(x => ist(x, "|")); if (ist(tokens[i], "|")) i++; return `|${inner}|`; }
+      return esc(t.v);
+    }
+    function folge(stop) {
+      let out = "";
+      while (i < tokens.length && !(stop && stop(tokens[i]))) {
+        const t = tokens[i];
+        if (t.t === "op" && t.v in OPS) {
+          i++;
+          const unaer = out === "" || out.endsWith("</span>") && /class="op"[^>]*>[^<]*<\/span>$/.test(out);
+          out += unaer ? OPS[t.v] : `<span class="op">${OPS[t.v]}</span>`;
+          continue;
+        }
+        if (ist(t, "^")) {
+          i++;
+          let neg = "";
+          if (ist(tokens[i], "-")) { i++; neg = "−"; }
+          const exp = ist(tokens[i], "(") ? (i++, bisZu()) : atom();
+          out += `<sup>${neg}${exp}</sup>`;
+          continue;
+        }
+        if (ist(t, ")")) { i++; out += ")"; continue; }
+        out += atom();
+      }
+      return out;
+    }
+    return `<span class="m">${folge(null)}</span>`;
+  }
+  // So erscheint eine Eingabezeile, solange man nicht darin schreibt
+  function anzeige(e) {
+    const d = e.d;
+    if (d.kind === "fn") return `<span class="m"><i>${e.name}</i>(<i>x</i>) = </span>${satz(e.text)}`;
+    if (d.kind === "punkt") return `<span class="m"><i>${e.name}</i> = (</span>${satz(d.sx)}<span class="m">&thinsp;|&thinsp;</span>${satz(d.sy)}<span class="m">)</span>`;
+    if (d.kind === "senkrecht") return `<span class="m"><i>x</i> = </span>${satz(d.s)}`;
+    return `<span class="m">${esc(e.text)}</span>`;
+  }
 
   /* ---------- Eingabezeilen ---------- */
   const liste = $("#fn-list");
@@ -1633,9 +1798,12 @@ $("#again-btn").addEventListener("click", () => {
     benennen();
     liste.innerHTML = eingaben.map((e, i) => `
       <div class="fn-row${e.an ? "" : " is-off"}">
-        <button type="button" class="fn-swatch" style="--c:${e.farbe}" data-toggle="${i}" aria-pressed="${e.an}" title="Ein- oder ausblenden"><i></i><span class="fn-name">${esc(label(e))}</span></button>
-        <input type="text" value="${esc(e.text)}" data-expr="${i}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Eingabe ${i + 1}" aria-invalid="${!!e.err}" placeholder="${i ? "z. B. (2|1) oder 2x + 1" : "z. B. x^2"}">
-        <button type="button" class="fn-del" data-del="${i}" aria-label="Eingabe ${i + 1} entfernen">✕</button>
+        <button type="button" class="fn-swatch" style="--c:${e.farbe}" data-kind="${e.d.kind}" data-toggle="${i}" aria-pressed="${e.an}" aria-label="Zeile ${i + 1} ein- oder ausblenden"><i></i></button>
+        <div class="fn-field${e.err ? " has-err" : ""}">
+          <input type="text" value="${esc(e.text)}" data-expr="${i}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Zeile ${i + 1}" aria-invalid="${!!e.err}" placeholder="${i ? "Funktion, Punkt oder Gerade" : "Funktion eingeben, z. B. x^2"}">
+          <div class="fn-math" aria-hidden="true">${anzeige(e)}</div>
+        </div>
+        <button type="button" class="fn-del" data-del="${i}" aria-label="Zeile ${i + 1} entfernen">✕</button>
         <p class="fn-err" ${e.err ? "" : "hidden"}>${esc(e.err)}</p>
       </div>`).join("");
     $("#fn-add").hidden = eingaben.length >= MAX_EINGABEN;
@@ -1644,7 +1812,12 @@ $("#again-btn").addEventListener("click", () => {
   }
   function nachAenderung() {
     benennen();
-    liste.querySelectorAll(".fn-name").forEach((el, i) => (el.textContent = label(eingaben[i])));
+    liste.querySelectorAll(".fn-row").forEach((row, i) => {
+      const e = eingaben[i];
+      row.querySelector(".fn-math").innerHTML = anzeige(e);
+      row.querySelector(".fn-swatch").dataset.kind = e.d.kind;
+      row.querySelector(".fn-field").classList.toggle("has-err", !!e.err);
+    });
     updateSliders();
     updateToolSelect();
     schedule();
@@ -1655,7 +1828,7 @@ $("#again-btn").addEventListener("click", () => {
     const e = eingaben[i];
     setText(e, ev.target.value);
     ev.target.setAttribute("aria-invalid", !!e.err);
-    const err = ev.target.parentElement.querySelector(".fn-err");
+    const err = ev.target.closest(".fn-row").querySelector(".fn-err");
     err.hidden = !e.err;
     err.textContent = e.err;
     nachAenderung();
@@ -1684,12 +1857,12 @@ $("#again-btn").addEventListener("click", () => {
   /* ---------- Mathe-Tastatur ---------- */
   // l = Beschriftung, t = eingefügter Text, z = Cursor so viele Zeichen zurück
   const TASTEN = [
-    { l: "x", c: "k-var" }, { l: "a", c: "k-var" }, { l: "b", c: "k-var" }, { l: "c", c: "k-var" }, { l: "π", t: "pi", c: "k-var" }, { l: "e", c: "k-var" }, { l: "⌫", t: "BS", a: "Löschen" },
+    { l: "x", c: "k-var" }, { l: "a", c: "k-var" }, { l: "b", c: "k-var" }, { l: "c", c: "k-var" }, { l: "k", c: "k-var" }, { l: "π", t: "pi", c: "k-var" }, { l: "⌫", t: "BS", a: "Löschen" },
     { l: "x²", t: "^2" }, { l: "x³", t: "^3" }, { l: "xⁿ", t: "^", a: "Hoch" }, { l: "√", t: "sqrt()", z: 1, a: "Wurzel" }, { l: "|x|", t: "||", z: 1, a: "Betrag" }, { l: "(" }, { l: ")" },
-    { l: "sin", t: "sin()", z: 1, c: "k-fn" }, { l: "cos", t: "cos()", z: 1, c: "k-fn" }, { l: "tan", t: "tan()", z: 1, c: "k-fn" }, { l: "ln", t: "ln()", z: 1, c: "k-fn" }, { l: "log", t: "log()", z: 1, c: "k-fn" }, { l: "eˣ", t: "e^()", z: 1 }, { l: "=" },
-    { l: "7", c: "k-num" }, { l: "8", c: "k-num" }, { l: "9", c: "k-num" }, { l: "÷", t: "/", a: "geteilt" }, { l: "·", a: "mal" }, { l: "←", t: "LEFT", a: "Cursor links" }, { l: "→", t: "RIGHT", a: "Cursor rechts" },
-    { l: "4", c: "k-num" }, { l: "5", c: "k-num" }, { l: "6", c: "k-num" }, { l: "+" }, { l: "−", t: "-", a: "minus" }, { l: "(□|□)", t: "(|)", z: 2, c: "k-fn", a: "Punkt" }, { l: "k", c: "k-var" },
-    { l: "1", c: "k-num" }, { l: "2", c: "k-num" }, { l: "3", c: "k-num" }, { l: "0", c: "k-num" }, { l: ".", c: "k-num", a: "Komma" }, { l: "↵ Neue Zeile", t: "ENTER", c: "k-wide" },
+    { l: "sin", t: "sin()", z: 1, c: "k-fn" }, { l: "cos", t: "cos()", z: 1, c: "k-fn" }, { l: "tan", t: "tan()", z: 1, c: "k-fn" }, { l: "ln", t: "ln()", z: 1, c: "k-fn" }, { l: "log", t: "log()", z: 1, c: "k-fn" }, { l: "eˣ", t: "e^()", z: 1 }, { l: "e", c: "k-var" },
+    { l: "7" }, { l: "8" }, { l: "9" }, { l: "÷", t: "/", a: "geteilt" }, { l: "·", a: "mal" }, { l: "←", t: "LEFT", a: "Cursor links" }, { l: "→", t: "RIGHT", a: "Cursor rechts" },
+    { l: "4" }, { l: "5" }, { l: "6" }, { l: "+" }, { l: "−", t: "-", a: "minus" }, { l: "( | )", t: "(|)", z: 2, c: "k-fn", a: "Punkt" }, { l: "=" },
+    { l: "1" }, { l: "2" }, { l: "3" }, { l: "0" }, { l: ".", a: "Komma" }, { l: "Neue Zeile", t: "ENTER", c: "k-wide" },
   ];
   const kbd = $("#kbd");
   kbd.innerHTML = TASTEN.map((k, i) => `<button type="button" data-k="${i}" class="${k.c || ""}"${k.a ? ` aria-label="${esc(k.a)}"` : ""}>${esc(k.l)}</button>`).join("");
@@ -1718,18 +1891,16 @@ $("#again-btn").addEventListener("click", () => {
     }
     inp.dispatchEvent(new Event("input", { bubbles: true }));
   });
-  // Auf Handy/Tablet: solange die Mathe-Tastatur offen ist, keine Handy-Tastatur einblenden
+  // Auf Handy/Tablet ist die Mathe-Tastatur offen und ersetzt die Handy-Tastatur
   const touchGeraet = matchMedia("(pointer: coarse)").matches;
   function tastaturModus() {
     const offen = !kbd.hidden;
+    $("#kbd-toggle").setAttribute("aria-expanded", offen);
+    $("#kbd-toggle").textContent = offen ? "Tastatur schliessen" : "Tastatur";
     liste.querySelectorAll("input").forEach(inp => (inp.inputMode = offen && touchGeraet ? "none" : "text"));
   }
-  $("#kbd-toggle").addEventListener("click", ev => {
-    kbd.hidden = !kbd.hidden;
-    ev.currentTarget.setAttribute("aria-expanded", !kbd.hidden);
-    ev.currentTarget.textContent = kbd.hidden ? "Tastatur einblenden" : "Tastatur ausblenden";
-    tastaturModus();
-  });
+  kbd.hidden = !touchGeraet;
+  $("#kbd-toggle").addEventListener("click", () => { kbd.hidden = !kbd.hidden; tastaturModus(); });
 
   /* ---------- Parameter-Regler (mit Abspielen) ---------- */
   let sliderKey = "";
@@ -1743,17 +1914,17 @@ $("#again-btn").addEventListener("click", () => {
     [...anim.keys()].forEach(n => { if (!names.includes(n)) anim.delete(n); });
     $("#slider-box").hidden = !names.length;
     $("#sliders").innerHTML = names.map(n => `
-      <div class="slider slider--param"><b>${n}</b>
-        <button type="button" class="play" data-play="${n}" aria-pressed="${anim.has(n)}" aria-label="${n} automatisch bewegen">${anim.has(n) ? "❚❚" : "▶"}</button>
+      <div class="slider slider--param">
+        <span class="m"><i>${n}</i> = <output>${fmt(paramWerte[n])}</output></span>
         <input type="range" min="-5" max="5" step="0.1" value="${paramWerte[n]}" data-param="${n}" aria-label="Parameter ${n}">
-        <output>${fmt(paramWerte[n])}</output>
+        <button type="button" class="play" data-play="${n}" aria-pressed="${anim.has(n)}" aria-label="${n} automatisch bewegen" title="automatisch bewegen">${anim.has(n) ? "❚❚" : "▶"}</button>
       </div>`).join("");
   }
   $("#sliders").addEventListener("input", ev => {
     const n = ev.target.dataset.param;
     if (!n) return;
     paramWerte[n] = +ev.target.value;
-    ev.target.nextElementSibling.textContent = fmt(paramWerte[n]);
+    ev.target.parentElement.querySelector("output").textContent = fmt(paramWerte[n]);
     schedule();
   });
   $("#sliders").addEventListener("click", ev => {
@@ -1776,7 +1947,7 @@ $("#again-btn").addEventListener("click", () => {
       if (v < -5) { v = -5; anim.set(n, 1); }
       paramWerte[n] = v;
       const inp = document.querySelector(`[data-param="${n}"]`);
-      if (inp) { inp.value = v; inp.nextElementSibling.textContent = fmt(v); }
+      if (inp) { inp.value = v; inp.parentElement.querySelector("output").textContent = fmt(v); }
     });
     draw();
     requestAnimationFrame(animSchritt);
@@ -1817,17 +1988,17 @@ $("#again-btn").addEventListener("click", () => {
 
   /* ---------- Ideen ---------- */
   const IDEEN = [
-    { titel: "Parabel verschieben", text: "Was bewirken a, b und c? Zieh an den Reglern.", e: ["a(x - b)^2 + c"] },
-    { titel: "Gerade y = mx + q", text: "m ist die Steigung, q der y-Achsenabschnitt.", e: ["m x + q"] },
-    { titel: "Sinus verformen", text: "Amplitude, Periode und Verschiebung – drück ▶.", e: ["a·sin(b(x - c))"] },
-    { titel: "Was ist die Ableitung?", text: "Zieh den Punkt: Die Tangentensteigung wird zum Graphen von f′.", e: ["x^3 - 3x"], an: ["deriv", "tangent", "extrema"], x0: -1.5 },
-    { titel: "Fläche unter der Kurve", text: "Mehr Rechtecke – die Summe nähert sich dem Integral.", e: ["0.5x^2 + 1"], an: ["area"], area: [0, 3], n: 6 },
-    { titel: "Wer wächst schneller?", text: "2^x gegen x^2 – wo schneiden sie sich?", e: ["2^x", "x^2"], an: ["intersect"] },
-    { titel: "Umkehrfunktion", text: "e^x und ln(x) sind an y = x gespiegelt.", e: ["e^x", "ln(x)", "x"] },
-    { titel: "Punkt auf dem Graphen", text: "Bewege a – der Punkt wandert auf der Parabel mit.", e: ["x^2", "(a|a^2)"] },
-    { titel: "Polstelle & Asymptote", text: "Was passiert in der Nähe von x = 1?", e: ["1/(x - 1) + 2", "x = 1", "2"] },
+    { titel: "Parabel verschieben", text: "Was bewirken {a}, {b} und {c} in {a(x - b)^2 + c}?", e: ["a(x - b)^2 + c"] },
+    { titel: "Steigung einer Geraden", text: "In {m x + q} ist {m} die Steigung und {q} der Achsenabschnitt.", e: ["m x + q"] },
+    { titel: "Sinus verformen", text: "Amplitude, Periode, Verschiebung. Mit ▶ bewegt sich ein Regler von selbst.", e: ["a·sin(b(x - c))"] },
+    { titel: "Die Ableitung sehen", text: "Zieh den Punkt über den Graphen und vergleiche die Tangentensteigung mit {f}′.", e: ["x^3 - 3x"], an: ["deriv", "tangent", "extrema"], x0: -1.5 },
+    { titel: "Fläche unter der Kurve", text: "Je mehr Rechtecke, desto näher liegt ihre Summe am Integral.", e: ["0.5x^2 + 1"], an: ["area"], area: [0, 3], n: 6 },
+    { titel: "Wer wächst schneller?", text: "{2^x} oder {x^2}, und wo schneiden sie sich?", e: ["2^x", "x^2"], an: ["intersect"] },
+    { titel: "Umkehrfunktion", text: "{e^x} und {ln(x)}, gespiegelt an der Winkelhalbierenden.", e: ["e^x", "ln(x)", "x"] },
+    { titel: "Punkt auf dem Graphen", text: "Bewege {a}: Der Punkt wandert auf der Parabel mit.", e: ["x^2", "(a|a^2)"] },
+    { titel: "Polstelle und Asymptote", text: "Was passiert in der Nähe von {x} = 1?", e: ["1/(x - 1) + 2", "x = 1", "2"] },
   ];
-  $("#ideen").innerHTML = IDEEN.map((d, i) => `<button type="button" data-idee="${i}"><b>${esc(d.titel)}</b><small>${esc(d.text)}</small></button>`).join("");
+  $("#ideen").innerHTML = IDEEN.map((d, i) => `<li><button type="button" data-idee="${i}">${esc(d.titel)}</button><span>${esc(d.text).replace(/\{([^}]+)\}/g, (_, m) => satz(m))}</span></li>`).join("");
   $("#ideen").addEventListener("click", ev => {
     const b = ev.target.closest("[data-idee]");
     if (b) idee(IDEEN[+b.dataset.idee], true);
@@ -1997,12 +2168,22 @@ $("#again-btn").addEventListener("click", () => {
       else { const p = Math.round(toPx(v)) + .5; ctx.moveTo(p, 0); ctx.lineTo(p, H); }
       ctx.stroke();
     };
+    // nur ein ruhiges Raster, Achsen mit Pfeilspitzen und Teilstrichen
     ctx.lineWidth = 1;
-    const isMajor = v => Math.abs(v / step - Math.round(v / step)) < 1e-6;
-    for (let v = Math.ceil(x0 / minor) * minor; v <= x1; v += minor) linie(false, v, isMajor(v) ? "#d6d6d6" : "#efefef");
-    for (let v = Math.ceil(y0 / minor) * minor; v <= y1; v += minor) linie(true, v, isMajor(v) ? "#d6d6d6" : "#efefef");
-    ctx.lineWidth = 1.3;
+    for (let v = Math.ceil(x0 / step) * step; v <= x1; v += step) linie(false, v, "#e8e8e8");
+    for (let v = Math.ceil(y0 / step) * step; v <= y1; v += step) linie(true, v, "#e8e8e8");
+    ctx.lineWidth = 1.2;
     linie(false, 0, "#111"); linie(true, 0, "#111");
+    {
+      const axp = Math.round(toPx(0)) + .5, ayp = Math.round(toPy(0)) + .5;
+      ctx.fillStyle = "#111";
+      if (ayp > 0 && ayp < H) { ctx.beginPath(); ctx.moveTo(W - 1, ayp); ctx.lineTo(W - 10, ayp - 4); ctx.lineTo(W - 10, ayp + 4); ctx.fill(); }
+      if (axp > 0 && axp < W) { ctx.beginPath(); ctx.moveTo(axp, 1); ctx.lineTo(axp - 4, 10); ctx.lineTo(axp + 4, 10); ctx.fill(); }
+      ctx.strokeStyle = "#111"; ctx.lineWidth = 1; ctx.beginPath();
+      for (let v = Math.ceil(x0 / minor) * minor; v <= x1; v += minor) { const p = Math.round(toPx(v)) + .5, l = Math.abs(v / step - Math.round(v / step)) < 1e-6 ? 4 : 2; ctx.moveTo(p, ayp - l); ctx.lineTo(p, ayp + l); }
+      for (let v = Math.ceil(y0 / minor) * minor; v <= y1; v += minor) { const p = Math.round(toPy(v)) + .5, l = Math.abs(v / step - Math.round(v / step)) < 1e-6 ? 4 : 2; ctx.moveTo(axp - l, p); ctx.lineTo(axp + l, p); }
+      ctx.stroke();
+    }
 
     ctx.fillStyle = "#111"; ctx.font = FONT;
     const ax = Math.min(Math.max(toPx(0), 0), W), ay = Math.min(Math.max(toPy(0), 0), H);
@@ -2103,7 +2284,7 @@ $("#again-btn").addEventListener("click", () => {
     x0El.min = fromPx(0); x0El.max = fromPx(W); x0El.step = (fromPx(W) - fromPx(0)) / 1000; x0El.value = tanX0;
     $("#x0-out").textContent = fmt(tanX0);
     const n = +$("#rect-n").value;
-    $("#rect-out").textContent = n ? n : "aus";
+    $("#rect-out").textContent = n;
 
     const flaeche = opt.area.checked && tf ? flaecheZeichnen(tool, tf) : null;
 
@@ -2172,52 +2353,75 @@ $("#again-btn").addEventListener("click", () => {
     if (nah && nah.d < (hover.touch ? 22 : 12)) {
       const p = nah.p;
       ctx.beginPath(); ctx.arc(toPx(p.x), toPy(p.y), 9, 0, 2 * Math.PI); ctx.lineWidth = 1.5; ctx.strokeStyle = p.e.farbe; ctx.stroke();
-      ro.textContent = `${punktName(p)}: (${fmt(p.x)} | ${fmt(p.y)})`;
+      ro.innerHTML = `${punktName(p)} ${koord(p.x, p.y)}`;
     } else if (best) {
       const px = hover.px, py = toPy(best.y);
       ctx.beginPath(); ctx.arc(px, py, 5, 0, 2 * Math.PI); ctx.fillStyle = best.e.farbe; ctx.fill();
       ctx.setLineDash([3, 4]); ctx.lineWidth = 1; ctx.strokeStyle = best.e.farbe;
       ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, ay); ctx.stroke(); ctx.setLineDash([]);
-      ro.textContent = `${best.e.name}(${fmt(x)}) = ${fmt(best.y)}`;
+      ro.innerHTML = `${I(best.e.name)}(${fmt(x)}) = ${fmt(best.y)}`;
     } else {
-      ro.textContent = `(${fmt(x)} | ${fmt(fromPy(hover.py))})`;
+      ro.innerHTML = koord(x, fromPy(hover.py));
     }
   }
-  const punktName = p => p.eigen ? `Punkt ${p.e.name}` : p.art === "Schnittpunkt" ? `Schnittpunkt ${p.e.name}, ${p.e2.name}` : `${p.art} von ${p.e.name}`;
+  const punktName = p => p.eigen ? `Punkt ${I(p.e.name)}` : p.art === "Schnittpunkt" ? `Schnittpunkt von ${I(p.e.name)} und ${I(p.e2.name)}` : `${p.art} von ${I(p.e.name)}`;
 
   /* ---------- Ergebnisse unter der Grafik ---------- */
   let infoHtml = "";
+  const I = v => `<i>${v}</i>`;
+  const koord = (x, y) => `(${fmt(x)}&thinsp;|&thinsp;${fmt(y)})`;
+  const liste8 = arr => {
+    const teile = arr.slice(0, 8).map(v => `<span class="nw">${v}</span>`);
+    return teile.join(", ") + (arr.length > 8 ? ", …" : "");
+  };
   function renderInfo() {
     const { punkte, tangente, flaeche, fs } = letzteInfos;
-    const karten = [];
-    const besondere = punkte.filter(p => !p.eigen).sort((a, b) => a.e.name.localeCompare(b.e.name) || a.x - b.x);
-    if (besondere.length) {
-      karten.push(`<div class="info-card"><h2>Besondere Punkte</h2><ul class="points">${besondere.slice(0, 30).map(p =>
-        `<li><span>${esc(p.art === "Schnittpunkt" ? `Schnittpunkt ${p.e.name}, ${p.e2.name}` : `${p.e.name}: ${p.art}`)}</span> (${fmt(p.x)} | ${fmt(p.y)})</li>`).join("")}</ul></div>`);
-    }
+    const teile = [];
+    // besondere Punkte, nach Funktion und Art gruppiert
+    const zeilen = [];
+    const ARTEN = [["Nullstelle", "Nullstellen", null], ["Hochpunkt", "Hochpunkte", "H"], ["Tiefpunkt", "Tiefpunkte", "T"], ["Wendepunkt", "Wendepunkte", "W"]];
+    fs.forEach(e => ARTEN.forEach(([art, mehrzahl, buchstabe]) => {
+      const ps = punkte.filter(p => p.e === e && p.art === art).sort((a, b) => a.x - b.x);
+      if (!ps.length) return;
+      const idx = k => ps.length > 1 ? `<sub>${k + 1}</sub>` : "";
+      const werte = ps.map((p, k) => buchstabe ? `${I(buchstabe)}${idx(k)}${koord(p.x, p.y)}` : `${I("x")}${idx(k)} = ${fmt(p.x)}`);
+      zeilen.push(`<dt>${ps.length > 1 ? mehrzahl : art} von ${I(e.name)}</dt><dd class="m">${liste8(werte)}</dd>`);
+    }));
+    const schnitt = punkte.filter(p => p.art === "Schnittpunkt");
+    const paare = [...new Set(schnitt.map(p => p.e.name + p.e2.name))];
+    paare.forEach(pa => {
+      const ps = schnitt.filter(p => p.e.name + p.e2.name === pa).sort((a, b) => a.x - b.x);
+      const werte = ps.map((p, k) => `${I("S")}${ps.length > 1 ? `<sub>${k + 1}</sub>` : ""}${koord(p.x, p.y)}`);
+      zeilen.push(`<dt>${I(ps[0].e.name)} und ${I(ps[0].e2.name)}</dt><dd class="m">${liste8(werte)}</dd>`);
+    });
+    if (zeilen.length) teile.push(`<section class="info-sec"><h2>Punkte</h2><dl class="res">${zeilen.join("")}</dl></section>`);
+
     if (tangente) {
-      const { e, x0, y0, m } = tangente, f = e.name;
-      karten.push(`<div class="info-card"><h2>Tangente an ${f}</h2>
-        <p class="formel"><i>x</i>₀ = ${fmt(x0)}<br><i>${f}</i>(<i>x</i>₀) = ${fmt(y0)}<br>Steigung <i>m</i> = <i>${f}</i>′(<i>x</i>₀) = ${fmt(m)}<br>
-        ${Number.isFinite(m) ? `<i>t</i>(<i>x</i>) = ${geradeText(m, y0 - m * x0)}` : "keine Tangente an dieser Stelle"}</p>
-        <p class="plot-help">Zieh den Punkt auf dem Graphen. Die Steigung der Tangente ist die Ableitung an dieser Stelle: <i>m</i> = Δ<i>y</i> / Δ<i>x</i>.</p></div>`);
+      const { e, x0, y0, m } = tangente, f = I(e.name), x0h = `${I("x")}<sub>0</sub>`;
+      teile.push(`<section class="info-sec"><h2>Tangente</h2><dl class="res">
+        <dt>Stelle</dt><dd class="m">${x0h} = ${fmt(x0)}</dd>
+        <dt>Punkt</dt><dd class="m">${I("P")}${koord(x0, y0)}</dd>
+        <dt>Steigung</dt><dd class="m">${I("m")} = ${f}′(${x0h}) = ${fmt(m)}</dd>
+        <dt>Gleichung</dt><dd class="m">${Number.isFinite(m) ? `${I("t")}(${I("x")}) = ${geradeText(m, y0 - m * x0).replace(/x/g, I("x"))}` : "keine Tangente an dieser Stelle"}</dd>
+      </dl><p class="note">Zieh den Punkt im Bild. Die Steigung der Tangente ist die Ableitung an dieser Stelle.</p></section>`);
     }
     if (flaeche) {
-      const { e, integral, betrag, summe, n } = flaeche, f = e.name;
-      karten.push(`<div class="info-card"><h2>Fläche unter ${f}</h2>
-        <p class="formel">∫ von ${fmt(areaA)} bis ${fmt(areaB)} <i>${f}</i>(<i>x</i>) d<i>x</i> = ${fmt(integral)}<br>
-        Fläche zwischen Graph und <i>x</i>-Achse = ${fmt(betrag)}
-        ${summe !== null ? `<br>${n} Rechtecke: Summe = ${fmt(summe)}` : ""}</p>
-        <p class="plot-help">${summe !== null ? "Mehr Rechtecke → die Summe kommt dem Integral immer näher." : "Teile unter der x-Achse zählen im Integral negativ. Zieh die Grenzen im Bild oder schalte Rechtecke ein."}</p></div>`);
+      const { e, integral, betrag, summe, n } = flaeche, f = I(e.name);
+      const int = `<span class="int"><span class="int-sign">∫</span><span class="int-lim"><span>${fmt(areaB)}</span><span>${fmt(areaA)}</span></span></span>`;
+      teile.push(`<section class="info-sec"><h2>Integral</h2><dl class="res">
+        <dt>Integral</dt><dd class="m">${int} ${f}(${I("x")})&thinsp;d${I("x")} = ${fmt(integral)}</dd>
+        <dt>Fläche</dt><dd class="m">${fmt(betrag)}</dd>
+        ${summe !== null ? `<dt>${n} Rechtecke</dt><dd class="m">Summe ≈ ${fmt(summe)}</dd>` : ""}
+      </dl><p class="note">${summe !== null ? "Je mehr Rechtecke, desto näher liegt ihre Summe am Integral." : "Teile unter der x-Achse zählen im Integral negativ, in der Fläche positiv. Die Grenzen lassen sich im Bild ziehen."}</p></section>`);
     }
     if (opt.table.checked && fs.length) {
       const xs = Array.from({ length: 9 }, (_, i) => tabStart + i * tabStep);
-      karten.push(`<div class="info-card"><h2>Wertetabelle</h2><div class="wt-wrap"><table class="wt">
-        <thead><tr><th>x</th>${fs.map(e => `<th style="color:${e.farbe}">${e.name}(x)</th>`).join("")}</tr></thead>
+      teile.push(`<section class="info-sec"><h2>Wertetabelle</h2><div class="wt-wrap"><table class="wt m">
+        <thead><tr><th>${I("x")}</th>${fs.map(e => `<th style="color:${e.farbe}">${I(e.name)}(${I("x")})</th>`).join("")}</tr></thead>
         <tbody>${xs.map(x => `<tr><td>${fmt(x)}</td>${fs.map(e => `<td>${fmt(auswerten(e)(x))}</td>`).join("")}</tr>`).join("")}</tbody>
-      </table></div></div>`);
+      </table></div></section>`);
     }
-    const html = karten.join("");
+    const html = teile.join("");
     if (html === infoHtml) return;
     infoHtml = html;
     $("#info-cards").innerHTML = html;
