@@ -2,3 +2,8 @@
 *.docx
 .claude/
 _offline/
+latex/
+
+# Instagram: Skripte, Schriften und das grosse Video nicht veröffentlichen
+insta/_werkzeuge/
+insta/**/*.mp4

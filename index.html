@@ -526,20 +526,36 @@
   .plot-help { margin: .7rem 0 0; font-size: .9rem; line-height: 1.5; color: #555; }
   .plot-help code { font-family: var(--mono); font-size: .88rem; color: var(--black); }
 
-  /* ---------- Entdecken ---------- */
-  .posts { display: grid; gap: 2.25rem 1.75rem; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); }
+  /* ---------- Entdecken ----------
+     Jede Art hat ihre eigene Darstellung: Erklärt als Liste wie die Skripte,
+     Zum Merken als Raster, Staunen gross, Rätsel im Hochformat mit Auflösung. */
+  .ent-art + .ent-art { margin-top: 3.25rem; }
+  .ent-art-text { margin: 0 0 1rem; font-size: .95rem; font-style: italic; }
+  .posts { display: grid; gap: 2rem 1.5rem; padding-top: 1.25rem; border-top: var(--line); }
+  .posts--merken { grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr)); }
+  .posts--staunen { grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); gap: 2.5rem 2rem; }
+  .posts--raetsel { grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr)); }
   .post { display: flex; flex-direction: column; min-width: 0; }
   .post-media {
-    position: relative; display: block; width: 100%; aspect-ratio: 4 / 5; padding: 0; overflow: hidden;
+    display: block; width: 100%; aspect-ratio: 4 / 5; padding: 0; overflow: hidden;
     background: var(--white); border: var(--line); cursor: zoom-in;
   }
   .post-media img { width: 100%; height: 100%; object-fit: cover; transition: transform .25s; }
   .post-media:hover img { transform: scale(1.02); }
-  .post-count { position: absolute; top: .55rem; right: .55rem; padding: 0 .5em; font-size: .8rem; background: var(--white); border: var(--line); }
-  .post-meta { margin: .75rem 0 0; font-size: .85rem; font-variant: small-caps; letter-spacing: .06em; }
-  .post-title { margin: .15rem 0 0; font-size: 1.2rem; font-weight: 400; line-height: 1.3; }
-  .post-text { margin: .35rem 0 0; font-size: .98rem; }
-  .post-link { margin: .35rem 0 0; font-size: .95rem; }
+  .post--raetsel .post-media { aspect-ratio: 9 / 16; }
+  .post-body { display: flex; flex-direction: column; gap: .3rem; padding-top: .75rem; }
+  .post-title { margin: 0; font-size: 1.15rem; font-weight: 400; line-height: 1.3; }
+  .post-sub { margin: 0; font-style: italic; }
+  .post-text { margin: 0; font-size: .95rem; line-height: 1.5; }
+  .post--raetsel .post-text { font-size: .9rem; }
+  .post-links { display: flex; flex-wrap: wrap; gap: .2rem 1rem; margin: .2rem 0 0; font-size: .95rem; }
+  /* Erklärt: wie ein Eintrag im Skriptverzeichnis */
+  .posts--erklaert { gap: 0; padding-top: 0; }
+  .post--erklaert { display: grid; grid-template-columns: 6.5rem 1fr; gap: 1.25rem; padding: 1.4rem 0; border-bottom: var(--line); }
+  @media (min-width: 40rem) { .post--erklaert { grid-template-columns: 11rem 1fr; gap: 2rem; } }
+  .post--erklaert .post-body { padding-top: 0; }
+  .post--erklaert .post-title { font-size: clamp(1.4rem, 4vw, 1.8rem); }
+  .post--erklaert .post-text { max-width: 38rem; font-size: 1rem; }
 
   /* ---------- FAQ ---------- */
   .faq { border-top: var(--line); }
@@ -763,7 +779,18 @@
   <!-- ===== Entdecken (Liste kommt aus ENTDECKEN) ===== -->
   <section class="page" data-page="entdecken" data-title="Mathematik entdecken" hidden>
     <div class="wrap">
-      <div class="page-head"><h1 class="page-title" tabindex="-1">Mathematik entdecken</h1></div>
+      <div class="page-head">
+        <h1 class="page-title" tabindex="-1">Mathematik entdecken</h1>
+        <label class="search">
+          <span class="visually-hidden">Beiträge durchsuchen</span>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M10.2 10.2 15 15" stroke="currentColor" stroke-width="1.3"/></svg>
+          <input type="search" id="ent-search" placeholder="Thema suchen …" autocomplete="off" spellcheck="false">
+        </label>
+      </div>
+      <p class="lead">Erklärungen, Tricks, schöne Bilder und Rätsel. Dieselben Beiträge wie auf Instagram.</p>
+      <div class="shop-bar" id="ent-tools">
+        <div class="filter" id="ent-filter" role="group" aria-label="Nach Art filtern"></div>
+      </div>
       <div id="entdecken"></div>
     </div>
   </section>
@@ -931,24 +958,79 @@ const REIHEN = ["Analysis", "Algebra", "Geometrie", "Stochastik"];
 const VIDEOS = [];
 
 /* =====================================================================
-   ENTDECKEN – deine Instagram-Beiträge. Solange die Liste leer ist,
-   steht auf der Seite «erscheint bald».
-   Neuer Beitrag: Bilder (JPG/PNG, am besten 1080 × 1350) in den Ordner
-   entdecken/ legen und oben in der Liste einen Eintrag ergänzen
-   (neueste zuerst).
-   - bilder:     Liste der Bilder, bei Karussell-Posts mehrere, in Reihenfolge
-   - titel:      kurzer Titel
-   - text:       optional, ein, zwei Sätze zum Beitrag
-   - thema:      optional, z. B. "Geometrie", "Zahlen", "Rätsel"
-   - datum:      optional, z. B. "November 2026"
-   - instagram:  optional, Link zum Post
-   Beispiel:
-   { bilder: ["entdecken/goldener-schnitt-1.jpg", "entdecken/goldener-schnitt-2.jpg"],
-     titel: "Der goldene Schnitt", thema: "Geometrie", datum: "November 2026",
-     text: "Warum taucht 1,618 … überall auf?",
-     instagram: "https://www.instagram.com/p/ABC123/" },
+   ENTDECKEN – deine Instagram-Beiträge
+   Jeder Beitrag hat in insta/ einen eigenen Ordner, benannt nach
+   «art-thema», mit den Bildern 01.png, 02.png, …
+   Die Art steht vorne im Ordnernamen und bestimmt die Darstellung:
+     erklaert-…  Karussell, das etwas Schritt für Schritt erklärt
+     merken-…    Trick oder Regel zum Merken
+     staunen-…   schönes Bild (Fraktal, Kurve, …)
+     raetsel-…   01.png = Rätsel, 02.png = Auflösung
+   Neuer Beitrag: Ordner anlegen und hier einen Eintrag ergänzen.
+   - ordner:      Name des Ordners in insta/
+   - bilder:      Anzahl Bilder (Standard 1)
+   - titel, untertitel (optional), text (optional)
+   - stichworte:  optional, damit die Suche mehr findet
+   - instagram:   optional, Link zum Post
    ===================================================================== */
-const ENTDECKEN = [];
+const ENTDECKEN = [
+  { ordner: "erklaert-0999-gleich-1", bilder: 7, titel: "0,999… = 1",
+    untertitel: "Drei Beweise, warum da nichts fehlt",
+    text: "Fast alle sagen zuerst: Da fehlt doch noch ein winziges bisschen. Mit Brüchen, mit einem Trick und mit der Frage nach der Lücke zeigt sich: 0,999… und 1 sind dieselbe Zahl.",
+    stichworte: ["Periode", "unendlich", "Dezimalzahl", "Brüche", "Drittel", "Grenzwert", "Beweis", "0.999"] },
+];
+
+// Fertig vorbereitet, aber noch nicht auf Instagram gepostet.
+// Zum Veröffentlichen: Eintrag nach oben in ENTDECKEN verschieben und den
+// Ordner in insta/ mit hochladen (git add insta/<ordner>).
+const ENTDECKEN_VORBEREITET = [
+  { ordner: "merken-prozente-umdrehen", titel: "Prozente darf man umdrehen",
+    text: "8 % von 50 ist dasselbe wie 50 % von 8. Rechne einfach die bequemere Seite.",
+    stichworte: ["Prozent", "Prozentrechnen", "Kopfrechnen", "Trick"] },
+  { ordner: "merken-mal-11", titel: "Mal 11 in zwei Sekunden",
+    text: "Ziffern auseinanderziehen, ihre Summe in die Mitte schreiben: 43 · 11 = 473.",
+    stichworte: ["Multiplikation", "Elf", "Kopfrechnen", "Trick"] },
+  { ordner: "merken-quadrat-mit-5", titel: "Quadrieren mit 5 am Ende",
+    text: "Vordere Ziffer mal ihren Nachfolger, dann 25 anhängen: 65² = 4225.",
+    stichworte: ["Quadrat", "Quadratzahl", "hoch 2", "Kopfrechnen", "Trick"] },
+
+  { ordner: "staunen-mandelbrot", titel: "Alles aus einer Zeile",
+    text: "Die Mandelbrot-Menge entsteht aus z ↦ z² + c. Hier 10 000-fach vergrössert, und es hört nie auf.",
+    stichworte: ["Mandelbrot", "Fraktal", "komplexe Zahlen", "unendlich", "Iteration"] },
+  { ordner: "staunen-sonnenblume", titel: "Eine Sonnenblume kennt 137,5°",
+    text: "Jeder Kern dreht sich um den goldenen Winkel weiter.",
+    stichworte: ["goldener Schnitt", "goldener Winkel", "Fibonacci", "Spirale", "Natur"] },
+  { ordner: "staunen-kardioide", titel: "Hier ist keine einzige Kurve",
+    text: "Nur 300 gerade Linien: Punkt n wird mit Punkt 2n verbunden.",
+    stichworte: ["Kardioide", "Herzkurve", "Modulo", "Linien", "Kreis"] },
+  { ordner: "staunen-harmonograph", titel: "Zwei Pendel. Ein Stift.",
+    text: "Sinus mal Sinus, langsam gedämpft: So zeichnet Physik.",
+    stichworte: ["Harmonograph", "Pendel", "Sinus", "Schwingung", "Physik"] },
+  { ordner: "staunen-rosen", titel: "Blumen ohne Gärtner",
+    text: "360 Sprünge zu je 71° auf der Rosenkurve r = sin(6θ).",
+    stichworte: ["Rosenkurve", "Maurer-Rose", "Polarkoordinaten", "Sinus", "Winkel"] },
+
+  { ordner: "raetsel-ball-und-schlaeger", bilder: 2, titel: "Schläger und Ball",
+    text: "Zusammen kosten sie 1.10 Fr., der Schläger 1 Fr. mehr als der Ball. Was kostet der Ball?",
+    stichworte: ["Gleichung", "Denkfalle", "Geld"] },
+  { ordner: "raetsel-zahlenfolge", bilder: 2, titel: "Welche Zahl kommt als Nächstes?",
+    text: "2, 6, 12, 20, 30, ?",
+    stichworte: ["Folge", "Zahlenfolge", "Muster"] },
+  { ordner: "raetsel-seerosen", bilder: 2, titel: "Seerosen im Teich",
+    text: "Sie verdoppeln sich jeden Tag, nach 48 Tagen ist der Teich bedeckt. Wann war er halb voll?",
+    stichworte: ["exponentiell", "Wachstum", "verdoppeln"] },
+  { ordner: "raetsel-quadrate-zaehlen", bilder: 2, titel: "Wie viele Quadrate?",
+    text: "Ein Gitter aus 3 × 3 Feldern. Es sind mehr als 9.",
+    stichworte: ["Quadrate", "zählen", "Geometrie", "Gitter"] },
+];
+
+// Arten in der Reihenfolge, in der sie auf der Seite erscheinen
+const ARTEN = [
+  { id: "erklaert", name: "Erklärt", text: "Ein Gedanke, Schritt für Schritt. Zum Durchblättern." },
+  { id: "merken", name: "Zum Merken", text: "Kleine Tricks, die beim Rechnen sofort helfen." },
+  { id: "staunen", name: "Staunen", text: "Bilder, die aus einer einzigen Formel entstehen." },
+  { id: "raetsel", name: "Rätsel", text: "Erst selbst überlegen, dann die Auflösung aufdecken." },
+];
 
 /* =====================================================================
    Ab hier muss nichts mehr angepasst werden
@@ -1215,26 +1297,67 @@ $("#videos").innerHTML = VIDEOS.length
      <p>Folge <a href="https://instagram.com/${esc(CONFIG.instagram)}" target="_blank" rel="noopener">@${esc(CONFIG.instagram)}</a> auf Instagram, dann verpasst du nichts.</p>`;
 
 /* ---------- Entdecken ---------- */
-function postHtml(post, i) {
-  const n = post.bilder?.length || 0;
-  const meta = [post.thema, post.datum].filter(Boolean).map(esc).join(" · ");
+const artVon = post => post.ordner.split("-")[0];
+const postBilder = post => Array.from({ length: post.bilder || 1 },
+  (_, i) => `insta/${encodeURIComponent(post.ordner)}/${String(i + 1).padStart(2, "0")}.png`);
+function postHtml(post) {
+  const i = ENTDECKEN.indexOf(post), art = artVon(post), bilder = postBilder(post);
+  const aktion = art === "raetsel"
+    ? `<button type="button" class="link-btn" data-post="${i}" data-start="1">Auflösung zeigen</button>`
+    : bilder.length > 1 ? `<button type="button" class="link-btn" data-post="${i}">Alle ${bilder.length} Folien ansehen</button>` : "";
   return `
-    <article class="post">
-      ${n ? `<button type="button" class="post-media" data-post="${i}" aria-label="${esc(post.titel)} gross ansehen">
-        <img src="${esc(post.bilder[0])}" alt="" loading="lazy">
-        ${n > 1 ? `<span class="post-count">1 / ${n}</span>` : ""}
-      </button>` : ""}
-      ${meta ? `<p class="post-meta">${meta}</p>` : ""}
-      <h2 class="post-title">${esc(post.titel)}</h2>
-      ${post.text ? `<p class="post-text">${esc(post.text)}</p>` : ""}
-      ${post.instagram ? `<p class="post-link"><a href="${esc(post.instagram)}" target="_blank" rel="noopener">Auf Instagram ansehen</a></p>` : ""}
+    <article class="post post--${art}" data-id="${i}">
+      <button type="button" class="post-media" data-post="${i}" aria-label="${esc(post.titel)} gross ansehen">
+        <img src="${esc(bilder[0])}" alt="" loading="lazy">
+      </button>
+      <div class="post-body">
+        <h3 class="post-title">${esc(post.titel)}</h3>
+        ${post.untertitel ? `<p class="post-sub">${esc(post.untertitel)}</p>` : ""}
+        ${post.text ? `<p class="post-text">${esc(post.text)}</p>` : ""}
+        ${aktion || post.instagram ? `<p class="post-links">${aktion}${post.instagram ? `<a href="${esc(post.instagram)}" target="_blank" rel="noopener">Auf Instagram</a>` : ""}</p>` : ""}
+      </div>
     </article>`;
 }
-$("#entdecken").innerHTML = ENTDECKEN.length
-  ? `<p class="lead">Kleine Entdeckungen aus der Mathematik, dieselben Beiträge wie auf Instagram.</p>
-     <div class="posts">${ENTDECKEN.map(postHtml).join("")}</div>`
-  : `<p class="lead">Hier erscheinen bald kleine Entdeckungen aus der Mathematik, dieselben Beiträge wie auf Instagram.</p>
-     <p>Folge <a href="https://instagram.com/${esc(CONFIG.instagram)}" target="_blank" rel="noopener">@${esc(CONFIG.instagram)}</a>, dann verpasst du keinen.</p>`;
+const entEl = $("#entdecken");
+const artenDa = ARTEN.filter(a => ENTDECKEN.some(p => artVon(p) === a.id));
+if (ENTDECKEN.length) {
+  entEl.innerHTML = artenDa.map(a => `
+    <section class="ent-art" data-art="${a.id}">
+      <h2 class="reihe-title">${esc(a.name)}</h2>
+      <p class="ent-art-text">${esc(a.text)}</p>
+      <div class="posts posts--${a.id}">${ENTDECKEN.filter(p => artVon(p) === a.id).map(postHtml).join("")}</div>
+    </section>`).join("") + `<p class="no-results" id="ent-leer" hidden></p>`;
+  $("#ent-filter").innerHTML = ["alle", ...artenDa.map(a => a.id)].map((id, k) =>
+    `<button type="button" data-art-filter="${id}" aria-pressed="${k === 0}">${id === "alle" ? "Alle" : esc(ARTEN.find(a => a.id === id).name)}</button>`).join("");
+  $("#ent-tools").hidden = artenDa.length < 2;                         // Filter erst ab zwei Arten
+  $("#ent-search").closest(".search").hidden = ENTDECKEN.length < 6;  // Suche erst ab sechs Beiträgen
+} else {
+  entEl.innerHTML = `<p>Hier erscheinen bald kleine Entdeckungen aus der Mathematik. Folge <a href="https://instagram.com/${esc(CONFIG.instagram)}" target="_blank" rel="noopener">@${esc(CONFIG.instagram)}</a>, dann verpasst du keine.</p>`;
+  $("#ent-tools").hidden = true;
+  $("#ent-search").closest(".search").hidden = true;
+}
+// Suche und Filter nach Art
+let entArt = "alle", entQuery = "";
+function entFilter() {
+  const words = norm(entQuery).split(/\s+/).filter(Boolean);
+  let n = 0;
+  entEl.querySelectorAll(".post").forEach(el => {
+    const p = ENTDECKEN[+el.dataset.id], art = artVon(p);
+    const text = norm([p.titel, p.untertitel, p.text, ...(p.stichworte || []), ARTEN.find(a => a.id === art)?.name].filter(Boolean).join(" "));
+    const show = (entArt === "alle" || art === entArt) && words.every(w => text.includes(w));
+    el.hidden = !show;
+    if (show) n++;
+  });
+  entEl.querySelectorAll(".ent-art").forEach(sec => (sec.hidden = !sec.querySelector(".post:not([hidden])")));
+  document.querySelectorAll("[data-art-filter]").forEach(b => b.setAttribute("aria-pressed", b.dataset.artFilter === entArt));
+  const leer = $("#ent-leer");
+  if (leer) { leer.hidden = n > 0; leer.textContent = n ? "" : `Nichts gefunden für «${entQuery.trim()}». Versuch es z. B. mit «Prozent» oder «Fraktal».`; }
+}
+$("#ent-search").addEventListener("input", e => { entQuery = e.target.value; entFilter(); });
+$("#ent-filter").addEventListener("click", e => {
+  const b = e.target.closest("[data-art-filter]");
+  if (b) { entArt = b.dataset.artFilter; entFilter(); }
+});
 
 /* ---------- Skript-Detailseite ---------- */
 function renderDetail(s) {
@@ -1402,8 +1525,8 @@ document.addEventListener("click", e => {
   }
   const post = e.target.closest("[data-post]");
   if (post) {
-    lbList = ENTDECKEN[+post.dataset.post].bilder;
-    showLb(0);
+    lbList = postBilder(ENTDECKEN[+post.dataset.post]);
+    showLb(+(post.dataset.start || 0));
     lb.showModal();
   }
   const add = e.target.closest("[data-add]");
