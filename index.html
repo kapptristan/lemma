@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lemma – Kostenlose Mathe-Skripte für Matura &amp; Uni</title>
 <meta name="description" content="Kostenlose Mathe-Skripte als PDF für Matura und Uni. Mathe nicht auswendig lernen, sondern verstehen.">
-<meta name="author" content="Tristan Kappeler">
+<meta name="author" content="Lemma">
 <link rel="canonical" href="https://lemmamathe.ch/">
 <link rel="icon" href="logos/2_L_qed_weiss.png">
 <link rel="apple-touch-icon" href="logos/2_L_qed_weiss.png">
@@ -761,7 +761,7 @@
     <div class="wrap">
       <h1 class="page-title" tabindex="-1">Impressum</h1>
       <div class="impressum">
-        <p><span data-config="name"></span><br><span data-config="adresse"></span></p>
+        <p>Lemma<br><span data-config="adresse"></span></p>
         <p>Kontakt: <a data-config-mail></a></p>
         <p><em>Die kostenlosen Skripte dürfen unverändert und kostenlos weitergegeben werden. Verkauf und Veränderung sind nicht gestattet.</em></p>
       </div>
@@ -778,7 +778,7 @@
       <a data-config-instagram target="_blank" rel="noopener"></a>
       <a href="#/impressum">Impressum</a>
     </div>
-    <small>© <span id="year"></span> <span data-config="name"></span></small>
+    <small>© <span id="year"></span> Lemma. Alle Rechte vorbehalten.</small>
   </div>
 </footer>
 
@@ -821,9 +821,6 @@ const CONFIG = {
   // Wie schnell das PDF bei einer Bestellung kommt
   lieferzeit: "innerhalb von 24 Stunden",
   // ---------------------------------------------------------------------------
-
-  // Dein Name (Impressum & Footer)
-  name: "Tristan Kappeler",
 
   // Adresse oder Ort fürs Impressum, z. B. "8000 Zürich"
   adresse: "9411 Schachen b. Reute AR",
@@ -911,8 +908,8 @@ let currentPage = "home";
     "@context": "https://schema.org",
     "@graph": [
       { "@type": "WebSite", "@id": base + "#website", url: base, name: "Lemma", inLanguage: "de-CH",
-        description: "Kostenlose Mathe-Skripte für Matura und Uni.", publisher: { "@id": base + "#person" } },
-      { "@type": "Person", "@id": base + "#person", name: CONFIG.name,
+        description: "Kostenlose Mathe-Skripte für Matura und Uni.", publisher: { "@id": base + "#lemma" } },
+      { "@type": "Organization", "@id": base + "#lemma", name: "Lemma", url: base,
         sameAs: ["https://instagram.com/" + CONFIG.instagram] },
       ...DOSSIERS.filter(isAvailable).map(s => ({
         "@type": "LearningResource",
@@ -927,7 +924,7 @@ let currentPage = "home";
         numberOfPages: s.seiten,
         version: s.version,
         isAccessibleForFree: istKostenlos(s),
-        author: { "@id": base + "#person" },
+        author: { "@id": base + "#lemma" },
       })),
     ],
   };
