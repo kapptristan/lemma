@@ -547,10 +547,11 @@
   .tile--raetsel img { object-position: center 40%; }
   .tile:hover img { transform: scale(1.03); }
   .tile:focus-visible { outline-offset: 2px; }
-  .tile-count {
+  .tile-art, .tile-count {
     position: absolute; top: .5rem; padding: .05em .55em; font-size: .78rem; line-height: 1.4;
     background: var(--white); border: var(--line);
   }
+  .tile-art { left: .5rem; font-variant: small-caps; letter-spacing: .06em; }
   .tile-count { right: .5rem; }
   .tile-count::before { content: ""; display: inline-block; width: .55em; height: .55em; margin-right: .3em; border: 1px solid currentColor; box-shadow: 2px -2px 0 -1px var(--white), 2px -2px 0 0 currentColor; vertical-align: .02em; }
 
@@ -572,7 +573,6 @@
   /* ---------- Footer ---------- */
   .site-footer { border-top: var(--line); padding: 1rem 0; font-size: .95rem; }
   @media (min-width: 40rem) { .site-footer { padding: 1.5rem 0; font-size: 1rem; } }
-  @media (max-width: 39.99rem) { .site-footer .logo { display: none; } }
   .site-footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .4rem 2rem; }
   .footer-links { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; }
 
@@ -851,13 +851,12 @@
 
 <footer class="site-footer">
   <div class="wrap">
-    <span class="logo logo--sm">Lemma</span>
+    <small>© <span id="year"></span> Lemma. Alle Rechte vorbehalten.</small>
     <div class="footer-links">
       <a href="#/faq">FAQ</a>
       <a data-config-instagram target="_blank" rel="noopener"></a>
       <a href="#/impressum">Impressum</a>
     </div>
-    <small>© <span id="year"></span> Lemma. Alle Rechte vorbehalten.</small>
   </div>
 </footer>
 
@@ -1263,6 +1262,7 @@ function postHtml(post) {
   return `
     <button type="button" class="tile tile--${art}" data-post="${i}" data-id="${i}" aria-label="${esc(artName)}: ${esc(post.titel)}">
       <img src="${esc(bilder[0])}" alt="" loading="lazy">
+      <span class="tile-art">${esc(artName)}</span>
       ${art !== "raetsel" && bilder.length > 1 ? `<span class="tile-count" aria-hidden="true">${bilder.length}</span>` : ""}
     </button>`;
 }
