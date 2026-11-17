@@ -280,13 +280,13 @@
   .lb-stage { position: relative; }
   .arrow {
     position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
-    display: grid; place-items: center; width: 2.75rem; height: 2.75rem; padding: 0;
-    font: inherit; font-size: 1.15rem; line-height: 1; color: var(--black);
+    display: grid; place-items: center; width: 1.9rem; height: 1.9rem; padding: 0;
+    font: inherit; font-size: .85rem; line-height: 1; color: var(--black);
     background: var(--white); border: var(--line); border-radius: 50%; cursor: pointer;
   }
   .arrow:hover { background: var(--black); color: var(--white); }
-  .arrow--prev { left: .6rem; }
-  .arrow--next { right: .6rem; }
+  .arrow--prev { left: .5rem; }
+  .arrow--next { right: .5rem; }
 
   /* Gruppierung nach Reihe */
   .reihe + .reihe { margin-top: 3rem; }
@@ -575,19 +575,6 @@
   }
   .lightbox::backdrop { background: rgba(17, 17, 17, .85); }
   .lightbox img { max-height: calc(94vh - 3.5rem); width: auto; margin: 0 auto; }
-  .lightbox.has-caption img { max-height: calc(94vh - 14rem); }
-  .lb-caption { width: 0; min-width: 100%; padding: 1rem 1.1rem .2rem; border-top: var(--line); }
-  /* Breite Bildschirme: Text neben dem Bild statt darunter */
-  @media (min-width: 52rem) {
-    .lightbox.has-caption[open] { display: grid; grid-template-columns: auto 19rem; }
-    .lightbox.has-caption img { max-height: calc(94vh - 3.5rem); }
-    .lightbox.has-caption .lb-caption { width: auto; min-width: 0; padding: 1.5rem 1.4rem; border-top: 0; border-left: var(--line); }
-    .lightbox.has-caption .lightbox-bar { grid-column: 1 / -1; }
-  }
-  .lb-art { margin: 0; font-size: .85rem; font-variant: small-caps; letter-spacing: .08em; }
-  .lb-title { margin: .1rem 0 0; font-size: 1.3rem; font-weight: 400; line-height: 1.25; }
-  .lb-sub { margin: .1rem 0 0; font-style: italic; }
-  .lb-text { margin: .45rem 0 0; font-size: .95rem; line-height: 1.5; }
   .lightbox-bar { display: flex; justify-content: space-between; align-items: center; border-top: var(--line); padding-left: 1.1rem; }
   .lightbox-bar button {
     font: inherit; font-size: 1rem; background: var(--white); color: var(--black);
@@ -877,7 +864,6 @@
     <button type="button" class="arrow arrow--prev" id="lb-prev" aria-label="Vorherige Seite">←</button>
     <button type="button" class="arrow arrow--next" id="lb-next" aria-label="Nächste Seite">→</button>
   </div>
-  <div class="lb-caption" id="lb-caption" hidden></div>
   <div class="lightbox-bar">
     <span class="count" id="lb-count"></span>
     <button type="button" id="lb-close" aria-label="Schliessen">✕</button>
@@ -981,50 +967,6 @@ const ENTDECKEN = [
     untertitel: "Drei Beweise, warum da nichts fehlt",
     text: "Fast alle sagen zuerst: Da fehlt doch noch ein winziges bisschen. Mit Brüchen, mit einem Trick und mit der Frage nach der Lücke zeigt sich: 0,999… und 1 sind dieselbe Zahl.",
     stichworte: ["Periode", "unendlich", "Dezimalzahl", "Brüche", "Drittel", "Grenzwert", "Beweis", "0.999"] },
-];
-
-// Fertig vorbereitet, aber noch nicht auf Instagram gepostet.
-// Zum Veröffentlichen: Eintrag nach oben in ENTDECKEN verschieben und den
-// Ordner in insta/ mit hochladen (git add insta/<ordner>).
-const ENTDECKEN_VORBEREITET = [
-  { ordner: "merken-prozente-umdrehen", titel: "Prozente darf man umdrehen",
-    text: "8 % von 50 ist dasselbe wie 50 % von 8. Rechne einfach die bequemere Seite.",
-    stichworte: ["Prozent", "Prozentrechnen", "Kopfrechnen", "Trick"] },
-  { ordner: "merken-mal-11", titel: "Mal 11 in zwei Sekunden",
-    text: "Ziffern auseinanderziehen, ihre Summe in die Mitte schreiben: 43 · 11 = 473.",
-    stichworte: ["Multiplikation", "Elf", "Kopfrechnen", "Trick"] },
-  { ordner: "merken-quadrat-mit-5", titel: "Quadrieren mit 5 am Ende",
-    text: "Vordere Ziffer mal ihren Nachfolger, dann 25 anhängen: 65² = 4225.",
-    stichworte: ["Quadrat", "Quadratzahl", "hoch 2", "Kopfrechnen", "Trick"] },
-
-  { ordner: "staunen-mandelbrot", titel: "Alles aus einer Zeile",
-    text: "Die Mandelbrot-Menge entsteht aus z ↦ z² + c. Hier 10 000-fach vergrössert, und es hört nie auf.",
-    stichworte: ["Mandelbrot", "Fraktal", "komplexe Zahlen", "unendlich", "Iteration"] },
-  { ordner: "staunen-sonnenblume", titel: "Eine Sonnenblume kennt 137,5°",
-    text: "Jeder Kern dreht sich um den goldenen Winkel weiter.",
-    stichworte: ["goldener Schnitt", "goldener Winkel", "Fibonacci", "Spirale", "Natur"] },
-  { ordner: "staunen-kardioide", titel: "Hier ist keine einzige Kurve",
-    text: "Nur 300 gerade Linien: Punkt n wird mit Punkt 2n verbunden.",
-    stichworte: ["Kardioide", "Herzkurve", "Modulo", "Linien", "Kreis"] },
-  { ordner: "staunen-harmonograph", titel: "Zwei Pendel. Ein Stift.",
-    text: "Sinus mal Sinus, langsam gedämpft: So zeichnet Physik.",
-    stichworte: ["Harmonograph", "Pendel", "Sinus", "Schwingung", "Physik"] },
-  { ordner: "staunen-rosen", titel: "Blumen ohne Gärtner",
-    text: "360 Sprünge zu je 71° auf der Rosenkurve r = sin(6θ).",
-    stichworte: ["Rosenkurve", "Maurer-Rose", "Polarkoordinaten", "Sinus", "Winkel"] },
-
-  { ordner: "raetsel-ball-und-schlaeger", bilder: 2, titel: "Schläger und Ball",
-    text: "Zusammen kosten sie 1.10 Fr., der Schläger 1 Fr. mehr als der Ball. Was kostet der Ball?",
-    stichworte: ["Gleichung", "Denkfalle", "Geld"] },
-  { ordner: "raetsel-zahlenfolge", bilder: 2, titel: "Welche Zahl kommt als Nächstes?",
-    text: "2, 6, 12, 20, 30, ?",
-    stichworte: ["Folge", "Zahlenfolge", "Muster"] },
-  { ordner: "raetsel-seerosen", bilder: 2, titel: "Seerosen im Teich",
-    text: "Sie verdoppeln sich jeden Tag, nach 48 Tagen ist der Teich bedeckt. Wann war er halb voll?",
-    stichworte: ["exponentiell", "Wachstum", "verdoppeln"] },
-  { ordner: "raetsel-quadrate-zaehlen", bilder: 2, titel: "Wie viele Quadrate?",
-    text: "Ein Gitter aus 3 × 3 Feldern. Es sind mehr als 9.",
-    stichworte: ["Quadrate", "zählen", "Geometrie", "Gitter"] },
 ];
 
 // Arten in der Reihenfolge, in der sie auf der Seite erscheinen
@@ -1326,17 +1268,6 @@ if (ENTDECKEN.length) {
   $("#ent-tools").hidden = true;
   $("#ent-search").closest(".search").hidden = true;
 }
-// Text unter dem grossen Bild
-function postCaption(post) {
-  const art = artVon(post), artName = ARTEN.find(a => a.id === art)?.name || "";
-  return `
-    <p class="lb-art">${esc(artName)}</p>
-    <h2 class="lb-title">${esc(post.titel)}</h2>
-    ${post.untertitel ? `<p class="lb-sub">${esc(post.untertitel)}</p>` : ""}
-    ${post.text ? `<p class="lb-text">${esc(post.text)}</p>` : ""}
-    ${art === "raetsel" ? `<p class="lb-text"><em>Erst selbst überlegen, dann weiterblättern zur Auflösung.</em></p>` : ""}
-    ${post.instagram ? `<p class="lb-text"><a href="${esc(post.instagram)}" target="_blank" rel="noopener">Auf Instagram ansehen</a></p>` : ""}`;
-}
 // Suche und Filter nach Art
 let entArt = "alle", entQuery = "";
 function entFilter() {
@@ -1520,18 +1451,12 @@ document.addEventListener("click", e => {
     const missing = [...document.querySelectorAll("#detail [data-lb]")].map(t => t.classList.contains("is-missing"));
     const seiten = vorschauUrls(s);
     lbList = seiten.filter((_, i) => !missing[i]);
-    $("#lb-caption").hidden = true;
-    lb.classList.remove("has-caption");
     showLb(Math.max(0, lbList.indexOf(seiten[+thumb.dataset.index])));
     lb.showModal();
   }
   const post = e.target.closest("[data-post]");
   if (post) {
-    const p = ENTDECKEN[+post.dataset.post];
-    lbList = postBilder(p);
-    $("#lb-caption").innerHTML = postCaption(p);
-    $("#lb-caption").hidden = false;
-    lb.classList.add("has-caption");
+    lbList = postBilder(ENTDECKEN[+post.dataset.post]);
     showLb(0);
     lb.showModal();
   }
