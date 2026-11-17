@@ -527,6 +527,15 @@
   .plot-help code { font-family: var(--mono); font-size: .88rem; color: var(--black); }
 
   /* ---------- Entdecken: Galerie wie ein Instagram-Profil ---------- */
+  #ent-tools { min-width: 0; }
+  #ent-filter { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+  #ent-filter::-webkit-scrollbar { display: none; }
+  #ent-filter button { flex: none; white-space: nowrap; }
+  @media (max-width: 30rem) {
+    #ent-filter button { padding: .45em .62em; font-size: .88rem; }
+    #ent-filter button:first-child { padding-left: .95em; }
+    #ent-filter button:last-child { padding-right: .95em; }
+  }
   .gallery { display: grid; gap: 4px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   @media (min-width: 40rem) { .gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; } }
   @media (min-width: 64rem) { .gallery { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
@@ -1259,9 +1268,8 @@ const entEl = $("#entdecken");
 const artenDa = ARTEN.filter(a => ENTDECKEN.some(p => artVon(p) === a.id));
 if (ENTDECKEN.length) {
   entEl.innerHTML = `<div class="gallery">${ENTDECKEN.map(postHtml).join("")}</div><p class="no-results" id="ent-leer" hidden></p>`;
-  $("#ent-filter").innerHTML = ["alle", ...artenDa.map(a => a.id)].map((id, k) =>
+  $("#ent-filter").innerHTML = ["alle", ...ARTEN.map(a => a.id)].map((id, k) =>
     `<button type="button" data-art-filter="${id}" aria-pressed="${k === 0}">${id === "alle" ? "Alle" : esc(ARTEN.find(a => a.id === id).name)}</button>`).join("");
-  $("#ent-tools").hidden = artenDa.length < 2;                         // Filter erst ab zwei Arten
   $("#ent-search").closest(".search").hidden = ENTDECKEN.length < 6;  // Suche erst ab sechs Beiträgen
 } else {
   entEl.innerHTML = `<p>Hier erscheinen bald kleine Entdeckungen aus der Mathematik. Folge <a href="https://instagram.com/${esc(CONFIG.instagram)}" target="_blank" rel="noopener">@${esc(CONFIG.instagram)}</a>, dann verpasst du keine.</p>`;
@@ -1282,7 +1290,13 @@ function entFilter() {
   });
   document.querySelectorAll("[data-art-filter]").forEach(b => b.setAttribute("aria-pressed", b.dataset.artFilter === entArt));
   const leer = $("#ent-leer");
-  if (leer) { leer.hidden = n > 0; leer.textContent = n ? "" : `Nichts gefunden für «${entQuery.trim()}». Versuch es z. B. mit «Prozent» oder «Fraktal».`; }
+  if (leer) {
+    leer.hidden = n > 0;
+    const artName = ARTEN.find(a => a.id === entArt)?.name;
+    leer.innerHTML = n ? "" : entQuery.trim()
+      ? `Nichts gefunden für «${esc(entQuery.trim())}». Versuch es mit einem anderen Begriff.`
+      : `Bei «${esc(artName)}» gibt es noch keine Beiträge. Folge <a href="https://instagram.com/${esc(CONFIG.instagram)}" target="_blank" rel="noopener">@${esc(CONFIG.instagram)}</a>, dann verpasst du sie nicht.`;
+  }
 }
 $("#ent-search").addEventListener("input", e => { entQuery = e.target.value; entFilter(); });
 $("#ent-filter").addEventListener("click", e => {
