@@ -586,8 +586,8 @@
     <a href="#/" class="logo logo--sm header-logo" aria-label="Lemma – zur Startseite">L<span class="logo-rest">emma</span></a>
     <nav class="nav" aria-label="Hauptnavigation">
       <a href="#/skripte" data-nav="skripte">Skripte</a>
-      <a href="#/videos" data-nav="videos">Videos</a>
       <a href="#/labor" data-nav="labor">Labor</a>
+      <a href="#/videos" data-nav="videos">Videos</a>
       <a href="#/entdecken" data-nav="entdecken">Entdecken</a>
       <a href="#/bestellen" data-nav="bestellen" data-nur-bestellung hidden>Bestellen<span class="cart-count" id="cart-count" hidden aria-label="Skripte im Warenkorb"></span></a>
     </nav>
@@ -1207,6 +1207,8 @@ function videoHtml(v) {
       </div>
     </article>`;
 }
+// Menüpunkt «Videos» erst zeigen, wenn es Videos gibt
+$('[data-nav="videos"]').hidden = !VIDEOS.length;
 $("#videos").innerHTML = VIDEOS.length
   ? `<div class="entries">${VIDEOS.map(videoHtml).join("")}</div>`
   : `<p class="lead">Hier kommen bald Videos zu den Skripten.</p>
