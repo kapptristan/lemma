@@ -2078,7 +2078,7 @@ $("#again-btn").addEventListener("click", () => {
   function startzustand() {
     eingaben = [];
     naechsteFarbe = 0;
-    neueEingabe("a(x - b)^2 + c");
+    neueEingabe(""); // leer starten, ohne Beispielfunktion
     Object.keys(paramWerte).forEach(n => delete paramWerte[n]);
     toolId = null;
     ["deriv", "extrema", "inflect", "tangent", "area", "table"].forEach(k => (opt[k].checked = false));
