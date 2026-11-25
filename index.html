@@ -553,6 +553,8 @@
   }
   .tile-art { left: .5rem; font-variant: small-caps; letter-spacing: .06em; }
   .tile-count { right: .5rem; }
+  .tile .tile-count--video::before { display: none; }
+  .tile--video img { object-position: center 8%; }   /* Titelbild 9:16 – Titel oben sichtbar halten */
   .tile-count::before { content: ""; display: inline-block; width: .55em; height: .55em; margin-right: .3em; border: 1px solid currentColor; box-shadow: 2px -2px 0 -1px var(--white), 2px -2px 0 0 currentColor; vertical-align: .02em; }
 
   /* ---------- FAQ ---------- */
@@ -582,7 +584,8 @@
     max-width: 94vw; max-height: 94vh; width: fit-content;
   }
   .lightbox::backdrop { background: rgba(17, 17, 17, .85); }
-  .lightbox img { max-height: calc(94vh - 3.5rem); width: auto; margin: 0 auto; }
+  .lightbox img, .lightbox video { display: block; max-height: calc(94vh - 3.5rem); max-width: 94vw; width: auto; margin: 0 auto; background: #111; }
+  .lightbox [hidden] { display: none; }
   .lightbox-bar { display: flex; justify-content: space-between; align-items: center; border-top: var(--line); padding-left: 1.1rem; }
   .lightbox-bar button {
     font: inherit; font-size: 1rem; background: var(--white); color: var(--black);
@@ -888,6 +891,7 @@
 <dialog class="lightbox" id="lightbox" aria-label="Vorschau">
   <div class="lb-stage" id="lb-stage">
     <img id="lb-img" alt="">
+    <video id="lb-video" controls playsinline loop preload="metadata" hidden></video>
     <button type="button" class="arrow arrow--prev" id="lb-prev" aria-label="Vorherige Seite">←</button>
     <button type="button" class="arrow arrow--next" id="lb-next" aria-label="Nächste Seite">→</button>
   </div>
@@ -985,11 +989,17 @@ const VIDEOS = [];
    Neuer Beitrag: Ordner anlegen und hier einen Eintrag ergänzen.
    - ordner:      Name des Ordners in insta/
    - bilder:      Anzahl Bilder (Standard 1)
+   - video:       true bei einem Reel: der Ordner enthält video.mp4 und
+                  titelbild.png (Vorschau in der Galerie)
    - titel, untertitel (optional), text (optional)
    - stichworte:  optional, damit die Suche mehr findet
    - instagram:   optional, Link zum Post
    ===================================================================== */
 const ENTDECKEN = [
+  { ordner: "staunen-fourier-kreise", video: true, titel: "Mit Kreisen alles zeichnen",
+    untertitel: "300 drehende Kreise zeichnen das Lemma-Zeichen",
+    text: "Ein Kreis dreht sich, auf ihm ein zweiter, darauf ein dritter … Mit genug Kreisen lässt sich jede geschlossene Kurve nachzeichnen. Das hat Joseph Fourier 1807 entdeckt: Jede Kurve ist eine Summe drehender Kreise.",
+    stichworte: ["Fourier", "Fourier-Reihe", "Kreise", "Epizykel", "Kurve", "Reel", "Video", "komplexe Zahlen"] },
   { ordner: "erklaert-riemann-vermutung", bilder: 6, titel: "Die Riemannsche Vermutung",
     untertitel: "Das berühmteste Rätsel der Mathematik – vermutlich gelöst",
     text: "Seit 1859 offen, 1 Million Dollar Preisgeld: Liegen alle wichtigen Nullstellen der Zeta-Funktion auf einer einzigen Linie? Am 20. November 2026 legten Levent Alpöge und die KI Claude einen computergeprüften Beweis vor. Fachleute prüfen ihn noch.",
@@ -1282,15 +1292,20 @@ $("#videos").innerHTML = VIDEOS.length
 
 /* ---------- Entdecken ---------- */
 const artVon = post => post.ordner.split("-")[0];
-const postBilder = post => Array.from({ length: post.bilder || 1 },
-  (_, i) => `insta/${encodeURIComponent(post.ordner)}/${String(i + 1).padStart(2, "0")}.png`);
+const postBilder = post => post.video
+  ? [`insta/${encodeURIComponent(post.ordner)}/video.mp4`]
+  : Array.from({ length: post.bilder || 1 },
+      (_, i) => `insta/${encodeURIComponent(post.ordner)}/${String(i + 1).padStart(2, "0")}.png`);
+const postVorschau = post => post.video ? `insta/${encodeURIComponent(post.ordner)}/titelbild.png` : postBilder(post)[0];
+const istVideo = url => url.endsWith(".mp4");
 function postHtml(post) {
   const i = ENTDECKEN.indexOf(post), art = artVon(post), bilder = postBilder(post);
   const artName = ARTEN.find(a => a.id === art)?.name || "";
   return `
-    <button type="button" class="tile tile--${art}" data-post="${i}" data-id="${i}" aria-label="${esc(artName)}: ${esc(post.titel)}">
-      <img src="${esc(bilder[0])}" alt="" loading="lazy">
+    <button type="button" class="tile tile--${art}${post.video ? " tile--video" : ""}" data-post="${i}" data-id="${i}" aria-label="${esc(artName)}: ${esc(post.titel)}">
+      <img src="${esc(postVorschau(post))}" alt="" loading="lazy">
       <span class="tile-art">${esc(artName)}</span>
+      ${post.video ? `<span class="tile-count tile-count--video">▶ Reel</span>` : ""}
       ${art !== "raetsel" && bilder.length > 1 ? `<span class="tile-count" aria-hidden="true">${bilder.length}</span>` : ""}
     </button>`;
 }
@@ -1454,13 +1469,23 @@ function route() {
 }
 
 /* ---------- Lightbox ---------- */
-const lb = $("#lightbox"), lbImg = $("#lb-img");
+const lb = $("#lightbox"), lbImg = $("#lb-img"), lbVideo = $("#lb-video");
 let lbList = [], lbIndex = 0;
 function showLb(i) {
   lbIndex = (i + lbList.length) % lbList.length;
-  lbImg.src = lbList[lbIndex];
-  lbImg.alt = `Vorschau Seite ${lbIndex + 1}`;
-  $("#lb-count").textContent = `${lbIndex + 1} / ${lbList.length}`;
+  const url = lbList[lbIndex], video = istVideo(url);
+  lbImg.hidden = video; lbVideo.hidden = !video;
+  if (video) {
+    lbImg.removeAttribute("src");
+    if (lbVideo.getAttribute("src") !== url) lbVideo.src = url;
+    lbVideo.currentTime = 0;
+    lbVideo.play().catch(() => {});
+  } else {
+    lbVideo.pause();
+    lbImg.src = url;
+    lbImg.alt = `Vorschau Seite ${lbIndex + 1}`;
+  }
+  $("#lb-count").textContent = video ? "Reel" : `${lbIndex + 1} / ${lbList.length}`;
   const multi = lbList.length > 1;
   $("#lb-prev").hidden = !multi;
   $("#lb-next").hidden = !multi;
@@ -1468,6 +1493,10 @@ function showLb(i) {
 $("#lb-prev").addEventListener("click", () => showLb(lbIndex - 1));
 $("#lb-next").addEventListener("click", () => showLb(lbIndex + 1));
 $("#lb-close").addEventListener("click", () => lb.close());
+// Reel beim Schliessen anhalten (Knopf, Hintergrund, Esc, Seitenwechsel)
+const lbCloseNative = lb.close.bind(lb);
+lb.close = () => { lbVideo.pause(); lbCloseNative(); };
+["close", "cancel"].forEach(ev => lb.addEventListener(ev, () => lbVideo.pause()));
 lb.addEventListener("click", e => { if (e.target === lb) lb.close(); }); // Klick auf Hintergrund
 lb.addEventListener("keydown", e => {
   if (e.key === "ArrowLeft") showLb(lbIndex - 1);

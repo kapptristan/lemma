@@ -7,3 +7,5 @@ latex/
 # Instagram: Skripte, Schriften und das grosse Video nicht veröffentlichen
 insta/_werkzeuge/
 insta/**/*.mp4
+# Reels, die auf der Website laufen (Entdecken)
+!insta/staunen-fourier-kreise/video.mp4
