@@ -554,7 +554,13 @@
   .tile-art { left: .5rem; font-variant: small-caps; letter-spacing: .06em; }
   .tile-count { right: .5rem; }
   .tile .tile-count--video::before { display: none; }
-  .tile--video img { object-position: center; }  /* Titelbild 9:16: Titel + Bild sitzen in der Bildmitte */
+  /* Titelbild 9:16: den 3:4-Ausschnitt (y 240–1680, wie im Profilraster) ganz zeigen,
+     so sitzen Titel + Bild mittig und der Titel liegt unter den Etiketten */
+  .tile--video img {
+    position: absolute; left: 50%; top: -16.667%; height: 133.333%; width: auto;
+    object-fit: fill; transform: translateX(-50%);
+  }
+  .tile--video:hover img { transform: translateX(-50%) scale(1.03); }
   .tile-count::before { content: ""; display: inline-block; width: .55em; height: .55em; margin-right: .3em; border: 1px solid currentColor; box-shadow: 2px -2px 0 -1px var(--white), 2px -2px 0 0 currentColor; vertical-align: .02em; }
 
   /* ---------- FAQ ---------- */
@@ -996,7 +1002,7 @@ const VIDEOS = [];
    - instagram:   optional, Link zum Post
    ===================================================================== */
 const ENTDECKEN = [
-  { ordner: "staunen-fourier-kreise", video: true, titel: "Mit Kreisen alles zeichnen",
+  { ordner: "staunen-fourier-kreise", video: true, v: 2, titel: "Mit Kreisen alles zeichnen",
     untertitel: "300 drehende Kreise zeichnen das Lemma-Zeichen",
     text: "Ein Kreis dreht sich, auf ihm ein zweiter, darauf ein dritter … Mit genug Kreisen lässt sich jede geschlossene Kurve nachzeichnen. Das hat Joseph Fourier 1807 entdeckt: Jede Kurve ist eine Summe drehender Kreise.",
     stichworte: ["Fourier", "Fourier-Reihe", "Kreise", "Epizykel", "Kurve", "Reel", "Video", "komplexe Zahlen"] },
@@ -1296,7 +1302,7 @@ const postBilder = post => post.video
   ? [`insta/${encodeURIComponent(post.ordner)}/video.mp4`]
   : Array.from({ length: post.bilder || 1 },
       (_, i) => `insta/${encodeURIComponent(post.ordner)}/${String(i + 1).padStart(2, "0")}.png`);
-const postVorschau = post => post.video ? `insta/${encodeURIComponent(post.ordner)}/titelbild.png` : postBilder(post)[0];
+const postVorschau = post => post.video ? `insta/${encodeURIComponent(post.ordner)}/titelbild.png?v=${post.v || 1}` : postBilder(post)[0];
 const istVideo = url => url.endsWith(".mp4");
 function postHtml(post) {
   const i = ENTDECKEN.indexOf(post), art = artVon(post), bilder = postBilder(post);
