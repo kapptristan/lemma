@@ -9,3 +9,4 @@ insta/_werkzeuge/
 insta/**/*.mp4
 # Reels, die auf der Website laufen (Entdecken)
 !insta/staunen-fourier-kreise/video.mp4
+!insta/staunen-gabriels-horn/video.mp4
