@@ -994,9 +994,11 @@ const VIDEOS = [];
    - titel, untertitel (optional), text (optional)
    - stichworte:  optional, damit die Suche mehr findet
    - instagram:   optional, Link zum Post
+   - version:     optional; nach einem Bild-Update erhöhen, damit Browser
+                  die neuen Bilder laden statt der zwischengespeicherten
    ===================================================================== */
 const ENTDECKEN = [
-  { ordner: "staunen-gabriels-horn", video: true, titel: "Gabriels Horn",
+  { ordner: "staunen-gabriels-horn", video: true, version: 2, titel: "Gabriels Horn",
     untertitel: "Füllen ja, anmalen nie",
     text: "Dreht man die Kurve y = 1/x ab x = 1 um die x-Achse, entsteht ein unendlich langes Horn. Sein Volumen ist genau π – die Oberfläche aber wächst ohne Ende. Man könnte es mit Farbe füllen, aber nie anmalen.",
     stichworte: ["Gabriels Horn", "Torricelli", "Rotationskörper", "Volumen", "Oberfläche", "Integral", "uneigentliches Integral", "unendlich", "3D", "Reel", "Video"] },
@@ -1297,11 +1299,11 @@ $("#videos").innerHTML = VIDEOS.length
 /* ---------- Entdecken ---------- */
 const artVon = post => post.ordner.split("-")[0];
 const postBilder = post => post.video
-  ? [`insta/${encodeURIComponent(post.ordner)}/video.mp4`]
+  ? [`insta/${encodeURIComponent(post.ordner)}/video.mp4${cacheParam(post)}`]
   : Array.from({ length: post.bilder || 1 },
-      (_, i) => `insta/${encodeURIComponent(post.ordner)}/${String(i + 1).padStart(2, "0")}.png`);
-const postVorschau = post => post.video ? `insta/${encodeURIComponent(post.ordner)}/vorschau.png` : postBilder(post)[0];
-const istVideo = url => url.endsWith(".mp4");
+      (_, i) => `insta/${encodeURIComponent(post.ordner)}/${String(i + 1).padStart(2, "0")}.png${cacheParam(post)}`);
+const postVorschau = post => post.video ? `insta/${encodeURIComponent(post.ordner)}/vorschau.png${cacheParam(post)}` : postBilder(post)[0];
+const istVideo = url => url.split("?")[0].endsWith(".mp4");
 function postHtml(post) {
   const i = ENTDECKEN.indexOf(post), art = artVon(post), bilder = postBilder(post);
   const artName = ARTEN.find(a => a.id === art)?.name || "";
