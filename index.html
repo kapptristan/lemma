@@ -400,9 +400,47 @@
   @media (min-width: 56rem) {
     .plot-layout { grid-template-columns: 19rem minmax(0, 1fr); grid-template-rows: auto 1fr; grid-template-areas: "panel stage" "panel info"; column-gap: 2.5rem; row-gap: 2.25rem; align-items: start; }
   }
-  .plot-stage { grid-area: stage; position: relative; border: var(--line); background: var(--white); }
+  .plot-stage { grid-area: stage; border: var(--line); background: var(--white); }
+  .plot-canvas-wrap { position: relative; }
   .plot-canvas { display: block; width: 100%; height: clamp(18rem, 48vh, 40rem); touch-action: none; cursor: grab; }
   @media (min-width: 56rem) { .plot-canvas { height: clamp(20rem, 64vh, 40rem); } }
+  .plot-bar {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .3rem 1.2rem;
+    padding: .35rem .7rem; border-top: var(--line); font-size: .95rem;
+  }
+  .plot-bar-group { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem 1.1rem; }
+  .icon-btn { width: 1.9rem; height: 1.9rem; padding: 0; border: 0; background: none; font: inherit; font-size: 1.25rem; line-height: 1; color: var(--black); cursor: pointer; }
+  .icon-btn:hover:not(:disabled) { background: var(--grey); }
+  .icon-btn:disabled { color: #b5b5b5; cursor: default; }
+  #panel-toggle { display: none; }
+
+  /* Vollbild für den Beamer: Grafik füllt den Bildschirm, alles grösser */
+  body.labor-vollbild { overflow: hidden; }
+  .plot-layout.is-vollbild {
+    position: fixed; inset: 0; z-index: 50; margin: 0; padding: 0 0 0 1.5rem; background: var(--white);
+    grid-template-columns: 24rem minmax(0, 1fr); grid-template-rows: auto 1fr; grid-template-areas: "panel stage" "info stage";
+    column-gap: 1.5rem; row-gap: 1.5rem; overflow-y: auto; overscroll-behavior: contain;
+  }
+  .plot-layout.is-vollbild .plot-panel { padding-top: 1.2rem; zoom: 1.2; }
+  .plot-layout.is-vollbild .plot-info { padding-bottom: 1.5rem; zoom: 1.2; }
+  .plot-layout.is-vollbild .plot-stage {
+    position: sticky; top: 0; grid-row: 1 / span 2; align-self: start; height: 100vh; height: 100dvh;
+    display: flex; flex-direction: column; border-width: 0 0 0 1px;
+  }
+  .plot-layout.is-vollbild .plot-canvas-wrap { flex: 1; min-height: 0; }
+  .plot-layout.is-vollbild .plot-canvas { height: 100%; }
+  .plot-layout.is-vollbild .plot-bar { font-size: 1.1rem; }
+  .plot-layout.is-vollbild .plot-readout { font-size: 1.4rem; }
+  .plot-layout.is-vollbild .plot-tools button { width: 2.8rem; height: 2.8rem; font-size: 1.4rem; }
+  .plot-layout.is-vollbild #panel-toggle { display: inline; }
+  .plot-layout.is-vollbild.ohne-panel { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage"; padding: 0; }
+  .plot-layout.is-vollbild.ohne-panel .plot-panel, .plot-layout.is-vollbild.ohne-panel .plot-info { display: none; }
+  .plot-layout.is-vollbild.ohne-panel .plot-stage { grid-row: auto; border: 0; }
+  @media (max-width: 55.99rem) {
+    .plot-layout.is-vollbild { padding: 0; grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage"; }
+    .plot-layout.is-vollbild .plot-panel, .plot-layout.is-vollbild .plot-info, .plot-layout.is-vollbild #panel-toggle { display: none; }
+    .plot-layout.is-vollbild .plot-stage { grid-row: auto; border: 0; }
+  }
   .plot-canvas.is-dragging { cursor: grabbing; }
   .plot-tools { position: absolute; top: .6rem; right: .6rem; display: flex; flex-direction: column; border: var(--line); background: var(--white); }
   .plot-tools button {
@@ -507,6 +545,9 @@
   .mini input { width: 3.6rem; padding: .1rem .15rem; font-family: var(--mono); font-size: .95rem; border: 0; border-bottom: var(--line); border-radius: 0; background: none; color: var(--black); }
   .mini input:focus { outline: 0; border-bottom-width: 2px; }
   .mini input[aria-invalid="true"] { border-bottom-style: dashed; }
+  .achsen { display: grid; grid-template-columns: 1rem auto auto; justify-content: start; gap: .35rem 1rem; align-items: baseline; }
+  .achsen input { width: 4rem; }
+  .achsen-checks { margin-top: .6rem; }
 
   /* unter der Grafik: Ergebnisse wie im Skript */
   .plot-info { grid-area: info; display: flex; flex-direction: column; gap: 2rem; }
@@ -705,15 +746,29 @@
     <div class="wrap">
       <h1 class="page-title" tabindex="-1">Funktionslabor</h1>
       <p class="lead">Funktionen zeichnen, verschieben, ableiten und integrieren.</p>
-      <div class="plot-layout">
+      <div class="plot-layout" id="plot-layout">
         <div class="plot-stage">
-          <canvas class="plot-canvas" id="plot" aria-label="Koordinatensystem"></canvas>
-          <div class="plot-tools">
-            <button type="button" id="zoom-in" aria-label="Hineinzoomen">+</button>
-            <button type="button" id="zoom-out" aria-label="Herauszoomen">−</button>
-            <button type="button" id="zoom-reset" aria-label="Ansicht zurücksetzen">⌂</button>
+          <div class="plot-canvas-wrap">
+            <canvas class="plot-canvas" id="plot" aria-label="Koordinatensystem"></canvas>
+            <div class="plot-tools">
+              <button type="button" id="zoom-in" aria-label="Hineinzoomen" title="Hineinzoomen">+</button>
+              <button type="button" id="zoom-out" aria-label="Herauszoomen" title="Herauszoomen">−</button>
+              <button type="button" id="zoom-reset" aria-label="Ansicht zurücksetzen" title="Ansicht zurücksetzen">⌂</button>
+            </div>
+            <div class="plot-readout m" id="readout" hidden></div>
           </div>
-          <div class="plot-readout m" id="readout" hidden></div>
+          <div class="plot-bar">
+            <span class="plot-bar-group">
+              <button type="button" class="icon-btn" id="undo" aria-label="Rückgängig" title="Rückgängig (Strg+Z)" disabled>↶</button>
+              <button type="button" class="icon-btn" id="redo" aria-label="Wiederholen" title="Wiederholen (Strg+Y)" disabled>↷</button>
+            </span>
+            <span class="plot-bar-group">
+              <button type="button" class="link-btn" id="img-save">Bild speichern</button>
+              <button type="button" class="link-btn" id="img-copy" hidden>Bild kopieren</button>
+              <button type="button" class="link-btn" id="panel-toggle" aria-pressed="false">Eingaben ausblenden</button>
+              <button type="button" class="link-btn" id="beamer" aria-pressed="false">Vollbild</button>
+            </span>
+          </div>
         </div>
 
         <div class="plot-panel">
@@ -725,7 +780,7 @@
               <button type="button" class="link-btn" id="reset">Zurücksetzen</button>
             </p>
             <div class="kbd" id="kbd" aria-label="Mathe-Tastatur" hidden></div>
-            <p class="plot-help">Funktion <code>x^2</code>, Punkt <code>(2|1)</code>, Gerade <code>x = 3</code>. Buchstaben wie <i>a</i> oder <i>k</i> werden zu Reglern.</p>
+            <p class="plot-help">Funktion <code>x^2</code>, Punkt <code>(2|1)</code>, Gerade <code>x = 3</code>. Buchstaben wie <i>a</i> oder <i>k</i> werden zu Reglern. Punkte lassen sich im Bild ziehen, <code>(a|a^2)</code> wandert dabei auf der Parabel.</p>
           </div>
           <div class="plot-box" id="slider-box" hidden>
             <h2>Parameter</h2>
@@ -764,6 +819,21 @@
                   <label>Schritt <input type="text" id="tab-step" value="1" autocomplete="off" spellcheck="false"></label>
                 </div>
               </div>
+            </div>
+          </div>
+          <div class="plot-box">
+            <h2>Achsen</h2>
+            <div class="mini achsen">
+              <span class="m"><i>x</i></span>
+              <label>von <input type="text" id="ax-xmin" autocomplete="off" spellcheck="false" aria-label="x-Achse von"></label>
+              <label>bis <input type="text" id="ax-xmax" autocomplete="off" spellcheck="false" aria-label="x-Achse bis"></label>
+              <span class="m"><i>y</i></span>
+              <label>von <input type="text" id="ax-ymin" autocomplete="off" spellcheck="false" aria-label="y-Achse von"></label>
+              <label>bis <input type="text" id="ax-ymax" autocomplete="off" spellcheck="false" aria-label="y-Achse bis"></label>
+            </div>
+            <div class="checks achsen-checks">
+              <label><input type="checkbox" id="opt-grid" checked> Gitter</label>
+              <label><input type="checkbox" id="opt-labels" checked> Zahlen an den Achsen</label>
             </div>
           </div>
         </div>
@@ -810,7 +880,7 @@
         </details>
         <details>
           <summary>Wofür ist das Funktionslabor?</summary>
-          <p>Zum Ausprobieren. Du tippst eine Funktion ein, ziehst an den Reglern und siehst sofort, was passiert. Ableitung, Tangente, Integral und Wertetabelle blendest du mit einem Klick ein. So wird aus einer Formel ein Bild, das man versteht.</p>
+          <p>Zum Ausprobieren. Du tippst eine Funktion ein, ziehst an den Reglern und siehst sofort, was passiert. Ableitung, Tangente, Integral und Wertetabelle blendest du mit einem Klick ein. So wird aus einer Formel ein Bild, das man versteht. Im Unterricht zeigt «Vollbild» alles gross für den Beamer, und mit «Bild speichern» kommt der Graph aufs Arbeitsblatt.</p>
         </details>
         <details>
           <summary>Wie gebe ich im Labor etwas ein?</summary>
@@ -1826,12 +1896,14 @@ $("#again-btn").addEventListener("click", () => {
   let eingaben = [];
   let naechsteId = 1, naechsteFarbe = 0, toolId = null;
   const paramWerte = {};
-  const view = { cx: 0, cy: 0, scale: 40 };
-  let W = 0, H = 0, dpr = 1, hover = null;
+  const view = { cx: 0, cy: 0, sx: 40, sy: 40 }; // Mitte und Pixel pro Einheit (x und y getrennt)
+  // W, H in «logischen» Pixeln; S vergrössert alles für den Beamer, F = Pixel pro logischem Pixel
+  let W = 0, H = 0, dpr = 1, S = 1, F = 1, hover = null;
   let tanX0 = 1, areaA = 0, areaB = 2, tabStart = -3, tabStep = 1;
   const opt = {
     deriv: $("#opt-deriv"), zeros: $("#opt-zeros"), extrema: $("#opt-extrema"), inflect: $("#opt-inflect"),
     intersect: $("#opt-intersect"), tangent: $("#opt-tangent"), area: $("#opt-area"), table: $("#opt-table"),
+    grid: $("#opt-grid"), labels: $("#opt-labels"),
   };
   const auswerten = e => x => e.d.c.f(x, paramWerte);
   const funktionen = () => eingaben.filter(e => e.an && e.d.kind === "fn");
@@ -2145,8 +2217,7 @@ $("#again-btn").addEventListener("click", () => {
     Object.keys(paramWerte).forEach(n => delete paramWerte[n]);
     toolId = null;
     ["deriv", "extrema", "inflect", "tangent", "area", "table"].forEach(k => (opt[k].checked = false));
-    opt.zeros.checked = true;
-    opt.intersect.checked = true;
+    ["zeros", "intersect", "grid", "labels"].forEach(k => (opt[k].checked = true));
     tanX0 = 1; areaA = 0; areaB = 2; tabStart = -3; tabStep = 1;
     $("#area-a").value = "0"; $("#area-b").value = "2"; $("#tab-start").value = "-3"; $("#tab-step").value = "1";
     $("#rect-n").value = 0;
@@ -2169,10 +2240,10 @@ $("#again-btn").addEventListener("click", () => {
     const s = a >= 1e6 || a < 1e-3 ? v.toPrecision(3) : String(+v.toFixed(3));
     return s.replace("-", "−");
   }
-  const toPx = x => W / 2 + (x - view.cx) * view.scale;
-  const toPy = y => H / 2 - (y - view.cy) * view.scale;
-  const fromPx = px => view.cx + (px - W / 2) / view.scale;
-  const fromPy = py => view.cy - (py - H / 2) / view.scale;
+  const toPx = x => W / 2 + (x - view.cx) * view.sx;
+  const toPy = y => H / 2 - (y - view.cy) * view.sy;
+  const fromPx = px => view.cx + (px - W / 2) / view.sx;
+  const fromPy = py => view.cy - (py - H / 2) / view.sy;
   const clampPy = py => Math.max(-4 * H - 1000, Math.min(5 * H + 1000, py));
   function niceStep(raw) {
     const p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p;
@@ -2294,8 +2365,9 @@ $("#again-btn").addEventListener("click", () => {
   }
 
   function gitter() {
-    const step = niceStep(90 / view.scale);
-    const minor = step / (Math.round(step / Math.pow(10, Math.floor(Math.log10(step)))) === 2 ? 4 : 5);
+    const stepX = niceStep(90 / view.sx), stepY = niceStep(90 / view.sy);
+    const fein = step => step / (Math.round(step / Math.pow(10, Math.floor(Math.log10(step)))) === 2 ? 4 : 5);
+    const minorX = fein(stepX), minorY = fein(stepY);
     const x0 = fromPx(0), x1 = fromPx(W), y0 = fromPy(H), y1 = fromPy(0);
     const linie = (horiz, v, farbe) => {
       ctx.strokeStyle = farbe; ctx.beginPath();
@@ -2305,38 +2377,45 @@ $("#again-btn").addEventListener("click", () => {
     };
     // nur ein ruhiges Raster, Achsen mit Pfeilspitzen und Teilstrichen
     ctx.lineWidth = 1;
-    for (let v = Math.ceil(x0 / step) * step; v <= x1; v += step) linie(false, v, "#e8e8e8");
-    for (let v = Math.ceil(y0 / step) * step; v <= y1; v += step) linie(true, v, "#e8e8e8");
+    if (opt.grid.checked) {
+      for (let v = Math.ceil(x0 / stepX) * stepX; v <= x1; v += stepX) linie(false, v, "#e8e8e8");
+      for (let v = Math.ceil(y0 / stepY) * stepY; v <= y1; v += stepY) linie(true, v, "#e8e8e8");
+    }
     ctx.lineWidth = 1.2;
     linie(false, 0, "#111"); linie(true, 0, "#111");
+    const ganz = (v, step) => Math.abs(v / step - Math.round(v / step)) < 1e-6;
     {
       const axp = Math.round(toPx(0)) + .5, ayp = Math.round(toPy(0)) + .5;
       ctx.fillStyle = "#111";
       if (ayp > 0 && ayp < H) { ctx.beginPath(); ctx.moveTo(W - 1, ayp); ctx.lineTo(W - 10, ayp - 4); ctx.lineTo(W - 10, ayp + 4); ctx.fill(); }
       if (axp > 0 && axp < W) { ctx.beginPath(); ctx.moveTo(axp, 1); ctx.lineTo(axp - 4, 10); ctx.lineTo(axp + 4, 10); ctx.fill(); }
       ctx.strokeStyle = "#111"; ctx.lineWidth = 1; ctx.beginPath();
-      for (let v = Math.ceil(x0 / minor) * minor; v <= x1; v += minor) { const p = Math.round(toPx(v)) + .5, l = Math.abs(v / step - Math.round(v / step)) < 1e-6 ? 4 : 2; ctx.moveTo(p, ayp - l); ctx.lineTo(p, ayp + l); }
-      for (let v = Math.ceil(y0 / minor) * minor; v <= y1; v += minor) { const p = Math.round(toPy(v)) + .5, l = Math.abs(v / step - Math.round(v / step)) < 1e-6 ? 4 : 2; ctx.moveTo(axp - l, p); ctx.lineTo(axp + l, p); }
+      for (let v = Math.ceil(x0 / minorX) * minorX; v <= x1; v += minorX) { const p = Math.round(toPx(v)) + .5, l = ganz(v, stepX) ? 4 : 2; ctx.moveTo(p, ayp - l); ctx.lineTo(p, ayp + l); }
+      for (let v = Math.ceil(y0 / minorY) * minorY; v <= y1; v += minorY) { const p = Math.round(toPy(v)) + .5, l = ganz(v, stepY) ? 4 : 2; ctx.moveTo(axp - l, p); ctx.lineTo(axp + l, p); }
       ctx.stroke();
     }
 
     ctx.fillStyle = "#111"; ctx.font = FONT;
     const ax = Math.min(Math.max(toPx(0), 0), W), ay = Math.min(Math.max(toPy(0), 0), H);
-    const dez = Math.max(0, -Math.floor(Math.log10(step) + 1e-9));
-    const zahl = v => (Math.abs(v) < step / 2 ? "0" : v.toFixed(dez)).replace("-", "−");
-    ctx.textAlign = "center"; ctx.textBaseline = "top";
-    const ly = Math.min(ay + 5, H - 20);
-    for (let v = Math.ceil(x0 / step) * step; v <= x1; v += step) if (Math.abs(v) >= step / 2) textHalo(zahl(v), toPx(v), ly);
-    ctx.textBaseline = "middle";
-    const links = ax > 40;
-    ctx.textAlign = links ? "right" : "left";
-    const lx = links ? Math.min(ax - 6, W - 6) : ax + 6;
-    for (let v = Math.ceil(y0 / step) * step; v <= y1; v += step) if (Math.abs(v) >= step / 2) textHalo(zahl(v), lx, toPy(v));
-    if (toPx(0) > 0 && toPx(0) < W && toPy(0) > 0 && toPy(0) < H) { ctx.textAlign = "right"; ctx.textBaseline = "top"; textHalo("0", toPx(0) - 5, toPy(0) + 5); }
+    if (opt.labels.checked) {
+      const zahl = (v, step) => {
+        const dez = Math.max(0, -Math.floor(Math.log10(step) + 1e-9));
+        return (Math.abs(v) < step / 2 ? "0" : v.toFixed(dez)).replace("-", "−");
+      };
+      ctx.textAlign = "center"; ctx.textBaseline = "top";
+      const ly = Math.min(ay + 5, H - 20);
+      for (let v = Math.ceil(x0 / stepX) * stepX; v <= x1; v += stepX) if (Math.abs(v) >= stepX / 2) textHalo(zahl(v, stepX), toPx(v), ly);
+      ctx.textBaseline = "middle";
+      const links = ax > 40;
+      ctx.textAlign = links ? "right" : "left";
+      const lx = links ? Math.min(ax - 6, W - 6) : ax + 6;
+      for (let v = Math.ceil(y0 / stepY) * stepY; v <= y1; v += stepY) if (Math.abs(v) >= stepY / 2) textHalo(zahl(v, stepY), lx, toPy(v));
+      if (toPx(0) > 0 && toPx(0) < W && toPy(0) > 0 && toPy(0) < H) { ctx.textAlign = "right"; ctx.textBaseline = "top"; textHalo("0", toPx(0) - 5, toPy(0) + 5); }
+    }
     ctx.font = FONT_IT;
     ctx.textAlign = "right"; ctx.textBaseline = "bottom"; textHalo("x", W - 8, ay - 4 < 18 ? ay + 24 : ay - 4);
     ctx.textAlign = "left"; ctx.textBaseline = "top"; textHalo("y", ax + 8 > W - 20 ? ax - 20 : ax + 8, 6);
-    return { step, ay };
+    return { ay };
   }
 
   function flaecheZeichnen(e, f) {
@@ -2387,7 +2466,7 @@ $("#again-btn").addEventListener("click", () => {
     ctx.moveTo(0, clampPy(toPy(y0 + m * (xl - tanX0)))); ctx.lineTo(W, clampPy(toPy(y0 + m * (xr - tanX0))));
     ctx.stroke();
     // Steigungsdreieck
-    const dx = niceStep(45 / view.scale), dy = m * dx;
+    const dx = niceStep(45 / view.sx), dy = m * dx;
     const p0 = [toPx(tanX0), toPy(y0)], p1 = [toPx(tanX0 + dx), toPy(y0)], p2 = [toPx(tanX0 + dx), clampPy(toPy(y0 + dy))];
     ctx.beginPath(); ctx.moveTo(...p0); ctx.lineTo(...p1); ctx.lineTo(...p2);
     ctx.fillStyle = alpha(e.farbe, .08); ctx.fill();
@@ -2407,9 +2486,9 @@ $("#again-btn").addEventListener("click", () => {
   function draw() {
     geplant = false;
     if (!W || !H) return;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.setTransform(F, 0, 0, F, 0, 0);
     ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, W, H);
-    const { step, ay } = gitter();
+    const { ay } = gitter();
     const fs = funktionen();
     const tool = toolEingabe();
     const tf = tool && auswerten(tool);
@@ -2460,6 +2539,7 @@ $("#again-btn").addEventListener("click", () => {
       if (!Number.isFinite(x) || !Number.isFinite(y)) return;
       const px = toPx(x), py = toPy(y);
       ctx.beginPath(); ctx.arc(px, py, 5.5, 0, 2 * Math.PI); ctx.fillStyle = e.farbe; ctx.fill();
+      if (ziehbar(e)) { ctx.beginPath(); ctx.arc(px, py, 8.5, 0, 2 * Math.PI); ctx.lineWidth = 1.5; ctx.strokeStyle = alpha(e.farbe, .45); ctx.stroke(); }
       ctx.font = FONT_IT; ctx.textAlign = "left"; ctx.textBaseline = "bottom";
       textHalo(e.name, px + 7, py - 5);
       punkte.push({ e, x, y, art: "Punkt", eigen: true });
@@ -2468,6 +2548,8 @@ $("#again-btn").addEventListener("click", () => {
     hoverZeichnen(fs, punkte, ay);
     letzteInfos = { punkte, tangente, flaeche, fs };
     renderInfo();
+    achsenFelder();
+    merkenSpaeter();
   }
 
   function hoverZeichnen(fs, punkte, ay) {
@@ -2565,39 +2647,120 @@ $("#again-btn").addEventListener("click", () => {
   /* ---------- Grösse, Zoom & Verschieben ---------- */
   function resetView() {
     view.cx = 0; view.cy = 0;
-    view.scale = Math.max(20, Math.min(W, H) / 14);
+    view.sx = view.sy = Math.max(20, Math.min(W, H) / 14);
     schedule();
   }
-  new ResizeObserver(() => {
+  const bereich = () => ({ x0: fromPx(0), x1: fromPx(W), y0: fromPy(H), y1: fromPy(0) });
+  let einpassenNach = null; // Bereich, der nach der nächsten Grössenänderung ganz sichtbar bleiben soll
+  function groesse() {
     const neu = !W;
     dpr = window.devicePixelRatio || 1;
-    W = canvas.clientWidth; H = canvas.clientHeight;
-    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
-    if (neu && W) resetView(); else schedule();
-  }).observe(canvas);
+    F = dpr * S;
+    const cw = canvas.clientWidth, ch = canvas.clientHeight;
+    W = cw / S; H = ch / S;
+    canvas.width = Math.round(cw * dpr); canvas.height = Math.round(ch * dpr);
+    if (!W || !H) return;
+    if (neu) resetView();
+    else if (einpassenNach) { einpassen(einpassenNach); einpassenNach = null; }
+    else schedule();
+  }
+  // Bereich ganz zeigen, das Verhältnis der Einheiten auf x und y bleibt
+  function einpassen(b) {
+    const k = Math.min(W / (b.x1 - b.x0) / view.sx, H / (b.y1 - b.y0) / view.sy);
+    if (Number.isFinite(k) && k > 0) { view.sx *= k; view.sy *= k; }
+    view.cx = (b.x0 + b.x1) / 2; view.cy = (b.y0 + b.y1) / 2;
+    schedule();
+  }
+  new ResizeObserver(groesse).observe(canvas);
 
   function zoomAt(px, py, factor) {
     const wx = fromPx(px), wy = fromPy(py);
-    view.scale = Math.min(1e6, Math.max(1e-3, view.scale * factor));
-    view.cx = wx - (px - W / 2) / view.scale;
-    view.cy = wy + (py - H / 2) / view.scale;
+    const k = Math.min(1e6 / Math.max(view.sx, view.sy), Math.max(1e-3 / Math.min(view.sx, view.sy), factor));
+    view.sx *= k; view.sy *= k;
+    view.cx = wx - (px - W / 2) / view.sx;
+    view.cy = wy + (py - H / 2) / view.sy;
     schedule();
   }
   $("#zoom-in").addEventListener("click", () => zoomAt(W / 2, H / 2, 1.5));
   $("#zoom-out").addEventListener("click", () => zoomAt(W / 2, H / 2, 1 / 1.5));
   $("#zoom-reset").addEventListener("click", resetView);
+  const pos = e => { const r = canvas.getBoundingClientRect(); return { x: (e.clientX - r.left) / S, y: (e.clientY - r.top) / S }; };
   canvas.addEventListener("wheel", e => {
     e.preventDefault();
-    const r = canvas.getBoundingClientRect();
+    const p = pos(e);
     const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
-    zoomAt(e.clientX - r.left, e.clientY - r.top, Math.exp(-dy * 0.0015));
+    zoomAt(p.x, p.y, Math.exp(-dy * 0.0015));
   }, { passive: false });
 
-  // Was liegt unter dem Zeiger? Tangentenpunkt oder Integralgrenze → ziehen statt verschieben
+  /* ---------- Achsenbereich eintippen ---------- */
+  const achsFelder = ["xmin", "xmax", "ymin", "ymax"].map(k => $("#ax-" + k));
+  const kurz = (v, spanne) => String(+v.toFixed(Math.max(0, Math.min(6, -Math.floor(Math.log10(spanne / 100))))));
+  function achsenFelder() {
+    if (!W || !H) return;
+    const b = bereich(), werte = [[b.x0, b.x1 - b.x0], [b.x1, b.x1 - b.x0], [b.y0, b.y1 - b.y0], [b.y1, b.y1 - b.y0]];
+    achsFelder.forEach((el, i) => {
+      if (document.activeElement === el) return;
+      el.value = kurz(...werte[i]);
+      el.removeAttribute("aria-invalid");
+    });
+  }
+  achsFelder.forEach(el => el.addEventListener("change", () => {
+    const [a, b, c, d] = achsFelder.map(f => konstante(f.value));
+    const okX = a < b, okY = c < d; // NaN ergibt false
+    achsFelder.forEach((f, i) => f.setAttribute("aria-invalid", !(i < 2 ? okX : okY)));
+    if (!okX || !okY) return;
+    view.sx = W / (b - a); view.sy = H / (d - c);
+    view.cx = (a + b) / 2; view.cy = (c + d) / 2;
+    schedule();
+  }));
+  achsFelder.forEach(el => el.addEventListener("keydown", ev => { if (ev.key === "Enter") el.dispatchEvent(new Event("change")); }));
+
+  /* ---------- Ziehen im Bild: Punkte, Tangentenpunkt, Integralgrenzen ---------- */
+  // Zahl → beim Ziehen neu schreiben; einzelner Buchstabe → der Regler bewegt sich mit
+  function koordArt(c, s) {
+    if (c.usesX) return null;
+    if (!c.params.size) return { zahl: true };
+    const t = s.trim();
+    return c.params.size === 1 && c.params.has(t) ? { param: t } : null;
+  }
+  function ziehbar(e) {
+    if (e.d.kind !== "punkt") return null;
+    const ax = koordArt(e.d.px, e.d.sx), ay = koordArt(e.d.py, e.d.sy);
+    return ax || ay ? { ax, ay } : null;
+  }
+  function paramSetzen(n, v) {
+    paramWerte[n] = v;
+    const r = $("#sliders").querySelector(`[data-param="${n}"]`);
+    if (!r) return;
+    r.min = Math.min(+r.min, v); r.max = Math.max(+r.max, v); r.value = v;
+    r.closest(".slider").querySelector(".pval").value = zahlText(v);
+  }
+  function punktZiehen(e, p) {
+    const z = ziehbar(e);
+    if (!z) return;
+    const x = runden(fromPx(p.x), view.sx), y = runden(fromPy(p.y), view.sy);
+    if (z.ax?.param) paramSetzen(z.ax.param, x);
+    if (z.ay?.param && z.ay.param !== z.ax?.param) paramSetzen(z.ay.param, y);
+    if (!z.ax?.zahl && !z.ay?.zahl) return;
+    const sx = z.ax?.zahl ? zahlText(x) : e.d.sx.trim(), sy = z.ay?.zahl ? zahlText(y) : e.d.sy.trim();
+    const text = (e.d.name ? `${e.d.name} = ` : "") + `(${sx}|${sy})`;
+    if (text === e.text) return;
+    setText(e, text);
+    const inp = liste.querySelectorAll("input[data-expr]")[eingaben.indexOf(e)];
+    if (inp) inp.value = text;
+    nachAenderung();
+  }
+
+  // Was liegt unter dem Zeiger? Punkt, Tangentenpunkt oder Integralgrenze → ziehen statt verschieben
   function ziehziel(p, touch) {
+    const r = touch ? 24 : 13;
+    const pts = eingaben.filter(e => e.an && ziehbar(e));
+    for (let i = pts.length - 1; i >= 0; i--) {
+      const e = pts[i], x = e.d.px.f(0, paramWerte), y = e.d.py.f(0, paramWerte);
+      if (Number.isFinite(x) && Number.isFinite(y) && Math.hypot(toPx(x) - p.x, toPy(y) - p.y) < r) return { punkt: e };
+    }
     const tool = toolEingabe();
     if (!tool) return null;
-    const r = touch ? 24 : 13;
     if (opt.tangent.checked) {
       const y = auswerten(tool)(tanX0);
       if (Number.isFinite(y) && Math.hypot(toPx(tanX0) - p.x, toPy(y) - p.y) < r) return "tan";
@@ -2608,17 +2771,18 @@ $("#again-btn").addEventListener("click", () => {
     }
     return null;
   }
-  const runden = v => { const s = niceStep(90 / view.scale) / 20; return +(Math.round(v / s) * s).toFixed(6); };
+  // auf «schöne» Werte runden, passend zum Zoom
+  const runden = (v, sc, teile = 10) => { const s = niceStep(90 / sc) / teile; return +(Math.round(v / s) * s).toFixed(6); };
   function ziehen(ziel, p) {
+    if (ziel.punkt) { punktZiehen(ziel.punkt, p); return; }
     const x = fromPx(p.x);
     if (ziel === "tan") tanX0 = x;
-    if (ziel === "a") { areaA = runden(x); $("#area-a").value = fmt(areaA).replace("−", "-"); }
-    if (ziel === "b") { areaB = runden(x); $("#area-b").value = fmt(areaB).replace("−", "-"); }
+    if (ziel === "a") { areaA = runden(x, view.sx, 20); $("#area-a").value = zahlText(areaA); }
+    if (ziel === "b") { areaB = runden(x, view.sx, 20); $("#area-b").value = zahlText(areaB); }
   }
 
   const pointers = new Map();
   let bewegt = 0, ziel = null;
-  const pos = e => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
   canvas.addEventListener("pointerdown", e => {
     canvas.setPointerCapture(e.pointerId);
     const p = pos(e);
@@ -2633,7 +2797,7 @@ $("#again-btn").addEventListener("click", () => {
       if (e.pointerType === "mouse") {
         hover = { px: p.x, py: p.y };
         const z = ziehziel(p, false);
-        canvas.style.cursor = z === "tan" ? "pointer" : z ? "ew-resize" : "";
+        canvas.style.cursor = z?.punkt ? "move" : z === "tan" ? "pointer" : z ? "ew-resize" : "";
         schedule();
       }
       return;
@@ -2643,8 +2807,8 @@ $("#again-btn").addEventListener("click", () => {
       bewegt += Math.abs(p.x - alt.x) + Math.abs(p.y - alt.y);
       if (ziel) ziehen(ziel, p);
       else {
-        view.cx -= (p.x - alt.x) / view.scale;
-        view.cy += (p.y - alt.y) / view.scale;
+        view.cx -= (p.x - alt.x) / view.sx;
+        view.cy += (p.y - alt.y) / view.sy;
       }
       hover = e.pointerType === "mouse" || ziel ? { px: p.x, py: p.y, touch: e.pointerType !== "mouse" } : null;
     } else if (pointers.size === 2) {
@@ -2653,8 +2817,8 @@ $("#again-btn").addEventListener("click", () => {
       const d1 = Math.hypot(p.x - andere.x, p.y - andere.y);
       const m0 = { x: (alt.x + andere.x) / 2, y: (alt.y + andere.y) / 2 };
       const m1 = { x: (p.x + andere.x) / 2, y: (p.y + andere.y) / 2 };
-      view.cx -= (m1.x - m0.x) / view.scale;
-      view.cy += (m1.y - m0.y) / view.scale;
+      view.cx -= (m1.x - m0.x) / view.sx;
+      view.cy += (m1.y - m0.y) / view.sy;
       if (d0 > 0) zoomAt(m1.x, m1.y, d1 / d0);
       bewegt += 100;
       hover = null;
@@ -2669,14 +2833,165 @@ $("#again-btn").addEventListener("click", () => {
       schedule();
     }
     pointers.delete(e.pointerId);
-    if (!pointers.size) { canvas.classList.remove("is-dragging"); ziel = null; }
+    if (!pointers.size) {
+      canvas.classList.remove("is-dragging");
+      if (ziel) merken(); // jedes Ziehen ist ein eigener Schritt zum Rückgängigmachen
+      ziel = null;
+    }
   };
   canvas.addEventListener("pointerup", ende);
   canvas.addEventListener("pointercancel", ende);
   canvas.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") { hover = null; schedule(); } });
 
+  /* ---------- Rückgängig & Wiederholen ---------- */
+  // Jeder Zustand als Text; die Ansicht (Zoom, Verschieben) gehört nicht dazu
+  const verlauf = [];
+  let vIdx = -1, merkTimer = 0;
+  function zustand() {
+    return JSON.stringify({
+      rows: eingaben.map(e => [e.id, e.farbe, e.an, e.text]), nf: naechsteFarbe, ni: naechsteId,
+      p: paramWerte, o: Object.fromEntries(Object.entries(opt).map(([k, el]) => [k, el.checked])),
+      t: toolId, v: [tanX0, areaA, areaB, tabStart, tabStep, +$("#rect-n").value],
+    });
+  }
+  function merken() {
+    clearTimeout(merkTimer); merkTimer = 0;
+    if (pointers.size || anim.size) { merkenSpaeter(); return; } // erst nach dem Ziehen bzw. Abspielen
+    const z = zustand();
+    if (z === verlauf[vIdx]) return;
+    verlauf.splice(vIdx + 1);
+    verlauf.push(z);
+    if (verlauf.length > 200) verlauf.shift();
+    vIdx = verlauf.length - 1;
+    undoKnoepfe();
+  }
+  function merkenSpaeter() { clearTimeout(merkTimer); merkTimer = setTimeout(merken, 450); }
+  function herstellen(z) {
+    const s = JSON.parse(z);
+    anim.clear();
+    eingaben = s.rows.map(([id, farbe, an, text]) => { const e = { id, farbe, an }; setText(e, text); return e; });
+    naechsteFarbe = s.nf; naechsteId = s.ni;
+    Object.keys(paramWerte).forEach(n => delete paramWerte[n]);
+    Object.assign(paramWerte, s.p);
+    Object.entries(s.o).forEach(([k, v]) => { if (opt[k]) opt[k].checked = v; });
+    toolId = s.t;
+    [tanX0, areaA, areaB, tabStart, tabStep] = s.v;
+    $("#rect-n").value = s.v[5];
+    $("#area-a").value = zahlText(areaA); $("#area-b").value = zahlText(areaB);
+    $("#tab-start").value = zahlText(tabStart); $("#tab-step").value = zahlText(tabStep);
+    sliderKey = null; toolKey = null;
+    lastInput = Math.min(lastInput, eingaben.length - 1);
+    subPanels();
+    renderRows();
+  }
+  function undoKnoepfe() {
+    $("#undo").disabled = vIdx <= 0;
+    $("#redo").disabled = vIdx >= verlauf.length - 1;
+  }
+  function rueckgaengig() {
+    anim.clear(); merken();
+    if (vIdx > 0) herstellen(verlauf[--vIdx]);
+    undoKnoepfe();
+  }
+  function wiederholen() {
+    anim.clear(); merken();
+    if (vIdx < verlauf.length - 1) herstellen(verlauf[++vIdx]);
+    undoKnoepfe();
+  }
+  $("#undo").addEventListener("click", rueckgaengig);
+  $("#redo").addEventListener("click", wiederholen);
+
+  /* ---------- Bild speichern / kopieren ---------- */
+  // dreifach aufgelöst, damit es auf einem Arbeitsblatt scharf bleibt
+  function bildBlob() {
+    return new Promise((ok, fehler) => {
+      const altF = F, altHover = hover;
+      hover = null; F = 3;
+      canvas.width = Math.round(W * F); canvas.height = Math.round(H * F);
+      draw();
+      canvas.toBlob(b => (b ? ok(b) : fehler(new Error("kein Bild"))), "image/png"); // nimmt das Bild sofort
+      F = altF; hover = altHover;
+      groesse();
+      draw();
+    });
+  }
+  const rueckmeldung = (b, text) => {
+    const alt = b.dataset.text || (b.dataset.text = b.textContent);
+    b.textContent = text;
+    clearTimeout(b._t);
+    b._t = setTimeout(() => (b.textContent = alt), 1800);
+  };
+  $("#img-save").addEventListener("click", async () => {
+    const blob = await bildBlob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "funktionslabor.png";
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  });
+  if (navigator.clipboard?.write && window.ClipboardItem) {
+    $("#img-copy").hidden = false;
+    $("#img-copy").addEventListener("click", async ev => {
+      const b = ev.currentTarget;
+      try {
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": bildBlob() })]);
+        rueckmeldung(b, "Kopiert ✓");
+      } catch { rueckmeldung(b, "Kopieren ging nicht"); }
+    });
+  }
+
+  /* ---------- Vollbild für den Beamer ---------- */
+  const layout = $("#plot-layout");
+  let vollbild = false;
+  function panelKnopf() {
+    const aus = layout.classList.contains("ohne-panel");
+    $("#panel-toggle").textContent = aus ? "Eingaben zeigen" : "Eingaben ausblenden";
+    $("#panel-toggle").setAttribute("aria-pressed", aus);
+  }
+  let ansichtVorher = null; // Ansicht vor dem Vollbild und direkt danach
+  const gleicheAnsicht = (a, b) => a && b && ["cx", "cy", "sx", "sy"].every(k => Math.abs(a[k] - b[k]) <= 1e-9 * (1 + Math.abs(a[k])));
+  function vollbildUmschalten(an) {
+    if (an === vollbild) return;
+    vollbild = an;
+    // beim Beenden: wurde im Vollbild nicht gezoomt, genau die alte Ansicht zurück (sonst wächst der Bereich mit jedem Umschalten)
+    const zurueck = !an && ansichtVorher && gleicheAnsicht(view, ansichtVorher.danach) ? ansichtVorher.vorher : null;
+    const vorher = { ...view };
+    einpassenNach = zurueck ? null : bereich();
+    layout.classList.toggle("is-vollbild", an);
+    document.body.classList.toggle("labor-vollbild", an);
+    if (!an) layout.classList.remove("ohne-panel");
+    S = an ? Math.max(1.4, Math.min(2, innerWidth / 1100)) : 1; // alles grösser, damit man es hinten im Zimmer liest
+    $("#beamer").textContent = an ? "Vollbild beenden" : "Vollbild";
+    $("#beamer").setAttribute("aria-pressed", an);
+    panelKnopf();
+    groesse();
+    if (zurueck) { Object.assign(view, zurueck); schedule(); }
+    ansichtVorher = an ? { vorher, danach: { ...view } } : null;
+    if (an && !document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(() => {});
+    if (!an && document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
+  }
+  $("#beamer").addEventListener("click", () => vollbildUmschalten(!vollbild));
+  $("#panel-toggle").addEventListener("click", () => { // Massstab bleibt, man sieht nur mehr oder weniger
+    layout.classList.toggle("ohne-panel");
+    panelKnopf();
+    groesse();
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement) vollbildUmschalten(false); });
+  addEventListener("hashchange", () => vollbildUmschalten(false));
+
+  document.addEventListener("keydown", ev => {
+    if (canvas.closest("[data-page]").hidden) return;
+    if (ev.key === "Escape" && vollbild) { vollbildUmschalten(false); return; }
+    if (!(ev.ctrlKey || ev.metaKey) || ev.altKey) return;
+    if (ev.target.closest?.("input, textarea, select, [contenteditable]")) return; // dort gilt das normale Rückgängig
+    const k = ev.key.toLowerCase();
+    if (k === "z" && !ev.shiftKey) { ev.preventDefault(); rueckgaengig(); }
+    else if (k === "y" || (k === "z" && ev.shiftKey)) { ev.preventDefault(); wiederholen(); }
+  });
+
   // Start
   startzustand();
+  merken();
   document.fonts?.load(FONT).then(schedule, () => {});
 })();
 
