@@ -633,9 +633,33 @@
   }
   .lightbox-bar button:hover { background: var(--grey); }
   .lightbox-bar .count { font-size: .9rem; }
+
+  /* ---------- Wartung: deckt die ganze Seite ab ----------
+     Ein- und ausschalten: den Block <div class="wartung"> direkt nach <body> stehen lassen bzw. löschen */
+  body:has(> .wartung) { overflow: hidden; }
+  .wartung {
+    position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center;
+    padding: 2rem 1.5rem; background: var(--white); color: var(--black); overflow-y: auto;
+  }
+  .wartung-inhalt { max-width: 34rem; text-align: center; }
+  .wartung .logo--lg { display: block; margin-bottom: 2.5rem; }
+  .wartung h1 { margin: 0 0 1rem; font-size: clamp(1.6rem, 5vw, 2.1rem); font-weight: 700; line-height: 1.2; }
+  .wartung p { margin: 0 0 1rem; font-size: 1.1rem; line-height: 1.55; }
+  .wartung-kontakt { margin-top: 2rem !important; padding-top: 1.25rem; border-top: var(--line); font-size: 1rem !important; }
 </style>
 </head>
 <body>
+
+<!-- ===== Wartung (zum Beenden diesen Block löschen) ===== -->
+<div class="wartung" role="alertdialog" aria-modal="true" aria-labelledby="wartung-titel" aria-describedby="wartung-text">
+  <div class="wartung-inhalt">
+    <span class="logo logo--lg" aria-hidden="true">Lemma</span>
+    <h1 id="wartung-titel">Wartungsarbeiten</h1>
+    <p id="wartung-text">Lemma ist gerade wegen Wartungsarbeiten nicht erreichbar. Wann die Seite wieder online ist, steht noch nicht fest.</p>
+    <p>Danke für deine Geduld!</p>
+    <p class="wartung-kontakt">Fragen? Schreib an <a data-config-mail></a> oder auf <a data-config-instagram-handle target="_blank" rel="noopener"></a>.</p>
+  </div>
+</div>
 
 <header class="site-header">
   <div class="wrap">
@@ -1176,6 +1200,11 @@ document.querySelectorAll("[data-config-instagram-handle]").forEach(el => {
   el.textContent = "@" + CONFIG.instagram;
 });
 $("#year").textContent = new Date().getFullYear();
+
+// Während der Wartung ist alles hinter dem Hinweis unerreichbar (auch per Tab-Taste)
+if (document.querySelector("body > .wartung")) {
+  [...document.body.children].forEach(el => { if (!el.matches(".wartung, script")) el.inert = true; });
+}
 
 // Teile, die nur bei aktiver Bestellung bzw. nur ohne Bestellung gelten
 document.querySelectorAll("[data-nur-bestellung]").forEach(el => (el.hidden = !BESTELLUNG_AKTIV));
