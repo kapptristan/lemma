@@ -400,47 +400,9 @@
   @media (min-width: 56rem) {
     .plot-layout { grid-template-columns: 19rem minmax(0, 1fr); grid-template-rows: auto 1fr; grid-template-areas: "panel stage" "panel info"; column-gap: 2.5rem; row-gap: 2.25rem; align-items: start; }
   }
-  .plot-stage { grid-area: stage; border: var(--line); background: var(--white); }
-  .plot-canvas-wrap { position: relative; }
+  .plot-stage { grid-area: stage; position: relative; border: var(--line); background: var(--white); }
   .plot-canvas { display: block; width: 100%; height: clamp(18rem, 48vh, 40rem); touch-action: none; cursor: grab; }
   @media (min-width: 56rem) { .plot-canvas { height: clamp(20rem, 64vh, 40rem); } }
-  .plot-bar {
-    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .3rem 1.2rem;
-    padding: .35rem .7rem; border-top: var(--line); font-size: .95rem;
-  }
-  .plot-bar-group { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem 1.1rem; }
-  .icon-btn { width: 1.9rem; height: 1.9rem; padding: 0; border: 0; background: none; font: inherit; font-size: 1.25rem; line-height: 1; color: var(--black); cursor: pointer; }
-  .icon-btn:hover:not(:disabled) { background: var(--grey); }
-  .icon-btn:disabled { color: #b5b5b5; cursor: default; }
-  #panel-toggle { display: none; }
-
-  /* Vollbild für den Beamer: Grafik füllt den Bildschirm, alles grösser */
-  body.labor-vollbild { overflow: hidden; }
-  .plot-layout.is-vollbild {
-    position: fixed; inset: 0; z-index: 50; margin: 0; padding: 0 0 0 1.5rem; background: var(--white);
-    grid-template-columns: 24rem minmax(0, 1fr); grid-template-rows: auto 1fr; grid-template-areas: "panel stage" "info stage";
-    column-gap: 1.5rem; row-gap: 1.5rem; overflow-y: auto; overscroll-behavior: contain;
-  }
-  .plot-layout.is-vollbild .plot-panel { padding-top: 1.2rem; zoom: 1.2; }
-  .plot-layout.is-vollbild .plot-info { padding-bottom: 1.5rem; zoom: 1.2; }
-  .plot-layout.is-vollbild .plot-stage {
-    position: sticky; top: 0; grid-row: 1 / span 2; align-self: start; height: 100vh; height: 100dvh;
-    display: flex; flex-direction: column; border-width: 0 0 0 1px;
-  }
-  .plot-layout.is-vollbild .plot-canvas-wrap { flex: 1; min-height: 0; }
-  .plot-layout.is-vollbild .plot-canvas { height: 100%; }
-  .plot-layout.is-vollbild .plot-bar { font-size: 1.1rem; }
-  .plot-layout.is-vollbild .plot-readout { font-size: 1.4rem; }
-  .plot-layout.is-vollbild .plot-tools button { width: 2.8rem; height: 2.8rem; font-size: 1.4rem; }
-  .plot-layout.is-vollbild #panel-toggle { display: inline; }
-  .plot-layout.is-vollbild.ohne-panel { grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage"; padding: 0; }
-  .plot-layout.is-vollbild.ohne-panel .plot-panel, .plot-layout.is-vollbild.ohne-panel .plot-info { display: none; }
-  .plot-layout.is-vollbild.ohne-panel .plot-stage { grid-row: auto; border: 0; }
-  @media (max-width: 55.99rem) {
-    .plot-layout.is-vollbild { padding: 0; grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage"; }
-    .plot-layout.is-vollbild .plot-panel, .plot-layout.is-vollbild .plot-info, .plot-layout.is-vollbild #panel-toggle { display: none; }
-    .plot-layout.is-vollbild .plot-stage { grid-row: auto; border: 0; }
-  }
   .plot-canvas.is-dragging { cursor: grabbing; }
   .plot-tools { position: absolute; top: .6rem; right: .6rem; display: flex; flex-direction: column; border: var(--line); background: var(--white); }
   .plot-tools button {
@@ -545,9 +507,6 @@
   .mini input { width: 3.6rem; padding: .1rem .15rem; font-family: var(--mono); font-size: .95rem; border: 0; border-bottom: var(--line); border-radius: 0; background: none; color: var(--black); }
   .mini input:focus { outline: 0; border-bottom-width: 2px; }
   .mini input[aria-invalid="true"] { border-bottom-style: dashed; }
-  .achsen { display: grid; grid-template-columns: 1rem auto auto; justify-content: start; gap: .35rem 1rem; align-items: baseline; }
-  .achsen input { width: 4rem; }
-  .achsen-checks { margin-top: .6rem; }
 
   /* unter der Grafik: Ergebnisse wie im Skript */
   .plot-info { grid-area: info; display: flex; flex-direction: column; gap: 2rem; }
@@ -746,29 +705,15 @@
     <div class="wrap">
       <h1 class="page-title" tabindex="-1">Funktionslabor</h1>
       <p class="lead">Funktionen zeichnen, verschieben, ableiten und integrieren.</p>
-      <div class="plot-layout" id="plot-layout">
+      <div class="plot-layout">
         <div class="plot-stage">
-          <div class="plot-canvas-wrap">
-            <canvas class="plot-canvas" id="plot" aria-label="Koordinatensystem"></canvas>
-            <div class="plot-tools">
-              <button type="button" id="zoom-in" aria-label="Hineinzoomen" title="Hineinzoomen">+</button>
-              <button type="button" id="zoom-out" aria-label="Herauszoomen" title="Herauszoomen">−</button>
-              <button type="button" id="zoom-reset" aria-label="Ansicht zurücksetzen" title="Ansicht zurücksetzen">⌂</button>
-            </div>
-            <div class="plot-readout m" id="readout" hidden></div>
+          <canvas class="plot-canvas" id="plot" aria-label="Koordinatensystem"></canvas>
+          <div class="plot-tools">
+            <button type="button" id="zoom-in" aria-label="Hineinzoomen">+</button>
+            <button type="button" id="zoom-out" aria-label="Herauszoomen">−</button>
+            <button type="button" id="zoom-reset" aria-label="Ansicht zurücksetzen">⌂</button>
           </div>
-          <div class="plot-bar">
-            <span class="plot-bar-group">
-              <button type="button" class="icon-btn" id="undo" aria-label="Rückgängig" title="Rückgängig (Strg+Z)" disabled>↶</button>
-              <button type="button" class="icon-btn" id="redo" aria-label="Wiederholen" title="Wiederholen (Strg+Y)" disabled>↷</button>
-            </span>
-            <span class="plot-bar-group">
-              <button type="button" class="link-btn" id="img-save">Bild speichern</button>
-              <button type="button" class="link-btn" id="img-copy" hidden>Bild kopieren</button>
-              <button type="button" class="link-btn" id="panel-toggle" aria-pressed="false">Eingaben ausblenden</button>
-              <button type="button" class="link-btn" id="beamer" aria-pressed="false">Vollbild</button>
-            </span>
-          </div>
+          <div class="plot-readout m" id="readout" hidden></div>
         </div>
 
         <div class="plot-panel">
@@ -780,7 +725,7 @@
               <button type="button" class="link-btn" id="reset">Zurücksetzen</button>
             </p>
             <div class="kbd" id="kbd" aria-label="Mathe-Tastatur" hidden></div>
-            <p class="plot-help">Funktion <code>x^2</code>, Punkt <code>(2|1)</code>, Gerade <code>x = 3</code>. Buchstaben wie <i>a</i> oder <i>k</i> werden zu Reglern. Punkte lassen sich im Bild ziehen, <code>(a|a^2)</code> wandert dabei auf der Parabel.</p>
+            <p class="plot-help">Funktion <code>x^2</code>, Punkt <code>(2|1)</code>, Gerade <code>x = 3</code>. Buchstaben wie <i>a</i> oder <i>k</i> werden zu Reglern.</p>
           </div>
           <div class="plot-box" id="slider-box" hidden>
             <h2>Parameter</h2>
@@ -819,21 +764,6 @@
                   <label>Schritt <input type="text" id="tab-step" value="1" autocomplete="off" spellcheck="false"></label>
                 </div>
               </div>
-            </div>
-          </div>
-          <div class="plot-box">
-            <h2>Achsen</h2>
-            <div class="mini achsen">
-              <span class="m"><i>x</i></span>
-              <label>von <input type="text" id="ax-xmin" autocomplete="off" spellcheck="false" aria-label="x-Achse von"></label>
-              <label>bis <input type="text" id="ax-xmax" autocomplete="off" spellcheck="false" aria-label="x-Achse bis"></label>
-              <span class="m"><i>y</i></span>
-              <label>von <input type="text" id="ax-ymin" autocomplete="off" spellcheck="false" aria-label="y-Achse von"></label>
-              <label>bis <input type="text" id="ax-ymax" autocomplete="off" spellcheck="false" aria-label="y-Achse bis"></label>
-            </div>
-            <div class="checks achsen-checks">
-              <label><input type="checkbox" id="opt-grid" checked> Gitter</label>
-              <label><input type="checkbox" id="opt-labels" checked> Zahlen an den Achsen</label>
             </div>
           </div>
         </div>
